@@ -1,0 +1,21 @@
+{
+  "n_bgcs": 2636,
+  "n_splits": 5,
+  "results": {
+    "hashed_architecture": {
+      "model": "rf",
+      "macro_f1": 0.7841851485440968,
+      "weighted_f1": 0.8098003538571367
+    },
+    "esm2_150M": {
+      "model": "logreg",
+      "macro_f1": 0.7615587913557399,
+      "weighted_f1": 0.7618739733881738
+    },
+    "combined": {
+      "model": "rf",
+      "macro_f1": 0.8340156866470232,
+      "weighted_f1": 0.8461557498254357
+    }
+  }
+}
