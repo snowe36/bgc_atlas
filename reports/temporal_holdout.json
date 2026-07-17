@@ -1,0 +1,52 @@
+{
+  "cutoff_date": "2022-09-16",
+  "k": 5,
+  "n_reference": 2472,
+  "n_heldout": 290,
+  "heldout_novelty_mean": 0.3973440464233903,
+  "heldout_novelty_median": 0.34122168284789645,
+  "random_control_novelty_mean_of_means": 0.4948408293561743,
+  "random_control_novelty_std_of_means": 0.01810154450816029,
+  "n_random_controls": 50,
+  "mann_whitney_u": 5457.0,
+  "p_value_heldout_gt_control": 0.9974008043878545,
+  "heldout_more_novel_than_random_control": false,
+  "heldout_novelty_by_class": [
+    {
+      "biosynth_class": "NRPS",
+      "count": 68,
+      "mean": 0.5386207881210736,
+      "median": 0.5442961165048543
+    },
+    {
+      "biosynth_class": "PKS",
+      "count": 68,
+      "mean": 0.5002439082429088,
+      "median": 0.4684466019417476
+    },
+    {
+      "biosynth_class": "RiPP",
+      "count": 85,
+      "mean": 0.16256424900057112,
+      "median": 0.08009708737864078
+    },
+    {
+      "biosynth_class": "hybrid",
+      "count": 37,
+      "mean": 0.614427534330447,
+      "median": 0.6901294498381877
+    },
+    {
+      "biosynth_class": "other",
+      "count": 5,
+      "mean": 0.5743527508090616,
+      "median": 0.5833333333333334
+    },
+    {
+      "biosynth_class": "terpene",
+      "count": 27,
+      "mean": 0.1912381637300731,
+      "median": 0.1104368932038835
+    }
+  ]
+}

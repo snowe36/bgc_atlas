@@ -107,6 +107,37 @@ def apply_main(argv: list[str] | None = None) -> int:
     return 0
 
 
+def temporal_main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        description="Prospective validation: fit on pre-cutoff MIBiG entries, "
+        "score post-cutoff entries as a held-out temporal novelty test"
+    )
+    parser.add_argument("-v", "--verbose", action="store_true")
+    parser.add_argument("--cutoff", default="2022-09-16", help="ISO date; entries added on/after this are held out")
+    parser.add_argument("-k", type=int, default=5, help="Neighbors for kNN novelty")
+    parser.add_argument("--n-controls", type=int, default=50, help="Random-holdout control repeats")
+    args = parser.parse_args(argv)
+    _setup_logging(args.verbose)
+    from bgcatlas.novelty.temporal import run_temporal_holdout
+
+    run_temporal_holdout(cutoff=args.cutoff, k=args.k, n_controls=args.n_controls)
+    return 0
+
+
+def ablation_main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        description="Compare hashed-architecture vs ESM2 vs combined representations"
+    )
+    parser.add_argument("-v", "--verbose", action="store_true")
+    parser.add_argument("--cv", type=int, default=5)
+    args = parser.parse_args(argv)
+    _setup_logging(args.verbose)
+    from bgcatlas.models.ablation import run_ablation
+
+    run_ablation(n_splits=args.cv)
+    return 0
+
+
 if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else ""
     rest = sys.argv[2:]
@@ -118,6 +149,8 @@ if __name__ == "__main__":
         "novelty": novelty_main,
         "validate": validate_main,
         "apply": apply_main,
+        "temporal": temporal_main,
+        "ablation": ablation_main,
     }
     if cmd in dispatch:
         raise SystemExit(dispatch[cmd](rest))

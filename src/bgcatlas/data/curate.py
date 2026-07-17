@@ -106,6 +106,8 @@ def _parse_one_json(path: Path) -> dict[str, Any] | None:
     elif isinstance(genes, dict):
         n_genes_json = len(genes.get("annotations") or []) + len(genes.get("to_add") or [])
 
+    date_added, date_latest = _changelog_dates(data.get("changelog") or {})
+
     return {
         "bgc_id": str(bgc_id),
         "biosynth_classes_raw": ";".join(raw_classes),
@@ -118,8 +120,27 @@ def _parse_one_json(path: Path) -> dict[str, Any] | None:
         "status": data.get("status") or "",
         "completeness": data.get("completeness") or "",
         "quality": data.get("quality") or "",
+        "date_added": date_added,
+        "date_latest": date_latest,
         "json_path": str(path),
     }
+
+
+def _changelog_dates(changelog: dict[str, Any]) -> tuple[str | None, str | None]:
+    """Earliest ("Submitted") and most recent revision dates from MIBiG's changelog."""
+    dates: list[str] = []
+    for release in (changelog.get("releases") or []):
+        d = release.get("date")
+        if isinstance(d, str) and re.match(r"^\d{4}-\d{2}-\d{2}$", d):
+            dates.append(d)
+        for entry in release.get("entries") or []:
+            d = entry.get("date")
+            if isinstance(d, str) and re.match(r"^\d{4}-\d{2}-\d{2}$", d):
+                dates.append(d)
+    if not dates:
+        return None, None
+    dates.sort()
+    return dates[0], dates[-1]
 
 
 _DOMAIN_PATTERNS = re.compile(
@@ -166,8 +187,11 @@ def _product_to_domain_tokens(product: str) -> list[str]:
     return tokens or (["CDS_other"] if product else [])
 
 
-def _domains_from_gbk(record) -> list[dict[str, Any]]:
+def _domains_from_gbk(
+    record,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     rows: list[dict[str, Any]] = []
+    protein_rows: list[dict[str, Any]] = []
     bgc_id = record.id
     m = re.search(r"(BGC\d+)", record.name or record.id or "")
     if m:
@@ -195,6 +219,17 @@ def _domains_from_gbk(record) -> list[dict[str, Any]]:
                     "aa_length": len(seq),
                 }
             )
+            if len(seq) >= 10:
+                protein_rows.append(
+                    {
+                        "bgc_id": bgc_id,
+                        "gene_order": gene_order,
+                        "locus_tag": locus,
+                        "product": product,
+                        "translation": seq,
+                        "aa_length": len(seq),
+                    }
+                )
             for d in _product_to_domain_tokens(product):
                 rows.append(
                     {
@@ -226,10 +261,12 @@ def _domains_from_gbk(record) -> list[dict[str, Any]]:
                         "aa_length": 0,
                     }
                 )
-    return rows
+    return rows, protein_rows
 
 
-def _parse_gbk_summary(gbk_path: Path) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+def _parse_gbk_summary(
+    gbk_path: Path,
+) -> tuple[dict[str, Any], list[dict[str, Any]], list[dict[str, Any]]]:
     record = next(SeqIO.parse(str(gbk_path), "genbank"))
     bgc_id = record.id
     m = re.search(r"(BGC\d+)", gbk_path.name)
@@ -244,7 +281,7 @@ def _parse_gbk_summary(gbk_path: Path) -> tuple[dict[str, Any], list[dict[str, A
         else:
             aa_lengths.append(max(0, int(f.location.end - f.location.start) // 3))
 
-    domain_rows = _domains_from_gbk(record)
+    domain_rows, protein_rows = _domains_from_gbk(record)
     domain_ids = [r["domain_id"] for r in domain_rows if r["domain_id"]]
 
     summary = {
@@ -257,7 +294,7 @@ def _parse_gbk_summary(gbk_path: Path) -> tuple[dict[str, Any], list[dict[str, A
         "domain_types": ";".join(sorted(Counter(domain_ids).keys())[:80]),
         "gbk_path": str(gbk_path),
     }
-    return summary, domain_rows
+    return summary, domain_rows, protein_rows
 
 
 def curate_mibig() -> tuple[pd.DataFrame, pd.DataFrame]:
@@ -285,16 +322,19 @@ def curate_mibig() -> tuple[pd.DataFrame, pd.DataFrame]:
 
     gbk_rows = []
     domain_rows: list[dict[str, Any]] = []
+    protein_rows: list[dict[str, Any]] = []
     for path in gbk_paths:
         try:
-            summary, domains = _parse_gbk_summary(path)
+            summary, domains, proteins = _parse_gbk_summary(path)
             gbk_rows.append(summary)
             domain_rows.extend(domains)
+            protein_rows.extend(proteins)
         except Exception as exc:  # noqa: BLE001
             LOG.warning("Failed GBK %s: %s", path.name, exc)
 
     gbk_df = pd.DataFrame(gbk_rows).drop_duplicates(subset=["bgc_id"])
     domains_df = pd.DataFrame(domain_rows)
+    proteins_df = pd.DataFrame(protein_rows)
 
     bgcs = meta.merge(gbk_df, on="bgc_id", how="outer")
     bgcs["biosynth_class"] = bgcs["biosynth_class"].fillna("other")
@@ -305,17 +345,23 @@ def curate_mibig() -> tuple[pd.DataFrame, pd.DataFrame]:
 
     out_bgc = PROCESSED / "mibig_bgcs.parquet"
     out_dom = PROCESSED / "mibig_domains.parquet"
+    out_prot = PROCESSED / "mibig_proteins.parquet"
     bgcs.to_parquet(out_bgc, index=False)
     domains_df.to_parquet(out_dom, index=False)
+    proteins_df.to_parquet(out_prot, index=False)
     bgcs.to_csv(PROCESSED / "mibig_bgcs.csv", index=False)
     domains_df.to_csv(PROCESSED / "mibig_domains.csv", index=False)
 
     LOG.info(
-        "Wrote %d BGCs (%s) and %d domain rows (%s)",
+        "Wrote %d BGCs (%s), %d domain rows (%s), %d protein sequences (%s)",
         len(bgcs),
         out_bgc,
         len(domains_df),
         out_dom,
+        len(proteins_df),
+        out_prot,
     )
     LOG.info("Class counts:\n%s", bgcs["biosynth_class"].value_counts().to_string())
+    n_dated = bgcs["date_added"].notna().sum() if "date_added" in bgcs.columns else 0
+    LOG.info("BGCs with changelog date_added: %d / %d", n_dated, len(bgcs))
     return bgcs, domains_df
