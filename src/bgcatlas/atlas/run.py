@@ -18,6 +18,31 @@ LOG = logging.getLogger(__name__)
 CLASS_ORDER = ["NRPS", "PKS", "RiPP", "terpene", "hybrid", "other"]
 
 
+def _robust_limits(vals: np.ndarray, lo: float = 1.0, hi: float = 99.0, pad: float = 0.15) -> tuple[float, float]:
+    """Percentile-based axis limits so a handful of extreme outliers don't collapse the plot."""
+    p_lo, p_hi = np.percentile(vals, [lo, hi])
+    span = max(p_hi - p_lo, 1e-9)
+    return p_lo - pad * span, p_hi + pad * span
+
+
+def _annotate_offframe(ax, coords: np.ndarray, xlim: tuple[float, float], ylim: tuple[float, float]) -> None:
+    """Note how many points fall outside the zoomed-in view instead of silently clipping them."""
+    off = (
+        (coords[:, 0] < xlim[0]) | (coords[:, 0] > xlim[1]) | (coords[:, 1] < ylim[0]) | (coords[:, 1] > ylim[1])
+    ).sum()
+    if off:
+        ax.text(
+            0.99,
+            0.01,
+            f"{off} extreme outlier point{'s' if off != 1 else ''} outside view\n(see validation audit)",
+            transform=ax.transAxes,
+            ha="right",
+            va="bottom",
+            fontsize=8,
+            color="dimgray",
+        )
+
+
 def _embed_2d(X: np.ndarray) -> tuple[np.ndarray, str]:
     """Return 2D coords and method name. Prefer UMAP; fall back to PCA."""
     Xs = StandardScaler(with_mean=False).fit_transform(X)
@@ -79,6 +104,10 @@ def run_atlas() -> pd.DataFrame:
     ax.set_xlabel(f"{method}-1")
     ax.set_ylabel(f"{method}-2")
     ax.legend(title="class", bbox_to_anchor=(1.02, 1), loc="upper left")
+    xlim, ylim = _robust_limits(coords[:, 0]), _robust_limits(coords[:, 1])
+    ax.set_xlim(xlim)
+    ax.set_ylim(ylim)
+    _annotate_offframe(ax, coords, xlim, ylim)
     fig.tight_layout()
     fig.savefig(FIGURES / "atlas_by_class.png", dpi=150)
     plt.close(fig)
@@ -91,6 +120,8 @@ def run_atlas() -> pd.DataFrame:
         sharex=True,
         sharey=True,
         height=2.6,
+        xlim=xlim,
+        ylim=ylim,
     )
     g.map_dataframe(sns.scatterplot, x="dim1", y="dim2", s=10, alpha=0.6, color="steelblue")
     g.figure.suptitle(f"Per-class neighborhoods ({method})", y=1.02)

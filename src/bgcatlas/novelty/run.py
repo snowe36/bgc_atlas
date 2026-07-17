@@ -11,6 +11,7 @@ import seaborn as sns
 from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import MinMaxScaler
 
+from bgcatlas.atlas.run import _annotate_offframe, _robust_limits
 from bgcatlas.paths import FIGURES, PROCESSED, REPORTS, ensure_dirs
 
 LOG = logging.getLogger(__name__)
@@ -115,6 +116,11 @@ def run_novelty(k: int = 5) -> pd.DataFrame:
     ax.set_xlabel("embed-1")
     ax.set_ylabel("embed-2")
     ax.legend()
+    coords = plot[["dim1", "dim2"]].dropna().to_numpy()
+    xlim, ylim = _robust_limits(coords[:, 0]), _robust_limits(coords[:, 1])
+    ax.set_xlim(xlim)
+    ax.set_ylim(ylim)
+    _annotate_offframe(ax, coords, xlim, ylim)
     fig.tight_layout()
     fig.savefig(FIGURES / "novelty_overlay.png", dpi=150)
     plt.close(fig)

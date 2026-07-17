@@ -23,14 +23,17 @@ import numpy as np
 import pandas as pd
 import torch
 
-MAX_AA = 1022  # ESM2 context budget; longer CDS translations are truncated
+MAX_AA = 700  # domain-composition signal lives in the first ~700 aa; caps worst-case batch cost
 
 
 def load_model(model_name: str, device: str):
     from transformers import AutoModel, AutoTokenizer
 
     tok = AutoTokenizer.from_pretrained(model_name)
-    model = AutoModel.from_pretrained(model_name)
+    try:
+        model = AutoModel.from_pretrained(model_name, attn_implementation="sdpa")
+    except Exception:
+        model = AutoModel.from_pretrained(model_name)
     model.eval().to(device)
     return tok, model
 
@@ -54,8 +57,8 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--input", default="data/processed/mibig_proteins.parquet")
     ap.add_argument("--outdir", default="data/processed")
-    ap.add_argument("--model", default="facebook/esm2_t33_650M_UR50D")
-    ap.add_argument("--batch-tokens", type=int, default=8000, help="approx tokens per batch")
+    ap.add_argument("--model", default="facebook/esm2_t30_150M_UR50D")
+    ap.add_argument("--batch-tokens", type=int, default=6000, help="approx tokens per batch")
     ap.add_argument("--max-proteins-per-bgc", type=int, default=60)
     args = ap.parse_args()
 
@@ -87,17 +90,27 @@ def main() -> None:
     batch_seqs: list[str] = []
     t0 = time.time()
     n_done = 0
+    n_batches = 0
 
     def flush():
-        nonlocal batch_idx, batch_seqs, n_done
+        nonlocal batch_idx, batch_seqs, n_done, n_batches
         if not batch_seqs:
             return
+        bt0 = time.time()
         emb = embed_batch(batch_seqs, tok, model, device)
         for local_i, global_i in enumerate(batch_idx):
             all_embeds[global_i] = emb[local_i]
         n_done += len(batch_seqs)
-        if n_done % 2000 < len(batch_seqs):
-            print(f"  {n_done}/{len(df_sorted)} proteins embedded ({time.time() - t0:.0f}s)")
+        n_batches += 1
+        elapsed = time.time() - t0
+        rate = n_done / elapsed if elapsed > 0 else 0
+        eta = (len(df_sorted) - n_done) / rate if rate > 0 else float("nan")
+        print(
+            f"  batch {n_batches}: +{len(batch_seqs)} seqs (maxlen={max(len(s) for s in batch_seqs)}) "
+            f"in {time.time() - bt0:.2f}s | {n_done}/{len(df_sorted)} done | "
+            f"{rate:.1f} seq/s | elapsed {elapsed:.0f}s | ETA {eta:.0f}s",
+            flush=True,
+        )
         batch_idx, batch_seqs = [], []
 
     for i, seq in enumerate(df_sorted["translation"].tolist()):
