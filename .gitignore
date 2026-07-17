@@ -9,8 +9,13 @@ data/processed/*
 reports/figures/*.png
 reports/figures/*.pdf
 reports/figures/*.svg
-reports/*.csv
 !reports/figures/.gitkeep
+# Keep hero ranking + audit tables in git for the README story
+!reports/novelty_ranking.csv
+!reports/novelty_by_class.csv
+!reports/predicted_novelty_ranking.csv
+!reports/sanity_metrics.json
+!reports/validation_audit.json
 
 # Python
 __pycache__/

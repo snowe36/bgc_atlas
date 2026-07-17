@@ -1,0 +1,53 @@
+{
+  "n_bgcs": 2762,
+  "class_label_leak_in_features": false,
+  "forbidden_features": [],
+  "top50_size_outliers": 4,
+  "top_decile_same_class_neighbor_rate": 0.6678700361010831,
+  "novelty_n_genes_spearman": 0.1180187701263028,
+  "novelty_by_class": [
+    {
+      "biosynth_class": "NRPS",
+      "count": 556,
+      "mean": 0.5720326672381761,
+      "median": 0.5828504165157551,
+      "std": 0.22279391151808056
+    },
+    {
+      "biosynth_class": "PKS",
+      "count": 717,
+      "mean": 0.6261092311368195,
+      "median": 0.6602680188337559,
+      "std": 0.25184822141301055
+    },
+    {
+      "biosynth_class": "RiPP",
+      "count": 413,
+      "mean": 0.25045404996785914,
+      "median": 0.16570083303151034,
+      "std": 0.24094180845347915
+    },
+    {
+      "biosynth_class": "hybrid",
+      "count": 413,
+      "mean": 0.6942044720085101,
+      "median": 0.7327055414704817,
+      "std": 0.2233435986530153
+    },
+    {
+      "biosynth_class": "other",
+      "count": 482,
+      "mean": 0.3358703999543132,
+      "median": 0.2673850054328142,
+      "std": 0.2394062845052046
+    },
+    {
+      "biosynth_class": "terpene",
+      "count": 181,
+      "mean": 0.3425194250621822,
+      "median": 0.27453821079319085,
+      "std": 0.25653527353297156
+    }
+  ],
+  "checks_passed": true
+}
