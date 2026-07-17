@@ -7,14 +7,13 @@ name = "np-discovery"
 version = "0.1.0"
 description = "CPU-only biosynthetic novelty atlas: map BGC space and rank unexplored regions (MIBiG)"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 license = { text = "MIT" }
 authors = [{ name = "Eric Snow" }]
 dependencies = [
   "numpy>=1.24",
   "pandas>=2.0",
   "scikit-learn>=1.3",
-  "umap-learn>=0.5.5",
   "matplotlib>=3.7",
   "seaborn>=0.13",
   "biopython>=1.81",
@@ -26,6 +25,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=7.4"]
+umap = ["umap-learn>=0.5.5"]
 
 [project.scripts]
 np-download = "npdiscovery.cli:download_main"
