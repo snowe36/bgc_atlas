@@ -138,6 +138,20 @@ def ablation_main(argv: list[str] | None = None) -> int:
     return 0
 
 
+def novelty_compare_main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        description="Compare novelty rankings across hashed/ESM2/combined representations"
+    )
+    parser.add_argument("-v", "--verbose", action="store_true")
+    parser.add_argument("-k", type=int, default=5)
+    args = parser.parse_args(argv)
+    _setup_logging(args.verbose)
+    from bgcatlas.novelty.embed_compare import run_novelty_representation_comparison
+
+    run_novelty_representation_comparison(k=args.k)
+    return 0
+
+
 if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else ""
     rest = sys.argv[2:]
@@ -151,6 +165,7 @@ if __name__ == "__main__":
         "apply": apply_main,
         "temporal": temporal_main,
         "ablation": ablation_main,
+        "novelty-compare": novelty_compare_main,
     }
     if cmd in dispatch:
         raise SystemExit(dispatch[cmd](rest))

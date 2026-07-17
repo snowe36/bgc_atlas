@@ -1,0 +1,13 @@
+{
+  "n_bgcs": 2636,
+  "k": 5,
+  "top_frac": 0.1,
+  "n_top": 264,
+  "spearman_hashed_vs_esm": -0.4224849409255431,
+  "spearman_hashed_vs_esm_pvalue": 1.2814434267142425e-114,
+  "spearman_hashed_vs_combined": 0.06304028911262868,
+  "spearman_hashed_vs_combined_pvalue": 0.001202443219999758,
+  "top_decile_jaccard_hashed_vs_esm": 0.015384615384615385,
+  "top_decile_jaccard_hashed_vs_combined": 0.19457013574660634,
+  "top_decile_jaccard_esm_vs_combined": 0.4666666666666667
+}

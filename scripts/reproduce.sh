@@ -18,5 +18,8 @@ bgc-atlas
 bgc-novelty
 bgc-validate
 bgc-apply
+bgc-temporal
 
 echo "Done. See reports/novelty_ranking.csv and reports/figures/"
+echo "(GPU embeddings are optional and not run here — see 'GPU / protein language model embeddings' in README.md;"
+echo " once data/processed/esm_embeddings.npy exists, also run: bgc-ablation && bgc-novelty-compare)"

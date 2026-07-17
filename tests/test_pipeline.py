@@ -8,9 +8,10 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from bgcatlas.data.curate import _coarsen_classes, _parse_one_json
+from bgcatlas.data.curate import _changelog_dates, _coarsen_classes, _parse_one_json
 from bgcatlas.featurize.run import build_feature_matrix
 from bgcatlas.novelty.run import score_novelty
+from bgcatlas.novelty.temporal import _score_query
 
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -82,3 +83,28 @@ def test_novelty_ranks_outlier():
     )
     scores = score_novelty(Z, k=2)
     assert scores["novelty"].argmax() == 3
+
+
+def test_changelog_dates_earliest_and_latest():
+    changelog = {
+        "releases": [
+            {"version": "1", "date": "2019-01-01", "entries": [{"date": "2019-01-01", "comment": "Submitted"}]},
+            {"version": "2", "date": "2021-06-15", "entries": [{"date": "2021-06-15", "comment": "Updated"}]},
+        ]
+    }
+    earliest, latest = _changelog_dates(changelog)
+    assert earliest == "2019-01-01"
+    assert latest == "2021-06-15"
+    assert _changelog_dates({}) == (None, None)
+
+
+def test_score_query_flags_far_cluster_as_novel():
+    # reference manifold is a tight cluster near the origin
+    Z_ref = np.array([[0.0, 0.0], [0.1, 0.0], [0.0, 0.1], [-0.1, 0.0], [0.0, -0.1]])
+    ref_knn_mean = Z_ref[:, 0] * 0 + 0.1  # roughly constant tight-cluster self-distance
+    Z_query_close = np.array([[0.05, 0.0]])
+    Z_query_far = np.array([[50.0, 50.0]])
+    p_close = _score_query(Z_ref, ref_knn_mean, Z_query_close, k=3)
+    p_far = _score_query(Z_ref, ref_knn_mean, Z_query_far, k=3)
+    assert p_far[0] > p_close[0]
+    assert p_far[0] == 1.0

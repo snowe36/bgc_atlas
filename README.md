@@ -33,6 +33,9 @@ This repo builds a reference atlas of MIBiG architecture space, ranks clusters b
 | Novelty score dominated by cluster size | **No** — Spearman(novelty, gene count) = **0.12** |
 | Top-decile novelty hits share their class with their nearest neighbor | **67%** of the time (i.e. novelty ≠ misclassification) |
 | Prospective test: do chronologically newer MIBiG entries score as architecture-novel? | **Not supported** — see [Prospective validation](#prospective-temporal-holdout-validation) below; reported as a negative result, not smoothed over |
+| ESM2 protein embeddings alone vs. hashed architecture (class recovery, macro-F1) | ESM2 **0.76** ≈ hashed **0.78** — comparable, not better, alone |
+| Combining hashed + ESM2 (macro-F1) | **0.83** — clear lift over either alone (see [GPU embeddings](#gpu--protein-language-model-embeddings)) |
+| Does the novelty *ranking* agree across representations? | **No** — hashed vs. ESM2 novelty is weakly *negatively* correlated (Spearman ρ=-0.42); top-decile overlap is only 1.5% |
 | Test suite | **4/4 passing**, run on every push via CI (badge above) |
 
 ---
@@ -43,7 +46,7 @@ Public resources such as **MIBiG** (experimentally characterized BGCs) and **ant
 
 That's the standard this project holds itself to: the same rigor a wet-lab experiment demands — negative controls, holdouts, and reporting results whether or not they support the hypothesis — applied to a computational discovery pipeline. Concretely: no result here is reported without checking whether it's an artifact of class labels, cluster size, or evaluation leakage, and the prospective holdout in this repo is a genuine hold-out-in-time test that gets reported even when it comes back negative.
 
-This project intentionally starts with **interpretable, CPU-friendly representations** rather than large pretrained models, to understand biosynthetic space structure and validate discovery heuristics before adding more complex embeddings (see [GPU / protein language model embeddings](#gpu--protein-language-model-embeddings-in-progress) below).
+This project intentionally starts with **interpretable, CPU-friendly representations** rather than large pretrained models, to understand biosynthetic space structure and validate discovery heuristics before adding more complex embeddings (see [GPU / protein language model embeddings](#gpu--protein-language-model-embeddings) below).
 
 ---
 
@@ -74,6 +77,8 @@ bash scripts/reproduce.sh && pytest -q
 | Parsed | **3,013** JSON entries · **2,636** GenBank records |
 | Featurized | **2,762** BGCs with gene annotations |
 | Classes | PKS 717 · NRPS 556 · other 482 · hybrid 413 · RiPP 413 · terpene 181 |
+| Protein sequences | **46,957** CDS translations extracted from GenBank (used for [GPU embeddings](#gpu--protein-language-model-embeddings)); **2,636** BGCs have ≥1 usable translation |
+| Temporal metadata | **100%** of BGCs have a real submission date from MIBiG's changelog (used for [prospective validation](#prospective-temporal-holdout-validation)) |
 | Demo set | Curated predicted BGCs in [`data/external/`](data/external/) (workflow illustration only) |
 
 Pipeline: `bgc-download` → tidy parquet/CSV under `data/processed/`.
@@ -195,14 +200,33 @@ Workflow: **reference atlas → architecture-novelty score → prioritize non-MI
 
 ---
 
-## GPU / protein language model embeddings (in progress)
+## GPU / protein language model embeddings
 
-The representation above is deliberately CPU-only and interpretable so the discovery strategy could be validated first. The natural next step — underway, not yet benchmarked in this README — is to see whether a protein language model changes the picture:
+The representation above is deliberately CPU-only and interpretable so the discovery strategy could be validated first (see [Representation benchmark](#representation-benchmark)). The natural next step: does a real protein language model change the picture? [`scripts/run_esm_embed.py`](scripts/run_esm_embed.py) embeds every MIBiG CDS translation with **ESM2** (`facebook/esm2_t30_150M_UR50D`) and mean-pools per BGC into a 640-D vector — the one GPU-dependent step in the pipeline, run standalone on a rented GPU pod (a $0.44/hr A40, ~10 minutes of actual compute) rather than inside the CPU-only local pipeline, then copied back in.
 
-- [`scripts/run_esm_embed.py`](scripts/run_esm_embed.py) embeds MIBiG CDS translations with **ESM2** (`facebook/esm2_t33_650M_UR50D`) and mean-pools to per-BGC vectors; it's the one GPU-dependent step, designed to run standalone on a rented GPU pod rather than inside the CPU-only local pipeline.
-- The planned `bgc-ablation` benchmark will compare hashed architecture features vs. ESM2 embeddings vs. the two combined, under the same 5-fold CV protocol as the [representation benchmark](#representation-benchmark) above, so any lift from the foundation-model embeddings is measured against the existing CPU baseline rather than asserted.
+**Classification ablation** (`bgc-ablation` → [`src/bgcatlas/models/ablation.py`](src/bgcatlas/models/ablation.py), [`reports/ablation_metrics.json`](reports/ablation_metrics.json)) — same 5-fold CV protocol as the representation benchmark, on the 2,636 BGCs with both representations:
 
-This section will be replaced with real numbers once that benchmark lands — intentionally not claimed here ahead of the evidence.
+| Representation | Macro-F1 | Weighted-F1 |
+|-----------------|---------:|-------------:|
+| Hashed architecture (CPU baseline) | 0.78 | 0.81 |
+| ESM2 (150M, mean-pooled) alone | 0.76 | 0.76 |
+| **Combined (hashed + ESM2)** | **0.83** | **0.85** |
+
+![Representation ablation](reports/figures/ablation_representation_comparison.png)
+
+ESM2 embeddings alone are *not* better than the hand-built architecture features for recovering known biosynthetic classes — but they carry complementary signal: concatenating the two lifts macro-F1 from 0.78 to 0.83. That's the honest result: a foundation model isn't automatically an upgrade here, but it isn't wasted either.
+
+**Does this change the novelty ranking?** (`bgc-novelty-compare` → [`src/bgcatlas/novelty/embed_compare.py`](src/bgcatlas/novelty/embed_compare.py), [`reports/novelty_representation_comparison.json`](reports/novelty_representation_comparison.json)) — a lot, it turns out:
+
+| Comparison | Spearman ρ | Top-decile Jaccard overlap |
+|------------|-----------:|----------------------------:|
+| Hashed vs. ESM2 novelty | **-0.42** | **1.5%** |
+| Hashed vs. combined novelty | 0.06 | 19.5% |
+| ESM2 vs. combined novelty | — | 46.7% |
+
+![Novelty representation comparison](reports/figures/novelty_representation_comparison.png)
+
+Hashed-architecture novelty and ESM2-embedding novelty pick almost entirely *different* BGCs as "most novel," and are weakly negatively correlated. This is an important caveat, not a footnote: "architecture-novel" is representation-dependent, not a property of the BGC itself. Treat any single novelty ranking (this repo's headline one included) as one lens on divergence, not a ground truth — this is exactly why the [validation](#validation) and [prospective holdout](#prospective-temporal-holdout-validation) checks matter more than the ranking alone.
 
 ---
 
@@ -210,17 +234,20 @@ This section will be replaced with real numbers once that benchmark lands — in
 
 - Scores reflect **architecture** divergence, not proven new chemistry
 - The prospective temporal holdout (above) did not confirm that architecture-novelty predicts which entries get added to MIBiG next — treat the novelty score as a within-corpus divergence measure, not a validated discovery-timing signal
+- **Novelty rankings are representation-dependent**: hashed-architecture and ESM2-embedding novelty barely agree (Spearman ρ=-0.42, 1.5% top-decile overlap) — see [GPU embeddings](#gpu--protein-language-model-embeddings). Don't read the headline ranking as *the* answer; it's one lens among several this repo checks against each other
 - Product-class / bioactivity prediction are out of scope
 - Raw MIBiG GenBank lacks antiSMASH domain calls; domains are inferred from CDS products
 - UMAP is optional (`pip install '.[umap]'`); PCA is the reliable default here
+- ESM2 embeddings use the 150M-parameter checkpoint mean-pooled per BGC (capped at 700 aa/protein, 60 proteins/BGC) — a larger checkpoint or a pooling scheme aware of domain boundaries would likely change the ablation numbers
 - Predicted set is a curated demo, not full antiSMASH-DB scale
 
 ---
 
 ## Future directions
 
-- GPU protein-embedding ablation (hashed architecture vs. ESM2 vs. combined) — see [GPU / protein language model embeddings](#gpu--protein-language-model-embeddings-in-progress)
 - Investigate *why* the temporal holdout came back negative (e.g. does restricting to non-major-family entries, or a longer lead time before the cutoff, change the picture?)
+- Investigate *why* hashed and ESM2 novelty disagree so strongly — e.g. do they disagree more for some biosynth classes than others?
+- Larger ESM2 checkpoint (650M+) with domain-aware pooling instead of uniform mean-pooling
 - Richer domain calls from antiSMASH-annotated GenBank
 - Larger curated antiSMASH-DB expansions for real genome prioritization
 
@@ -241,10 +268,15 @@ bash scripts/reproduce.sh
 pytest -q
 ```
 
-Step-through CLI:
+Step-through CLI (all CPU-only except the optional GPU embedding step):
 
 ```text
 bgc-download → bgc-featurize → bgc-sanity → bgc-atlas → bgc-novelty → bgc-validate → bgc-apply → bgc-temporal
+                                                                                                        │
+                                          [GPU pod] scripts/run_esm_embed.py ──────────────────────────┘
+                                                          │
+                                                          ▼
+                                          bgc-ablation → bgc-novelty-compare
 ```
 
 ---
@@ -253,7 +285,7 @@ bgc-download → bgc-featurize → bgc-sanity → bgc-atlas → bgc-novelty → 
 
 ```text
 src/bgcatlas/        package (data, featurize, models, atlas, novelty)
-scripts/             thin wrappers + reproduce.sh
+scripts/             thin wrappers + reproduce.sh + run_esm_embed.py (GPU-only)
 data/raw|processed/  MIBiG download + feature matrices (gitignored bulk)
 data/external/       demo predicted BGCs (not discovery claims)
 reports/             rankings, metrics, figures
@@ -276,6 +308,7 @@ The commit history is the scientific story:
 7. Validate discovery strategy
 8. Apply to new genomes
 9. Prospective temporal-holdout validation
+10. GPU protein embeddings + representation ablation
 
 ---
 

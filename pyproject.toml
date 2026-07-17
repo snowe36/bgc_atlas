@@ -39,6 +39,7 @@ bgc-validate = "bgcatlas.cli:validate_main"
 bgc-apply = "bgcatlas.cli:apply_main"
 bgc-temporal = "bgcatlas.cli:temporal_main"
 bgc-ablation = "bgcatlas.cli:ablation_main"
+bgc-novelty-compare = "bgcatlas.cli:novelty_compare_main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
