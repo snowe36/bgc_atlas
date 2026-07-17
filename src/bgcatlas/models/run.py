@@ -21,7 +21,7 @@ from sklearn.model_selection import StratifiedKFold, cross_val_predict
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
-from npdiscovery.paths import FIGURES, PROCESSED, REPORTS, ensure_dirs
+from bgcatlas.paths import FIGURES, PROCESSED, REPORTS, ensure_dirs
 
 LOG = logging.getLogger(__name__)
 

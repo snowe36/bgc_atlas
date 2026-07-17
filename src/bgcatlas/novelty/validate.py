@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-from npdiscovery.paths import FIGURES, PROCESSED, REPORTS, ensure_dirs
+from bgcatlas.paths import FIGURES, PROCESSED, REPORTS, ensure_dirs
 
 LOG = logging.getLogger(__name__)
 

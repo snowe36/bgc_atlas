@@ -11,8 +11,8 @@ from sklearn.decomposition import PCA
 from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import StandardScaler
 
-from npdiscovery.featurize.run import N_HASH_DIMS, _hash_token
-from npdiscovery.paths import DATA, PROCESSED, REPORTS, ROOT, ensure_dirs
+from bgcatlas.featurize.run import N_HASH_DIMS, _hash_token
+from bgcatlas.paths import DATA, PROCESSED, REPORTS, ROOT, ensure_dirs
 
 LOG = logging.getLogger(__name__)
 

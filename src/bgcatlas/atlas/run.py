@@ -11,7 +11,7 @@ import seaborn as sns
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
-from npdiscovery.paths import FIGURES, PROCESSED, ensure_dirs
+from bgcatlas.paths import FIGURES, PROCESSED, ensure_dirs
 
 LOG = logging.getLogger(__name__)
 

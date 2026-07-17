@@ -9,7 +9,7 @@ from pathlib import Path
 import requests
 from tqdm import tqdm
 
-from npdiscovery.paths import RAW, ensure_dirs
+from bgcatlas.paths import RAW, ensure_dirs
 
 LOG = logging.getLogger(__name__)
 

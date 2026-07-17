@@ -3,9 +3,9 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "np-discovery"
+name = "bgc-atlas"
 version = "0.1.0"
-description = "CPU-only biosynthetic novelty atlas: map BGC space and rank unexplored regions (MIBiG)"
+description = "CPU-only biosynthetic architecture atlas: map BGC space and rank architecture-novel regions (MIBiG)"
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
@@ -28,13 +28,13 @@ dev = ["pytest>=7.4"]
 umap = ["umap-learn>=0.5.5"]
 
 [project.scripts]
-np-download = "npdiscovery.cli:download_main"
-np-featurize = "npdiscovery.cli:featurize_main"
-np-sanity = "npdiscovery.cli:sanity_main"
-np-atlas = "npdiscovery.cli:atlas_main"
-np-novelty = "npdiscovery.cli:novelty_main"
-np-validate = "npdiscovery.cli:validate_main"
-np-apply = "npdiscovery.cli:apply_main"
+bgc-download = "bgcatlas.cli:download_main"
+bgc-featurize = "bgcatlas.cli:featurize_main"
+bgc-sanity = "bgcatlas.cli:sanity_main"
+bgc-atlas = "bgcatlas.cli:atlas_main"
+bgc-novelty = "bgcatlas.cli:novelty_main"
+bgc-validate = "bgcatlas.cli:validate_main"
+bgc-apply = "bgcatlas.cli:apply_main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

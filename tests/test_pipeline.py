@@ -8,9 +8,9 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from npdiscovery.data.curate import _coarsen_classes, _parse_one_json
-from npdiscovery.featurize.run import build_feature_matrix
-from npdiscovery.novelty.run import score_novelty
+from bgcatlas.data.curate import _coarsen_classes, _parse_one_json
+from bgcatlas.featurize.run import build_feature_matrix
+from bgcatlas.novelty.run import score_novelty
 
 
 FIXTURES = Path(__file__).parent / "fixtures"

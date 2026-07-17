@@ -11,7 +11,7 @@ import seaborn as sns
 from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import MinMaxScaler
 
-from npdiscovery.paths import FIGURES, PROCESSED, REPORTS, ensure_dirs
+from bgcatlas.paths import FIGURES, PROCESSED, REPORTS, ensure_dirs
 
 LOG = logging.getLogger(__name__)
 

@@ -12,7 +12,7 @@ from typing import Any
 import pandas as pd
 from Bio import SeqIO
 
-from npdiscovery.paths import PROCESSED, RAW, ensure_dirs
+from bgcatlas.paths import PROCESSED, RAW, ensure_dirs
 
 LOG = logging.getLogger(__name__)
 

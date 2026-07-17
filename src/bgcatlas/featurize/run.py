@@ -9,7 +9,7 @@ from collections import Counter, defaultdict
 import numpy as np
 import pandas as pd
 
-from npdiscovery.paths import PROCESSED, ensure_dirs
+from bgcatlas.paths import PROCESSED, ensure_dirs
 
 LOG = logging.getLogger(__name__)
 
