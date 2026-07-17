@@ -3,23 +3,22 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-PYTHON="${PYTHON:-python3.11}"
-if [[ ! -d .venv ]]; then
-  "$PYTHON" -m venv .venv
+if ! command -v uv >/dev/null 2>&1; then
+  echo "uv is required. Install: https://docs.astral.sh/uv/getting-started/installation/" >&2
+  exit 1
 fi
-# shellcheck disable=SC1091
-source .venv/bin/activate
-pip install -q -e ".[dev]"
 
-bgc-download
-bgc-featurize
-bgc-sanity
-bgc-atlas
-bgc-novelty
-bgc-validate
-bgc-apply
-bgc-temporal
+uv sync --extra dev
+
+uv run bgc-download
+uv run bgc-featurize
+uv run bgc-sanity
+uv run bgc-atlas
+uv run bgc-novelty
+uv run bgc-validate
+uv run bgc-apply
+uv run bgc-temporal
 
 echo "Done. See reports/novelty_ranking.csv and reports/figures/"
 echo "(GPU embeddings are optional and not run here — see 'GPU / protein language model embeddings' in README.md;"
-echo " once data/processed/esm_embeddings.npy exists, also run: bgc-ablation && bgc-novelty-compare)"
+echo " once data/processed/esm_embeddings.npy exists, also run: uv run bgc-ablation && uv run bgc-novelty-compare)"
