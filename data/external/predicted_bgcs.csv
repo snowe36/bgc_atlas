@@ -1,0 +1,9 @@
+genome,bgc_id,predicted_class,n_genes,n_domain_tokens
+Bacillus_sp_predicted,PRED0004,RiPP,8,4
+Micromonospora_sp_predicted,PRED0003,hybrid,22,5
+Myxococcus_sp_predicted,PRED0008,hybrid,35,6
+Pseudomonas_sp_predicted,PRED0005,terpene,6,4
+Rare_actinobacterium_predicted,PRED0006,other,15,7
+Rare_actinobacterium_predicted,PRED0007,NRPS,28,8
+Streptomyces_sp_predicted_1,PRED0001,NRPS,12,5
+Streptomyces_sp_predicted_1,PRED0002,PKS,18,6
