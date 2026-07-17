@@ -13,6 +13,7 @@ authors = [{ name = "Eric Snow" }]
 dependencies = [
   "numpy>=1.24",
   "pandas>=2.0",
+  "scipy>=1.11",
   "scikit-learn>=1.3",
   "matplotlib>=3.7",
   "seaborn>=0.13",
@@ -26,6 +27,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["pytest>=7.4"]
 umap = ["umap-learn>=0.5.5"]
+embed = ["torch>=2.2", "fair-esm>=2.0.0"]
 
 [project.scripts]
 bgc-download = "bgcatlas.cli:download_main"
@@ -35,6 +37,8 @@ bgc-atlas = "bgcatlas.cli:atlas_main"
 bgc-novelty = "bgcatlas.cli:novelty_main"
 bgc-validate = "bgcatlas.cli:validate_main"
 bgc-apply = "bgcatlas.cli:apply_main"
+bgc-temporal = "bgcatlas.cli:temporal_main"
+bgc-ablation = "bgcatlas.cli:ablation_main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
