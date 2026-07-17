@@ -210,6 +210,12 @@ The commit history is the scientific story:
 
 ---
 
+## Acknowledgements
+
+Developed with the assistance of [Cursor](https://cursor.com), the AI code editor, which supported code authoring, refactoring, and documentation throughout this project.
+
+---
+
 ## License
 
 MIT
