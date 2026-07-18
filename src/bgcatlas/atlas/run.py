@@ -11,6 +11,7 @@ import seaborn as sns
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
+from bgcatlas.config import PCA_N_COMPONENTS
 from bgcatlas.paths import FIGURES, PROCESSED, ensure_dirs
 
 LOG = logging.getLogger(__name__)
@@ -66,7 +67,7 @@ def run_atlas() -> pd.DataFrame:
 
     # high-D PCA for downstream novelty (saved here for reuse)
     Xs = StandardScaler(with_mean=False).fit_transform(X)
-    n_comp = min(50, X.shape[0] - 1, X.shape[1])
+    n_comp = min(PCA_N_COMPONENTS, X.shape[0] - 1, X.shape[1])
     pca = PCA(n_components=n_comp, random_state=42)
     Z = pca.fit_transform(Xs)
     np.save(PROCESSED / "pca_embedding.npy", Z)

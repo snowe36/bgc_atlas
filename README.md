@@ -38,11 +38,13 @@ This is a representation-learning / novelty-ranking problem with explicit negati
 |-------|--------|
 | Representation recovers known classes | RF macro-F1 **0.76**, weighted-F1 **0.79** (5-fold CV) |
 | Class-label leakage into novelty features | **None** |
-| Novelty dominated by cluster size | **No** (Spearman = **0.12**) |
+| Novelty ↔ cluster size (Spearman) | **0.55** — moderate size confound; not the whole story |
 | Prospective holdout: do newer MIBiG entries score as novel? | **Not supported** (held-out mean 0.40 vs random-control 0.50; p=0.997) — reported as a negative result |
+| Holdout excluding major families (PKS/NRPS/hybrid) | Still negative (held-out mean **0.31** vs control **0.49**; n=117) |
 | Hashed vs ESM2 alone (class recovery) | ~tied (0.78 vs 0.76 macro-F1) |
 | Combined hashed + ESM2 | **0.83** macro-F1 — complementary signal |
 | Do novelty *rankings* agree across representations? | **No** (Spearman ρ=**-0.42**; top-decile overlap **1.5%**) |
+| Disagreement by class | Strongest in **other / NRPS / PKS**; near-zero in **hybrid** |
 
 ---
 
@@ -62,7 +64,13 @@ CPU pipeline (locked deps via [`uv.lock`](uv.lock); CI on every push):
 bgc-download → bgc-featurize → bgc-sanity → bgc-atlas → bgc-novelty → bgc-validate → bgc-apply → bgc-temporal
 ```
 
-Optional GPU step: `scripts/run_esm_embed.py`, then `uv run bgc-ablation` and `uv run bgc-novelty-compare`.
+Optional GPU step (needs `uv sync --extra embed` for `torch` + HuggingFace `transformers`):
+
+```bash
+uv sync --extra embed
+python scripts/run_esm_embed.py
+uv run bgc-ablation && uv run bgc-novelty-compare
+```
 
 ---
 
@@ -123,11 +131,13 @@ Integrity checks are first-class (`bgc-validate` → [`reports/validation_audit.
 |-------|--------|
 | **Class-label leakage into features** | **none** |
 | Top-decile same-class neighbor rate | **0.67** |
-| Novelty ↔ gene-count correlation | **0.12** (not size-dominated) |
+| Novelty ↔ gene-count Spearman | **0.55** (moderate size confound) |
 | Top-50 size outliers flagged | **4** |
 | Checks passed | **yes** |
 
 ![Stratified novelty audit](reports/figures/validation_novelty_by_class.png)
+
+Size is a real correlate of architecture-novelty in this space (larger clusters tend to sit farther from neighbors), but ρ=0.55 is not "novelty = size." Leakage and same-class neighbor checks remain clean.
 
 ---
 
@@ -135,19 +145,20 @@ Integrity checks are first-class (`bgc-validate` → [`reports/validation_audit.
 
 MIBiG's changelog carries a real submission date per entry. Fit the reference manifold on BGCs added **before** a cutoff, then ask whether entries added **after** score as architecture-novel relative to a size-matched random-holdout control (`bgc-temporal` → [`reports/temporal_holdout.json`](reports/temporal_holdout.json)).
 
-| Cutoff | Reference | Held-out | Held-out mean novelty | Random-control mean (± std) | Mann-Whitney p (held-out > control) |
-|--------|----------:|---------:|----------------------:|----------------------------:|------------------------------------:|
-| 2022-09-16 | 2,472 | 290 | **0.397** | **0.495** (± 0.018) | **0.997** |
+| Cutoff | Subset | Reference | Held-out | Held-out mean | Control mean | p (held-out > control) |
+|--------|--------|----------:|---------:|--------------:|-------------:|-----------------------:|
+| 2022-09-16 | All classes | 2,472 | 290 | **0.397** | **0.495** | **0.997** |
+| 2022-09-16 | Exclude PKS/NRPS/hybrid | — | 117 | **0.310** | **0.491** | **1.000** |
 
 ![Prospective novelty: random vs. true post-cutoff holdout](reports/figures/temporal_holdout.png)
 
-**This does not support the hypothesis.** Post-cutoff entries scored *less* architecture-novel than a random control. Likely reading: recent MIBiG additions skew toward incremental variants of well-studied families, so "added recently" and "architecturally novel" measure different things. Reported as a negative result rather than reframed after the fact.
+**This does not support the hypothesis.** Post-cutoff entries scored *less* architecture-novel than a random control. Restricting to non-major families (RiPP / terpene / other) makes the gap *worse*, not better — so the negative result is not explained by incremental PKS/NRPS variants alone. Reported honestly rather than reframed after the fact.
 
 ---
 
 ## GPU / protein language model embeddings
 
-After validating the CPU discovery strategy, ask whether a protein language model changes the picture. [`scripts/run_esm_embed.py`](scripts/run_esm_embed.py) embeds MIBiG CDS translations with **ESM2** (`facebook/esm2_t30_150M_UR50D`) and mean-pools per BGC (GPU-only step; ~10 min on an A40).
+After validating the CPU discovery strategy, ask whether a protein language model changes the picture. [`scripts/run_esm_embed.py`](scripts/run_esm_embed.py) embeds MIBiG CDS translations with **ESM2** (`facebook/esm2_t30_150M_UR50D`) via HuggingFace `transformers` and mean-pools per BGC (GPU-only step; ~10 min on an A40). Install with `uv sync --extra embed`.
 
 **Classification ablation** (`bgc-ablation` → [`reports/ablation_metrics.json`](reports/ablation_metrics.json)):
 
@@ -172,6 +183,21 @@ ESM2 alone is not better than hand-built architecture features for class recover
 ![Novelty representation comparison](reports/figures/novelty_representation_comparison.png)
 
 Hashed and ESM2 novelty pick almost entirely different top hits. "Architecture-novel" is representation-dependent — which is why the validation and holdout checks matter more than any single ranking.
+
+**Class-stratified disagreement** ([`reports/novelty_disagreement_by_class.csv`](reports/novelty_disagreement_by_class.csv)):
+
+| Class | n | Spearman ρ (hashed vs ESM2) | Top-decile Jaccard |
+|-------|--:|----------------------------:|-------------------:|
+| other | 474 | **-0.42** | 1.1% |
+| NRPS | 538 | **-0.38** | 1.9% |
+| PKS | 695 | **-0.31** | 3.7% |
+| terpene | 166 | -0.28 | 3.0% |
+| RiPP | 359 | -0.22 | 5.9% |
+| hybrid | 404 | **-0.02** | 2.6% |
+
+![Class-stratified novelty disagreement](reports/figures/novelty_disagreement_by_class.png)
+
+Disagreement is strongest in **other / NRPS / PKS**. Hybrids are the exception (near-zero rank correlation): the two representations do not systematically anti-agree there, but top-decile overlap remains tiny.
 
 ---
 
@@ -204,8 +230,9 @@ Hashed and ESM2 novelty pick almost entirely different top hits. "Architecture-n
 ## Limitations
 
 - Scores reflect **architecture** divergence, not proven new chemistry
-- Temporal holdout did **not** confirm that novelty predicts which entries get added to MIBiG next
-- Novelty rankings are **representation-dependent** (hashed vs ESM2 barely agree)
+- Novelty correlates moderately with cluster size (Spearman **0.55**)
+- Temporal holdout did **not** confirm that novelty predicts which entries get added to MIBiG next — including after excluding major families
+- Novelty rankings are **representation-dependent** (hashed vs ESM2 barely agree; class-stratified)
 - Product-class / bioactivity prediction are out of scope
 - Domains are inferred from CDS products (raw MIBiG GenBank lacks antiSMASH domain calls)
 - ESM2 uses 150M mean-pooled embeddings (700 aa / 60 proteins per BGC caps)
@@ -215,8 +242,7 @@ Hashed and ESM2 novelty pick almost entirely different top hits. "Architecture-n
 
 ## Future directions
 
-- Why the temporal holdout was negative (non-major-family subsets; longer lead times)
-- Why hashed and ESM2 novelty disagree so strongly (class-stratified analysis)
+- Longer lead-time temporal cutoffs (and organism-stratified holdouts)
 - Larger ESM2 checkpoint + domain-aware pooling
 - Richer antiSMASH domain calls; larger predicted-genome prioritization sets
 
@@ -236,8 +262,10 @@ uv run pytest -q
 
 Optional GPU path:
 
-```text
-scripts/run_esm_embed.py → uv run bgc-ablation → uv run bgc-novelty-compare
+```bash
+uv sync --extra embed   # torch + transformers
+python scripts/run_esm_embed.py
+uv run bgc-ablation && uv run bgc-novelty-compare
 ```
 
 UMAP for 2-D maps: `uv sync --extra umap` (PCA is the default).
@@ -247,14 +275,14 @@ UMAP for 2-D maps: `uv sync --extra umap` (PCA is the default).
 ## Project layout
 
 ```text
-src/bgcatlas/        package (data, featurize, models, atlas, novelty)
+src/bgcatlas/        package (config, data, featurize, models, atlas, novelty)
 scripts/             reproduce.sh + run_esm_embed.py (GPU-only)
 uv.lock              locked dependency versions
 data/raw|processed/  MIBiG download + feature matrices (gitignored bulk)
 data/external/       demo predicted BGCs
 reports/             rankings, metrics, figures
-tests/               unit tests (6 passing)
-.github/workflows/   CI (uv sync + pytest)
+tests/               unit tests + fixtures
+.github/workflows/   CI (uv sync + ruff + pytest)
 ```
 
 ---

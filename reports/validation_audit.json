@@ -4,7 +4,7 @@
   "forbidden_features": [],
   "top50_size_outliers": 4,
   "top_decile_same_class_neighbor_rate": 0.6678700361010831,
-  "novelty_n_genes_spearman": 0.1180187701263028,
+  "novelty_n_genes_spearman": 0.5500039593683226,
   "novelty_by_class": [
     {
       "biosynth_class": "NRPS",

@@ -130,7 +130,9 @@ def main() -> None:
     id_to_pos = {b: i for i, b in enumerate(bgc_ids)}
     sums = np.zeros((len(bgc_ids), prot_dim), dtype=np.float64)
     counts = np.zeros(len(bgc_ids), dtype=np.int64)
-    for row_idx, bgc_id in zip(df_sorted["_emb_idx"].to_numpy(), df_sorted["bgc_id"].to_numpy()):
+    for row_idx, bgc_id in zip(
+        df_sorted["_emb_idx"].to_numpy(), df_sorted["bgc_id"].to_numpy(), strict=True
+    ):
         pos = id_to_pos[bgc_id]
         sums[pos] += all_embeds[row_idx]
         counts[pos] += 1

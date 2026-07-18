@@ -9,7 +9,6 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 from sklearn.neighbors import NearestNeighbors
-from sklearn.preprocessing import MinMaxScaler
 
 from bgcatlas.atlas.run import _annotate_offframe, _robust_limits
 from bgcatlas.paths import FIGURES, PROCESSED, REPORTS, ensure_dirs

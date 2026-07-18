@@ -4,17 +4,14 @@ from __future__ import annotations
 
 import hashlib
 import logging
-from collections import Counter, defaultdict
 
 import numpy as np
 import pandas as pd
 
+from bgcatlas.config import MIN_DOMAIN_FREQ, N_HASH_DIMS
 from bgcatlas.paths import PROCESSED, ensure_dirs
 
 LOG = logging.getLogger(__name__)
-
-N_HASH_DIMS = 256
-MIN_DOMAIN_FREQ = 3
 
 
 def _hash_token(token: str, n_dims: int = N_HASH_DIMS) -> int:
@@ -60,7 +57,7 @@ def build_feature_matrix(
         i = id_to_idx[bgc_id]
         for tok in seq:
             arch_hash[i, _hash_token(f"uni::{tok}")] += 1.0
-        for a, b in zip(seq, seq[1:]):
+        for a, b in zip(seq, seq[1:], strict=False):
             arch_hash[i, _hash_token(f"bi::{a}::{b}")] += 1.0
 
     # size / composition numeric features

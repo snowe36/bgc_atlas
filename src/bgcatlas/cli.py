@@ -72,9 +72,11 @@ def atlas_main(argv: list[str] | None = None) -> int:
 
 
 def novelty_main(argv: list[str] | None = None) -> int:
+    from bgcatlas.config import DEFAULT_NOVELTY_K
+
     parser = argparse.ArgumentParser(description="Score biosynthetic novelty and rank BGCs")
     parser.add_argument("-v", "--verbose", action="store_true")
-    parser.add_argument("-k", type=int, default=5, help="Neighbors for kNN novelty")
+    parser.add_argument("-k", type=int, default=DEFAULT_NOVELTY_K, help="Neighbors for kNN novelty")
     args = parser.parse_args(argv)
     _setup_logging(args.verbose)
     from bgcatlas.novelty.run import run_novelty
@@ -108,13 +110,19 @@ def apply_main(argv: list[str] | None = None) -> int:
 
 
 def temporal_main(argv: list[str] | None = None) -> int:
+    from bgcatlas.config import DEFAULT_NOVELTY_K, DEFAULT_TEMPORAL_CUTOFF
+
     parser = argparse.ArgumentParser(
         description="Prospective validation: fit on pre-cutoff MIBiG entries, "
         "score post-cutoff entries as a held-out temporal novelty test"
     )
     parser.add_argument("-v", "--verbose", action="store_true")
-    parser.add_argument("--cutoff", default="2022-09-16", help="ISO date; entries added on/after this are held out")
-    parser.add_argument("-k", type=int, default=5, help="Neighbors for kNN novelty")
+    parser.add_argument(
+        "--cutoff",
+        default=DEFAULT_TEMPORAL_CUTOFF,
+        help="ISO date; entries added on/after this are held out",
+    )
+    parser.add_argument("-k", type=int, default=DEFAULT_NOVELTY_K, help="Neighbors for kNN novelty")
     parser.add_argument("--n-controls", type=int, default=50, help="Random-holdout control repeats")
     args = parser.parse_args(argv)
     _setup_logging(args.verbose)
@@ -139,11 +147,13 @@ def ablation_main(argv: list[str] | None = None) -> int:
 
 
 def novelty_compare_main(argv: list[str] | None = None) -> int:
+    from bgcatlas.config import DEFAULT_NOVELTY_K
+
     parser = argparse.ArgumentParser(
         description="Compare novelty rankings across hashed/ESM2/combined representations"
     )
     parser.add_argument("-v", "--verbose", action="store_true")
-    parser.add_argument("-k", type=int, default=5)
+    parser.add_argument("-k", type=int, default=DEFAULT_NOVELTY_K)
     args = parser.parse_args(argv)
     _setup_logging(args.verbose)
     from bgcatlas.novelty.embed_compare import run_novelty_representation_comparison

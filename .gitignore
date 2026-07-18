@@ -1,4 +1,4 @@
-# Data (large; regenerate with np-download)
+# Data (large; regenerate with bgc-download)
 data/raw/*
 data/processed/*
 !data/.gitkeep
@@ -22,6 +22,14 @@ reports/figures/*.svg
 !reports/predicted_novelty_ranking.csv
 !reports/sanity_metrics.json
 !reports/validation_audit.json
+!reports/novelty_representation_comparison.json
+!reports/novelty_disagreement_by_class.csv
+!reports/temporal_holdout.json
+!reports/ablation_metrics.json
+!reports/figures/novelty_representation_comparison.png
+!reports/figures/novelty_disagreement_by_class.png
+!reports/figures/temporal_holdout.png
+!reports/figures/ablation_representation_comparison.png
 
 # Python
 __pycache__/

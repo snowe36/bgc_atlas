@@ -1,0 +1,19 @@
+{
+  "accession": "BGC9999999",
+  "status": "active",
+  "biosynthesis": {
+    "classes": [{"class": "NRPS", "subclass": "Unknown"}]
+  },
+  "taxonomy": {"name": "Test organism", "ncbiTaxId": 1},
+  "compounds": [{"name": "testomycin"}],
+  "genes": {"annotations": [{"id": "g1"}, {"id": "g2"}, {"id": "g3"}]},
+  "changelog": {
+    "releases": [
+      {
+        "version": "1",
+        "date": "2020-01-15",
+        "entries": [{"date": "2020-01-15", "comment": "Submitted"}]
+      }
+    ]
+  }
+}

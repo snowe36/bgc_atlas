@@ -9,5 +9,61 @@
   "spearman_hashed_vs_combined_pvalue": 0.001202443219999758,
   "top_decile_jaccard_hashed_vs_esm": 0.015384615384615385,
   "top_decile_jaccard_hashed_vs_combined": 0.19457013574660634,
-  "top_decile_jaccard_esm_vs_combined": 0.4666666666666667
+  "top_decile_jaccard_esm_vs_combined": 0.4666666666666667,
+  "by_class": [
+    {
+      "biosynth_class": "NRPS",
+      "n": 538,
+      "spearman_hashed_vs_esm": -0.37831730676240777,
+      "spearman_pvalue": 9.475748852570483e-20,
+      "top_decile_jaccard": 0.018867924528301886,
+      "mean_novelty_hashed": 0.5705346246905046,
+      "mean_novelty_esm": 0.5131755112405918
+    },
+    {
+      "biosynth_class": "PKS",
+      "n": 695,
+      "spearman_hashed_vs_esm": -0.3131858713665374,
+      "spearman_pvalue": 2.785258858533021e-17,
+      "top_decile_jaccard": 0.037037037037037035,
+      "mean_novelty_hashed": 0.6270601886612153,
+      "mean_novelty_esm": 0.3301991727301271
+    },
+    {
+      "biosynth_class": "RiPP",
+      "n": 359,
+      "spearman_hashed_vs_esm": -0.21845388195910626,
+      "spearman_pvalue": 2.9770997984302384e-05,
+      "top_decile_jaccard": 0.058823529411764705,
+      "mean_novelty_hashed": 0.253436437923179,
+      "mean_novelty_esm": 0.7175513893220151
+    },
+    {
+      "biosynth_class": "hybrid",
+      "n": 404,
+      "spearman_hashed_vs_esm": -0.022854750507608185,
+      "spearman_pvalue": 0.6469443446500462,
+      "top_decile_jaccard": 0.02564102564102564,
+      "mean_novelty_hashed": 0.6939335299753885,
+      "mean_novelty_esm": 0.45055235125030524
+    },
+    {
+      "biosynth_class": "other",
+      "n": 474,
+      "spearman_hashed_vs_esm": -0.41668409693405023,
+      "spearman_pvalue": 2.479752854549743e-21,
+      "top_decile_jaccard": 0.010752688172043012,
+      "mean_novelty_hashed": 0.3104232219633464,
+      "mean_novelty_esm": 0.5496613263516921
+    },
+    {
+      "biosynth_class": "terpene",
+      "n": 166,
+      "spearman_hashed_vs_esm": -0.27866862289005195,
+      "spearman_pvalue": 0.000277388299359063,
+      "top_decile_jaccard": 0.030303030303030304,
+      "mean_novelty_hashed": 0.34200064013168424,
+      "mean_novelty_esm": 0.6762625454379186
+    }
+  ]
 }

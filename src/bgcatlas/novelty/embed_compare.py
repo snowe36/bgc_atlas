@@ -22,6 +22,7 @@ from scipy.stats import spearmanr
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
+from bgcatlas.config import DEFAULT_NOVELTY_K, PCA_N_COMPONENTS
 from bgcatlas.models.ablation import _load_aligned
 from bgcatlas.novelty.run import score_novelty
 from bgcatlas.paths import FIGURES, REPORTS, ensure_dirs
@@ -29,14 +30,45 @@ from bgcatlas.paths import FIGURES, REPORTS, ensure_dirs
 LOG = logging.getLogger(__name__)
 
 
-def _pca_novelty(X: np.ndarray, standardize_with_mean: bool, k: int = 5) -> np.ndarray:
+def _pca_novelty(X: np.ndarray, standardize_with_mean: bool, k: int = DEFAULT_NOVELTY_K) -> np.ndarray:
     Xs = StandardScaler(with_mean=standardize_with_mean).fit_transform(X)
-    n_comp = min(50, Xs.shape[0] - 1, Xs.shape[1])
+    n_comp = min(PCA_N_COMPONENTS, Xs.shape[0] - 1, Xs.shape[1])
     Z = PCA(n_components=n_comp, random_state=42).fit_transform(Xs)
     return score_novelty(Z, k=k)["novelty"]
 
 
-def run_novelty_representation_comparison(k: int = 5, top_frac: float = 0.1) -> dict:
+def _class_stratified_disagreement(
+    out: pd.DataFrame, top_frac: float
+) -> tuple[list[dict], pd.DataFrame]:
+    """Per-class Spearman + top-decile overlap for hashed vs ESM2 novelty."""
+    rows: list[dict] = []
+    for cls, sub in out.groupby("biosynth_class"):
+        if len(sub) < 10:
+            continue
+        rho, pval = spearmanr(sub["novelty_hashed"], sub["novelty_esm"])
+        n_top = max(1, int(round(top_frac * len(sub))))
+        top_h = set(sub.nlargest(n_top, "novelty_hashed")["bgc_id"])
+        top_e = set(sub.nlargest(n_top, "novelty_esm")["bgc_id"])
+        union = top_h | top_e
+        jaccard = len(top_h & top_e) / len(union) if union else 0.0
+        rows.append(
+            {
+                "biosynth_class": cls,
+                "n": int(len(sub)),
+                "spearman_hashed_vs_esm": float(rho),
+                "spearman_pvalue": float(pval),
+                "top_decile_jaccard": float(jaccard),
+                "mean_novelty_hashed": float(sub["novelty_hashed"].mean()),
+                "mean_novelty_esm": float(sub["novelty_esm"].mean()),
+            }
+        )
+    by_class = pd.DataFrame(rows).sort_values("spearman_hashed_vs_esm")
+    return rows, by_class
+
+
+def run_novelty_representation_comparison(
+    k: int = DEFAULT_NOVELTY_K, top_frac: float = 0.1
+) -> dict:
     ensure_dirs()
     meta, X_hash, X_esm = _load_aligned()
     X_combined = np.hstack(
@@ -67,6 +99,7 @@ def run_novelty_representation_comparison(k: int = 5, top_frac: float = 0.1) -> 
 
     rho_hash_esm, p_hash_esm = spearmanr(novelty_hash, novelty_esm)
     rho_hash_combined, p_hash_combined = spearmanr(novelty_hash, novelty_combined)
+    by_class_rows, by_class_df = _class_stratified_disagreement(out, top_frac=top_frac)
 
     audit = {
         "n_bgcs": int(len(out)),
@@ -80,6 +113,7 @@ def run_novelty_representation_comparison(k: int = 5, top_frac: float = 0.1) -> 
         "top_decile_jaccard_hashed_vs_esm": _jaccard(top_hash, top_esm),
         "top_decile_jaccard_hashed_vs_combined": _jaccard(top_hash, top_combined),
         "top_decile_jaccard_esm_vs_combined": _jaccard(top_esm, top_combined),
+        "by_class": by_class_rows,
     }
 
     REPORTS.mkdir(parents=True, exist_ok=True)
@@ -88,6 +122,7 @@ def run_novelty_representation_comparison(k: int = 5, top_frac: float = 0.1) -> 
     out.sort_values("novelty_combined", ascending=False).to_csv(
         REPORTS / "novelty_representation_comparison.csv", index=False
     )
+    by_class_df.to_csv(REPORTS / "novelty_disagreement_by_class.csv", index=False)
 
     fig, axes = plt.subplots(1, 2, figsize=(11, 4.8))
     sns.scatterplot(data=out, x="novelty_hashed", y="novelty_esm", hue="biosynth_class", s=14, alpha=0.6, ax=axes[0])
@@ -106,6 +141,25 @@ def run_novelty_representation_comparison(k: int = 5, top_frac: float = 0.1) -> 
     fig.tight_layout()
     fig.savefig(FIGURES / "novelty_representation_comparison.png", dpi=150)
     plt.close(fig)
+
+    if len(by_class_df):
+        fig, ax = plt.subplots(figsize=(7, 4.2))
+        plot_df = by_class_df.sort_values("spearman_hashed_vs_esm")
+        sns.barplot(
+            data=plot_df,
+            x="biosynth_class",
+            y="spearman_hashed_vs_esm",
+            hue="biosynth_class",
+            legend=False,
+            ax=ax,
+        )
+        ax.axhline(0, color="gray", linestyle="--", linewidth=1)
+        ax.set_ylabel("Spearman ρ (hashed vs ESM2 novelty)")
+        ax.set_xlabel("")
+        ax.set_title("Class-stratified novelty ranking disagreement")
+        fig.tight_layout()
+        fig.savefig(FIGURES / "novelty_disagreement_by_class.png", dpi=150)
+        plt.close(fig)
 
     LOG.info(
         "Novelty representation comparison: hashed-vs-ESM rho=%.3f, top-decile Jaccard=%.3f",

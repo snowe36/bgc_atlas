@@ -11,8 +11,9 @@ from sklearn.decomposition import PCA
 from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import StandardScaler
 
-from bgcatlas.featurize.run import N_HASH_DIMS, _hash_token
-from bgcatlas.paths import DATA, PROCESSED, REPORTS, ROOT, ensure_dirs
+from bgcatlas.config import PCA_N_COMPONENTS
+from bgcatlas.featurize.run import _hash_token
+from bgcatlas.paths import DATA, PROCESSED, REPORTS, ensure_dirs
 
 LOG = logging.getLogger(__name__)
 
@@ -151,7 +152,7 @@ def _vectorize_predicted(
             key = f"arch_hash::{h}"
             if key in name_to_idx:
                 X[i, name_to_idx[key]] += 1.0
-        for a, b in zip(seq, seq[1:]):
+        for a, b in zip(seq, seq[1:], strict=False):
             h = _hash_token(f"bi::{a}::{b}")
             key = f"arch_hash::{h}"
             if key in name_to_idx:
@@ -184,7 +185,7 @@ def run_apply(k: int = 5) -> pd.DataFrame:
     Xs_ref = scaler.fit_transform(X_ref)
     Xs_pred = scaler.transform(X_pred)
 
-    n_comp = min(50, Xs_ref.shape[0] - 1, Xs_ref.shape[1])
+    n_comp = min(PCA_N_COMPONENTS, Xs_ref.shape[0] - 1, Xs_ref.shape[1])
     pca = PCA(n_components=n_comp, random_state=42)
     Z_ref = pca.fit_transform(Xs_ref)
     Z_pred = pca.transform(Xs_pred)

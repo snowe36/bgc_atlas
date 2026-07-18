@@ -6,9 +6,9 @@ import json
 import logging
 
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
 import seaborn as sns
+from scipy.stats import spearmanr
 
 from bgcatlas.paths import FIGURES, PROCESSED, REPORTS, ensure_dirs
 
@@ -42,8 +42,8 @@ def run_validate() -> dict:
     high = scores[scores["novelty"] >= thr]
     same_class = (high["biosynth_class"] == high["neighbor_class"]).mean()
 
-    # Correlation of novelty with n_genes (should not be the whole story)
-    corr_genes = float(scores["novelty"].corr(scores["n_genes"]))
+    # Rank correlation of novelty with n_genes (should not be the whole story)
+    corr_genes, _ = spearmanr(scores["novelty"], scores["n_genes"])
 
     audit = {
         "n_bgcs": int(len(scores)),
@@ -51,7 +51,7 @@ def run_validate() -> dict:
         "forbidden_features": forbidden,
         "top50_size_outliers": n_size_outliers,
         "top_decile_same_class_neighbor_rate": float(same_class),
-        "novelty_n_genes_spearman": corr_genes,
+        "novelty_n_genes_spearman": float(corr_genes),
         "novelty_by_class": by_class.to_dict(orient="records"),
         "checks_passed": (not class_leak) and (n_size_outliers < 25),
     }
