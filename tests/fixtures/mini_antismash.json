@@ -1,0 +1,30 @@
+{
+  "version": "7.0.0-test",
+  "records": [
+    {
+      "name": "contigA",
+      "areas": [
+        {
+          "start": 0,
+          "end": 10000,
+          "products": ["NRPS", "T1PKS"],
+          "cds": [
+            {
+              "product": "nonribosomal peptide synthase",
+              "domains": ["Condensation", "AMP-binding"]
+            },
+            {
+              "product": "type I polyketide synthase",
+              "domains": [{"name": "PKS_KS"}, {"name": "PKS_AT"}]
+            }
+          ]
+        },
+        {
+          "start": 20000,
+          "end": 25000,
+          "products": ["terpene"]
+        }
+      ]
+    }
+  ]
+}

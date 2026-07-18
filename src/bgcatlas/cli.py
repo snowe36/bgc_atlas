@@ -97,15 +97,25 @@ def validate_main(argv: list[str] | None = None) -> int:
 
 
 def apply_main(argv: list[str] | None = None) -> int:
+    from bgcatlas.config import DEFAULT_NOVELTY_K
+
     parser = argparse.ArgumentParser(
-        description="Score curated predicted BGCs against the MIBiG manifold"
+        description="Score predicted BGCs (demo CSV or antiSMASH GBK/JSON) against the MIBiG manifold"
     )
     parser.add_argument("-v", "--verbose", action="store_true")
+    parser.add_argument(
+        "--input",
+        default=None,
+        help="antiSMASH .gbk/.json, directory of region GBKs, or domains CSV "
+        "(default: curated demo under data/external/)",
+    )
+    parser.add_argument("--genome", default=None, help="Optional genome label for antiSMASH ingest")
+    parser.add_argument("-k", type=int, default=DEFAULT_NOVELTY_K, help="Neighbors for kNN novelty")
     args = parser.parse_args(argv)
     _setup_logging(args.verbose)
     from bgcatlas.data.apply import run_apply
 
-    run_apply()
+    run_apply(k=args.k, input_path=args.input, genome=args.genome)
     return 0
 
 

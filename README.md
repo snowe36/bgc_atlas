@@ -64,7 +64,7 @@ CPU pipeline (locked deps via [`uv.lock`](uv.lock); CI on every push):
 bgc-download → bgc-featurize → bgc-sanity → bgc-atlas → bgc-novelty → bgc-validate → bgc-apply → bgc-temporal
 ```
 
-Optional GPU step (needs `uv sync --extra embed` for `torch` + HuggingFace `transformers`):
+Optional GPU step (V2: 650M + length-weighted pooling; `uv sync --extra embed`):
 
 ```bash
 uv sync --extra embed
@@ -156,11 +156,31 @@ MIBiG's changelog carries a real submission date per entry. Fit the reference ma
 
 ---
 
-## GPU / protein language model embeddings
+## GPU / protein language model embeddings (V2)
 
-After validating the CPU discovery strategy, ask whether a protein language model changes the picture. [`scripts/run_esm_embed.py`](scripts/run_esm_embed.py) embeds MIBiG CDS translations with **ESM2** (`facebook/esm2_t30_150M_UR50D`) via HuggingFace `transformers` and mean-pools per BGC (GPU-only step; ~10 min on an A40). Install with `uv sync --extra embed`.
+After validating the CPU discovery strategy, ask whether a protein language model changes the picture. [`scripts/run_esm_embed.py`](scripts/run_esm_embed.py) embeds MIBiG CDS translations with **ESM2** via HuggingFace `transformers` and pools per BGC.
 
-**Classification ablation** (`bgc-ablation` → [`reports/ablation_metrics.json`](reports/ablation_metrics.json)):
+**V2 defaults** (override with flags):
+
+| Knob | V1 (legacy) | V2 default |
+|------|-------------|------------|
+| Model | `esm2_t30_150M` | `esm2_t33_650M` |
+| Pooling | uniform mean | **length-weighted** (longer enzymes count more) |
+| Max AA / proteins | 700 / 60 | 1024 / 80 |
+| Cache | BGC matrix only | + protein-level cache + `esm_embed_manifest.json` |
+
+```bash
+uv sync --extra embed
+# full GPU embed (writes esm_embeddings.npy + protein cache + manifest)
+python scripts/run_esm_embed.py
+# re-pool without GPU after the first run
+python scripts/run_esm_embed.py --from-cache --pooling mean
+# legacy 150M mean-pool bake-off
+python scripts/run_esm_embed.py --model facebook/esm2_t30_150M_UR50D --pooling mean --max-aa 700
+uv run bgc-ablation && uv run bgc-novelty-compare
+```
+
+**Classification ablation** (V1 150M mean-pool numbers below; re-run after a V2 embed to refresh → [`reports/ablation_metrics.json`](reports/ablation_metrics.json)):
 
 | Representation | Macro-F1 | Weighted-F1 |
 |----------------|---------:|------------:|
@@ -170,7 +190,7 @@ After validating the CPU discovery strategy, ask whether a protein language mode
 
 ![Representation ablation](reports/figures/ablation_representation_comparison.png)
 
-ESM2 alone is not better than hand-built architecture features for class recovery, but it carries complementary signal.
+ESM2 alone is not better than hand-built architecture features for class recovery, but it carries complementary signal. Ablation labels now follow `esm_embed_manifest.json` so 650M / length-weighted runs don't get mislabeled as `esm2_150M`.
 
 **Novelty ranking comparison** (`bgc-novelty-compare` → [`reports/novelty_representation_comparison.json`](reports/novelty_representation_comparison.json)):
 
@@ -201,9 +221,25 @@ Disagreement is strongest in **other / NRPS / PKS**. Hybrids are the exception (
 
 ---
 
-## Apply to new genomes (demo)
+## Apply to new genomes (V2: antiSMASH ingest)
 
-**Demonstration only — not a discovery claim.** Curated predicted BGC domain tables in [`data/external/`](data/external/) illustrate scoring against the MIBiG manifold ([`reports/predicted_novelty_ranking.csv`](reports/predicted_novelty_ranking.csv)):
+Score predicted BGCs against the MIBiG manifold (`bgc-apply` → [`reports/predicted_novelty_ranking.csv`](reports/predicted_novelty_ranking.csv)).
+
+```bash
+# curated demo (default)
+uv run bgc-apply
+
+# antiSMASH region GenBanks (preferred — domains from aSDomain / PFAM_domain)
+uv run bgc-apply --input /path/to/antismash_outdir --genome MyStreptomyces
+
+# antiSMASH JSON (areas/products; CDS domains when present)
+uv run bgc-apply --input /path/to/result.json
+
+# pre-normalized domains CSV (genome,bgc_id,predicted_class,gene_order,domain_id,n_genes)
+uv run bgc-apply --input data/external/predicted_domains.csv
+```
+
+Demo ranking (illustration only):
 
 | Rank | Genome (demo label) | BGC | Predicted class | Score | Nearest MIBiG |
 |-----:|---------------------|-----|-----------------|------:|---------------|
@@ -235,16 +271,16 @@ Disagreement is strongest in **other / NRPS / PKS**. Hybrids are the exception (
 - Novelty rankings are **representation-dependent** (hashed vs ESM2 barely agree; class-stratified)
 - Product-class / bioactivity prediction are out of scope
 - Domains are inferred from CDS products (raw MIBiG GenBank lacks antiSMASH domain calls)
-- ESM2 uses 150M mean-pooled embeddings (700 aa / 60 proteins per BGC caps)
-- Predicted set is a curated demo, not antiSMASH-DB scale
+- V1 results used 150M mean-pooled embeddings; V2 defaults to 650M + length-weighted pooling — **re-run GPU embed + ablation to refresh reported tables**
+- antiSMASH ingest supports region GBK/JSON; still not a full antiSMASH-DB-scale discovery campaign
 
 ---
 
 ## Future directions
 
 - Longer lead-time temporal cutoffs (and organism-stratified holdouts)
-- Larger ESM2 checkpoint + domain-aware pooling
-- Richer antiSMASH domain calls; larger predicted-genome prioritization sets
+- Contrastive / metric learning on architecture neighborhoods once V2 embeddings are baked off
+- Larger predicted-genome prioritization sets (antiSMASH-DB scale)
 
 ---
 
@@ -260,7 +296,7 @@ bash scripts/reproduce.sh
 uv run pytest -q
 ```
 
-Optional GPU path:
+Optional GPU path (V2 defaults: 650M + length-weighted):
 
 ```bash
 uv sync --extra embed   # torch + transformers
@@ -275,13 +311,13 @@ UMAP for 2-D maps: `uv sync --extra umap` (PCA is the default).
 ## Project layout
 
 ```text
-src/bgcatlas/        package (config, data, featurize, models, atlas, novelty)
-scripts/             reproduce.sh + run_esm_embed.py (GPU-only)
+src/bgcatlas/        package (config, embed_pool, data/antismash, featurize, models, atlas, novelty)
+scripts/             reproduce.sh + run_esm_embed.py (GPU V2)
 uv.lock              locked dependency versions
 data/raw|processed/  MIBiG download + feature matrices (gitignored bulk)
-data/external/       demo predicted BGCs
+data/external/       demo predicted BGCs + last apply cache
 reports/             rankings, metrics, figures
-tests/               unit tests + fixtures
+tests/               unit tests + antiSMASH fixtures
 .github/workflows/   CI (uv sync + ruff + pytest)
 ```
 

@@ -28,8 +28,20 @@ from bgcatlas.paths import FIGURES, PROCESSED, REPORTS, ensure_dirs
 LOG = logging.getLogger(__name__)
 
 
-def _load_aligned() -> tuple[pd.DataFrame, np.ndarray, np.ndarray]:
-    """Return (meta, X_hash, X_esm) restricted to BGCs present in both representations."""
+def _esm_representation_label() -> str:
+    """Label for the active ESM matrix (from V2 manifest when present)."""
+    man_path = PROCESSED / "esm_embed_manifest.json"
+    if man_path.exists():
+        try:
+            man = json.loads(man_path.read_text(encoding="utf-8"))
+            return str(man.get("representation_label") or man.get("model") or "esm")
+        except (OSError, json.JSONDecodeError):
+            pass
+    return "esm2"
+
+
+def _load_aligned() -> tuple[pd.DataFrame, np.ndarray, np.ndarray, str]:
+    """Return (meta, X_hash, X_esm, esm_label) for BGCs present in both representations."""
     X_hash_full = np.load(PROCESSED / "feature_matrix.npy")
     meta_full = pd.read_parquet(PROCESSED / "feature_meta.parquet")
 
@@ -42,6 +54,7 @@ def _load_aligned() -> tuple[pd.DataFrame, np.ndarray, np.ndarray]:
         )
     X_esm_full = np.load(esm_path)
     esm_ids = pd.read_csv(ids_path)
+    esm_label = _esm_representation_label()
 
     meta_full = meta_full.reset_index(drop=True)
     meta_full["_row"] = np.arange(len(meta_full))
@@ -50,14 +63,15 @@ def _load_aligned() -> tuple[pd.DataFrame, np.ndarray, np.ndarray]:
 
     merged = meta_full.merge(esm_ids[["bgc_id", "_esm_row"]], on="bgc_id", how="inner")
     LOG.info(
-        "Ablation: %d / %d BGCs have both hashed features and ESM embeddings",
+        "Ablation: %d / %d BGCs have both hashed features and ESM embeddings (%s)",
         len(merged),
         len(meta_full),
+        esm_label,
     )
     X_hash = X_hash_full[merged["_row"].to_numpy()]
     X_esm = X_esm_full[merged["_esm_row"].to_numpy()]
     meta = merged.drop(columns=["_row", "_esm_row"]).reset_index(drop=True)
-    return meta, X_hash, X_esm
+    return meta, X_hash, X_esm, esm_label
 
 
 def _cv_benchmark(X: np.ndarray, y: np.ndarray, n_splits: int) -> dict:
@@ -85,7 +99,7 @@ def _cv_benchmark(X: np.ndarray, y: np.ndarray, n_splits: int) -> dict:
 
 def run_ablation(n_splits: int = 5) -> dict:
     ensure_dirs()
-    meta, X_hash, X_esm = _load_aligned()
+    meta, X_hash, X_esm, esm_label = _load_aligned()
     y = meta["biosynth_class"].astype(str).to_numpy()
 
     counts = pd.Series(y).value_counts()
@@ -99,8 +113,8 @@ def run_ablation(n_splits: int = 5) -> dict:
 
     variants = {
         "hashed_architecture": X_hash,
-        "esm2_150M": X_esm,
-        "combined": X_combined,
+        esm_label: X_esm,
+        f"combined_hashed+{esm_label}": X_combined,
     }
     results = {}
     for name, X in variants.items():
@@ -113,7 +127,12 @@ def run_ablation(n_splits: int = 5) -> dict:
             results[name]["weighted_f1"],
         )
 
-    out = {"n_bgcs": int(len(y)), "n_splits": n_splits, "results": results}
+    out = {
+        "n_bgcs": int(len(y)),
+        "n_splits": n_splits,
+        "esm_representation": esm_label,
+        "results": results,
+    }
     REPORTS.mkdir(parents=True, exist_ok=True)
     with open(REPORTS / "ablation_metrics.json", "w", encoding="utf-8") as fh:
         json.dump(out, fh, indent=2)

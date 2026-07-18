@@ -1,21 +1,27 @@
 #!/usr/bin/env python
-"""Embed MIBiG CDS protein sequences with ESM2 and pool to per-BGC vectors.
+"""Embed MIBiG CDS protein sequences with ESM2 and pool to per-BGC vectors (V2).
 
 Standalone by design: this is the one GPU-dependent step in the pipeline, meant
 to run on a rented GPU pod (see README "GPU embeddings" section), not as part
-of the CPU-only local pipeline. It reads `mibig_proteins.parquet` (bgc_id,
-locus_tag, translation, ...) and writes a dense per-BGC embedding matrix.
+of the CPU-only local pipeline.
+
+V2 upgrades vs V1:
+  - default model is ESM2 650M (150M still available via --model)
+  - length-weighted BGC pooling (biosynthetic enzymes count more than tiny ORFs)
+  - protein-level cache so pooling can be re-run without GPU
+  - manifest JSON recording model / pooling / caps for ablation labels
 
 Usage:
-    python run_esm_embed.py \
-        --input data/processed/mibig_proteins.parquet \
-        --outdir data/processed \
-        --model facebook/esm2_t33_650M_UR50D
+    uv sync --extra embed
+    python scripts/run_esm_embed.py
+    # or: python scripts/run_esm_embed.py --model facebook/esm2_t30_150M_UR50D --pooling mean
+    # re-pool from cache (CPU): python scripts/run_esm_embed.py --from-cache --pooling length_weighted
 """
 
 from __future__ import annotations
 
 import argparse
+import json
 import time
 from pathlib import Path
 
@@ -23,7 +29,14 @@ import numpy as np
 import pandas as pd
 import torch
 
-MAX_AA = 700  # domain-composition signal lives in the first ~700 aa; caps worst-case batch cost
+from bgcatlas.config import (
+    DEFAULT_ESM_BATCH_TOKENS,
+    DEFAULT_ESM_MAX_AA,
+    DEFAULT_ESM_MAX_PROTEINS,
+    DEFAULT_ESM_MODEL,
+    DEFAULT_ESM_POOLING,
+)
+from bgcatlas.embed_pool import pool_bgcs, representation_label
 
 
 def load_model(model_name: str, device: str):
@@ -38,39 +51,94 @@ def load_model(model_name: str, device: str):
     return tok, model
 
 
-def embed_batch(seqs: list[str], tok, model, device: str) -> np.ndarray:
-    enc = tok(seqs, return_tensors="pt", padding=True, truncation=True, max_length=MAX_AA + 2)
+def embed_batch(seqs: list[str], tok, model, device: str, max_aa: int) -> np.ndarray:
+    enc = tok(seqs, return_tensors="pt", padding=True, truncation=True, max_length=max_aa + 2)
     enc = {k: v.to(device) for k, v in enc.items()}
     with torch.no_grad():
         out = model(**enc)
     hidden = out.last_hidden_state  # (B, L, D)
     mask = enc["attention_mask"].unsqueeze(-1).float()
-    # drop BOS/EOS by zeroing first/last valid token per sequence is fiddly;
-    # mean over all non-pad tokens (incl. BOS/EOS) is standard practice and stable.
     summed = (hidden * mask).sum(dim=1)
     counts = mask.sum(dim=1).clamp(min=1)
     pooled = summed / counts
     return pooled.float().cpu().numpy()
 
 
-def main() -> None:
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--input", default="data/processed/mibig_proteins.parquet")
-    ap.add_argument("--outdir", default="data/processed")
-    ap.add_argument("--model", default="facebook/esm2_t30_150M_UR50D")
-    ap.add_argument("--batch-tokens", type=int, default=6000, help="approx tokens per batch")
-    ap.add_argument("--max-proteins-per-bgc", type=int, default=60)
-    args = ap.parse_args()
+def _write_outputs(
+    outdir: Path,
+    bgc_ids: list[str],
+    bgc_embeds: np.ndarray,
+    counts: np.ndarray,
+    protein_embeds: np.ndarray | None,
+    protein_meta: pd.DataFrame | None,
+    manifest: dict,
+) -> None:
+    outdir.mkdir(parents=True, exist_ok=True)
+    np.save(outdir / "esm_embeddings.npy", bgc_embeds)
+    pd.DataFrame({"bgc_id": bgc_ids, "n_proteins_embedded": counts}).to_csv(
+        outdir / "esm_bgc_ids.csv", index=False
+    )
+    if protein_embeds is not None and protein_meta is not None:
+        np.save(outdir / "esm_protein_embeddings.npy", protein_embeds)
+        protein_meta.to_csv(outdir / "esm_protein_meta.csv", index=False)
+    with open(outdir / "esm_embed_manifest.json", "w", encoding="utf-8") as fh:
+        json.dump(manifest, fh, indent=2)
+    print(f"Wrote {bgc_embeds.shape} BGC embedding matrix -> {outdir / 'esm_embeddings.npy'}")
+    print(f"Manifest -> {outdir / 'esm_embed_manifest.json'}")
+
+
+def run_from_cache(outdir: Path, pooling: str) -> None:
+    """Re-pool BGC vectors from cached protein embeddings (CPU, no model load)."""
+    prot_path = outdir / "esm_protein_embeddings.npy"
+    meta_path = outdir / "esm_protein_meta.csv"
+    if not prot_path.exists() or not meta_path.exists():
+        raise FileNotFoundError(
+            f"Protein cache missing under {outdir}. Run a full GPU embed first "
+            "(writes esm_protein_embeddings.npy + esm_protein_meta.csv)."
+        )
+    embeds = np.load(prot_path)
+    meta = pd.read_csv(meta_path)
+    if len(meta) != len(embeds):
+        raise RuntimeError("Protein meta rows != embedding rows; cache is corrupt.")
+    prev = {}
+    man_path = outdir / "esm_embed_manifest.json"
+    if man_path.exists():
+        prev = json.loads(man_path.read_text(encoding="utf-8"))
+
+    bgc_ids, bgc_embeds, counts = pool_bgcs(
+        embeds,
+        meta["bgc_id"].to_numpy(),
+        meta["aa_length"].to_numpy(dtype=np.float64),
+        pooling=pooling,
+    )
+    manifest = {
+        **prev,
+        "pooling": pooling,
+        "n_bgcs": int(len(bgc_ids)),
+        "n_proteins": int(len(meta)),
+        "from_cache": True,
+        "representation_label": representation_label(prev.get("model", "esm"), pooling),
+    }
+    _write_outputs(outdir, bgc_ids, bgc_embeds, counts, None, None, manifest)
+
+
+def run_embed(args: argparse.Namespace) -> None:
+    outdir = Path(args.outdir)
+    if args.from_cache:
+        run_from_cache(outdir, pooling=args.pooling)
+        return
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    print(f"device={device} model={args.model}")
+    print(f"device={device} model={args.model} pooling={args.pooling} max_aa={args.max_aa}")
 
     df = pd.read_parquet(args.input)
     df["translation"] = df["translation"].str.upper().str.replace(r"[^A-Z]", "", regex=True)
     df = df[df["translation"].str.len() >= 10].copy()
-    df["translation"] = df["translation"].str.slice(0, MAX_AA)
+    if "aa_length" not in df.columns:
+        df["aa_length"] = df["translation"].str.len()
+    df["aa_length"] = pd.to_numeric(df["aa_length"], errors="coerce").fillna(0).astype(int)
+    df["translation"] = df["translation"].str.slice(0, args.max_aa)
 
-    # cap proteins/BGC so a handful of mega-clusters don't dominate wall-clock
     df = (
         df.sort_values(["bgc_id", "aa_length"], ascending=[True, False])
         .groupby("bgc_id")
@@ -80,8 +148,6 @@ def main() -> None:
     print(f"Embedding {len(df)} protein sequences across {df['bgc_id'].nunique()} BGCs")
 
     tok, model = load_model(args.model, device)
-
-    # length-sorted dynamic batching to minimize padding waste
     order = df["translation"].str.len().sort_values(ascending=False).index
     df_sorted = df.loc[order].reset_index(drop=True)
 
@@ -97,7 +163,7 @@ def main() -> None:
         if not batch_seqs:
             return
         bt0 = time.time()
-        emb = embed_batch(batch_seqs, tok, model, device)
+        emb = embed_batch(batch_seqs, tok, model, device, max_aa=args.max_aa)
         for local_i, global_i in enumerate(batch_idx):
             all_embeds[global_i] = emb[local_i]
         n_done += len(batch_seqs)
@@ -120,31 +186,69 @@ def main() -> None:
         batch_idx.append(i)
         batch_seqs.append(seq)
     flush()
-    print(f"Done embedding proteins in {time.time() - t0:.0f}s")
+    elapsed = time.time() - t0
+    print(f"Done embedding proteins in {elapsed:.0f}s")
 
-    df_sorted["_emb_idx"] = range(len(df_sorted))
-    prot_dim = all_embeds.shape[1]
-
-    bgc_ids = sorted(df_sorted["bgc_id"].unique())
-    bgc_embeds = np.zeros((len(bgc_ids), prot_dim), dtype=np.float32)
-    id_to_pos = {b: i for i, b in enumerate(bgc_ids)}
-    sums = np.zeros((len(bgc_ids), prot_dim), dtype=np.float64)
-    counts = np.zeros(len(bgc_ids), dtype=np.int64)
-    for row_idx, bgc_id in zip(
-        df_sorted["_emb_idx"].to_numpy(), df_sorted["bgc_id"].to_numpy(), strict=True
-    ):
-        pos = id_to_pos[bgc_id]
-        sums[pos] += all_embeds[row_idx]
-        counts[pos] += 1
-    bgc_embeds = (sums / np.maximum(counts, 1)[:, None]).astype(np.float32)
-
-    outdir = Path(args.outdir)
-    outdir.mkdir(parents=True, exist_ok=True)
-    np.save(outdir / "esm_embeddings.npy", bgc_embeds)
-    pd.DataFrame({"bgc_id": bgc_ids, "n_proteins_embedded": counts}).to_csv(
-        outdir / "esm_bgc_ids.csv", index=False
+    bgc_ids, bgc_embeds, counts = pool_bgcs(
+        all_embeds,
+        df_sorted["bgc_id"].to_numpy(),
+        df_sorted["aa_length"].to_numpy(dtype=np.float64),
+        pooling=args.pooling,
     )
-    print(f"Wrote {bgc_embeds.shape} embedding matrix -> {outdir / 'esm_embeddings.npy'}")
+
+    locus = (
+        df_sorted["locus_tag"].astype(str)
+        if "locus_tag" in df_sorted.columns
+        else pd.Series([""] * len(df_sorted))
+    )
+    protein_meta = pd.DataFrame(
+        {
+            "bgc_id": df_sorted["bgc_id"].to_numpy(),
+            "locus_tag": locus.to_numpy(),
+            "aa_length": df_sorted["aa_length"].to_numpy(),
+            "emb_idx": np.arange(len(df_sorted)),
+        }
+    )
+    manifest = {
+        "model": args.model,
+        "pooling": args.pooling,
+        "max_aa": args.max_aa,
+        "max_proteins_per_bgc": args.max_proteins_per_bgc,
+        "batch_tokens": args.batch_tokens,
+        "device": device,
+        "n_bgcs": int(len(bgc_ids)),
+        "n_proteins": int(len(df_sorted)),
+        "hidden_size": int(all_embeds.shape[1]),
+        "elapsed_s": float(elapsed),
+        "from_cache": False,
+        "representation_label": representation_label(args.model, args.pooling),
+    }
+    _write_outputs(
+        outdir, bgc_ids, bgc_embeds, counts, all_embeds, protein_meta, manifest
+    )
+
+
+def main() -> None:
+    ap = argparse.ArgumentParser(description="ESM2 protein → BGC embeddings (V2)")
+    ap.add_argument("--input", default="data/processed/mibig_proteins.parquet")
+    ap.add_argument("--outdir", default="data/processed")
+    ap.add_argument("--model", default=DEFAULT_ESM_MODEL)
+    ap.add_argument(
+        "--pooling",
+        default=DEFAULT_ESM_POOLING,
+        choices=["mean", "length_weighted"],
+        help="How to aggregate protein vectors into a BGC vector",
+    )
+    ap.add_argument("--max-aa", type=int, default=DEFAULT_ESM_MAX_AA)
+    ap.add_argument("--max-proteins-per-bgc", type=int, default=DEFAULT_ESM_MAX_PROTEINS)
+    ap.add_argument("--batch-tokens", type=int, default=DEFAULT_ESM_BATCH_TOKENS)
+    ap.add_argument(
+        "--from-cache",
+        action="store_true",
+        help="Re-pool from esm_protein_embeddings.npy (no GPU / model download)",
+    )
+    args = ap.parse_args()
+    run_embed(args)
 
 
 if __name__ == "__main__":

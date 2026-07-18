@@ -9,7 +9,14 @@ import numpy as np
 import pandas as pd
 from scipy.stats import spearmanr
 
-from bgcatlas.config import MAJOR_FAMILIES, N_HASH_DIMS, PCA_N_COMPONENTS
+from bgcatlas.config import (
+    DEFAULT_ESM_MODEL,
+    DEFAULT_ESM_POOLING,
+    MAJOR_FAMILIES,
+    N_HASH_DIMS,
+    PCA_N_COMPONENTS,
+)
+from bgcatlas.data.antismash import load_antismash_gbk, load_antismash_json, load_predicted_domains
 from bgcatlas.data.curate import _changelog_dates, _coarsen_classes, _parse_one_json
 from bgcatlas.featurize.run import _hash_token, build_feature_matrix
 from bgcatlas.novelty.embed_compare import _class_stratified_disagreement
@@ -222,3 +229,48 @@ def test_config_defaults_sensible():
     assert N_HASH_DIMS == 256
     assert PCA_N_COMPONENTS == 50
     assert set(MAJOR_FAMILIES) == {"PKS", "NRPS", "hybrid"}
+    assert "650M" in DEFAULT_ESM_MODEL
+    assert DEFAULT_ESM_POOLING == "length_weighted"
+
+
+def test_length_weighted_pooling_prefers_long_proteins():
+    from bgcatlas.embed_pool import pool_bgcs
+
+    # Same BGC: short protein at ones, long protein at zeros → length_weighted nearer zeros
+    embeds = np.array([[1.0, 1.0], [0.0, 0.0]], dtype=np.float32)
+    bgc_ids = np.array(["BGC1", "BGC1"])
+    aa = np.array([10.0, 990.0])
+    _, mean_pool, _ = pool_bgcs(embeds, bgc_ids, aa, pooling="mean")
+    _, len_pool, _ = pool_bgcs(embeds, bgc_ids, aa, pooling="length_weighted")
+    assert np.allclose(mean_pool[0], [0.5, 0.5])
+    assert len_pool[0, 0] < 0.1
+
+
+def test_antismash_gbk_fixture():
+    df = load_antismash_gbk(FIXTURES / "mini_region.gbk", genome="test_genome")
+    assert set(df.columns) == {
+        "genome",
+        "bgc_id",
+        "predicted_class",
+        "gene_order",
+        "domain_id",
+        "n_genes",
+    }
+    assert df["predicted_class"].iloc[0] == "hybrid"
+    assert "Condensation" in set(df["domain_id"])
+    assert "PKS_KS" in set(df["domain_id"])
+
+
+def test_antismash_json_fixture():
+    df = load_antismash_json(FIXTURES / "mini_antismash.json", genome="json_genome")
+    assert df["bgc_id"].nunique() == 2
+    assert "Condensation" in set(df["domain_id"])
+    terpene = df[df["predicted_class"] == "terpene"]
+    assert len(terpene) >= 1
+
+
+def test_load_predicted_domains_dispatch():
+    df = load_predicted_domains(FIXTURES / "mini_antismash.json")
+    assert len(df) >= 2
+    df2 = load_predicted_domains(FIXTURES / "mini_region.gbk")
+    assert "AMP-binding" in set(df2["domain_id"])
