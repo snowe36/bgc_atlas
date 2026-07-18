@@ -3,67 +3,68 @@
   "k": 5,
   "top_frac": 0.1,
   "n_top": 264,
-  "spearman_hashed_vs_esm": -0.4224849409255431,
-  "spearman_hashed_vs_esm_pvalue": 1.2814434267142425e-114,
-  "spearman_hashed_vs_combined": 0.06304028911262868,
-  "spearman_hashed_vs_combined_pvalue": 0.001202443219999758,
-  "top_decile_jaccard_hashed_vs_esm": 0.015384615384615385,
-  "top_decile_jaccard_hashed_vs_combined": 0.19457013574660634,
-  "top_decile_jaccard_esm_vs_combined": 0.4666666666666667,
+  "esm_representation": "esm2-t33_650M_length_weighted",
+  "spearman_hashed_vs_esm": -0.3767739960655603,
+  "spearman_hashed_vs_esm_pvalue": 1.1087821420549985e-89,
+  "spearman_hashed_vs_combined": -0.12186440733490632,
+  "spearman_hashed_vs_combined_pvalue": 3.4472075001098853e-10,
+  "top_decile_jaccard_hashed_vs_esm": 0.017341040462427744,
+  "top_decile_jaccard_hashed_vs_combined": 0.1069182389937107,
+  "top_decile_jaccard_esm_vs_combined": 0.6761904761904762,
   "by_class": [
     {
       "biosynth_class": "NRPS",
       "n": 538,
-      "spearman_hashed_vs_esm": -0.37831730676240777,
-      "spearman_pvalue": 9.475748852570483e-20,
+      "spearman_hashed_vs_esm": -0.3126926424867422,
+      "spearman_pvalue": 1.1456359584464482e-13,
       "top_decile_jaccard": 0.018867924528301886,
       "mean_novelty_hashed": 0.5705346246905046,
-      "mean_novelty_esm": 0.5131755112405918
+      "mean_novelty_esm": 0.5115904714206104
     },
     {
       "biosynth_class": "PKS",
       "n": 695,
-      "spearman_hashed_vs_esm": -0.3131858713665374,
-      "spearman_pvalue": 2.785258858533021e-17,
+      "spearman_hashed_vs_esm": -0.2660414840936492,
+      "spearman_pvalue": 1.0046330169766591e-12,
       "top_decile_jaccard": 0.037037037037037035,
       "mean_novelty_hashed": 0.6270601886612153,
-      "mean_novelty_esm": 0.3301991727301271
+      "mean_novelty_esm": 0.3172762890257054
     },
     {
       "biosynth_class": "RiPP",
       "n": 359,
-      "spearman_hashed_vs_esm": -0.21845388195910626,
-      "spearman_pvalue": 2.9770997984302384e-05,
-      "top_decile_jaccard": 0.058823529411764705,
+      "spearman_hashed_vs_esm": -0.16334640636799536,
+      "spearman_pvalue": 0.001902406416211215,
+      "top_decile_jaccard": 0.014084507042253521,
       "mean_novelty_hashed": 0.253436437923179,
-      "mean_novelty_esm": 0.7175513893220151
+      "mean_novelty_esm": 0.6956573446163442
     },
     {
       "biosynth_class": "hybrid",
       "n": 404,
-      "spearman_hashed_vs_esm": -0.022854750507608185,
-      "spearman_pvalue": 0.6469443446500462,
-      "top_decile_jaccard": 0.02564102564102564,
+      "spearman_hashed_vs_esm": 0.23342933305768956,
+      "spearman_pvalue": 2.1055935583117513e-06,
+      "top_decile_jaccard": 0.1111111111111111,
       "mean_novelty_hashed": 0.6939335299753885,
-      "mean_novelty_esm": 0.45055235125030524
+      "mean_novelty_esm": 0.4492203205140249
     },
     {
       "biosynth_class": "other",
       "n": 474,
-      "spearman_hashed_vs_esm": -0.41668409693405023,
-      "spearman_pvalue": 2.479752854549743e-21,
-      "top_decile_jaccard": 0.010752688172043012,
+      "spearman_hashed_vs_esm": -0.3998915449728681,
+      "spearman_pvalue": 1.2548899258905218e-19,
+      "top_decile_jaccard": 0.021739130434782608,
       "mean_novelty_hashed": 0.3104232219633464,
-      "mean_novelty_esm": 0.5496613263516921
+      "mean_novelty_esm": 0.5752660149400716
     },
     {
       "biosynth_class": "terpene",
       "n": 166,
-      "spearman_hashed_vs_esm": -0.27866862289005195,
-      "spearman_pvalue": 0.000277388299359063,
-      "top_decile_jaccard": 0.030303030303030304,
+      "spearman_hashed_vs_esm": -0.24639651604869145,
+      "spearman_pvalue": 0.0013738307499869791,
+      "top_decile_jaccard": 0.0,
       "mean_novelty_hashed": 0.34200064013168424,
-      "mean_novelty_esm": 0.6762625454379186
+      "mean_novelty_esm": 0.7129832422669806
     }
   ]
 }
