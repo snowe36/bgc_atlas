@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "bgc-atlas"
-version = "0.1.0"
-description = "Reproducible framework for mapping biosynthetic space and validating architecture-novelty rankings (MIBiG)"
+version = "0.2.0"
+description = "V2: map biosynthetic space, validate novelty rankings, ESM2 ablations, antiSMASH apply (MIBiG)"
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }

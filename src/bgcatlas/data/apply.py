@@ -1,4 +1,4 @@
-"""Score curated predicted BGCs against the MIBiG reference manifold."""
+"""Score predicted BGCs (demo CSV or antiSMASH GBK/JSON) against the MIBiG manifold."""
 
 from __future__ import annotations
 
@@ -12,6 +12,7 @@ from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import StandardScaler
 
 from bgcatlas.config import PCA_N_COMPONENTS
+from bgcatlas.data.antismash import load_predicted_domains
 from bgcatlas.featurize.run import _hash_token
 from bgcatlas.paths import DATA, PROCESSED, REPORTS, ensure_dirs
 
@@ -27,8 +28,6 @@ def _ensure_curated_predicted() -> Path:
     if path.exists():
         return path
 
-    # Curated synthetic "genome mining" candidates: realistic domain mixes
-    # that are not MIBiG accessions (stand-ins for antiSMASH predictions).
     rows = []
     catalog = [
         {
@@ -141,12 +140,10 @@ def _vectorize_predicted(
     for i, row in meta.iterrows():
         bgc_id = row["bgc_id"]
         seq = ordered.get(bgc_id, [])
-        # domain counts
         for tok, cnt in pd.Series(seq).value_counts().items():
             key = f"dom::{tok}"
             if key in name_to_idx:
                 X[i, name_to_idx[key]] = float(cnt)
-        # architecture hashes
         for tok in seq:
             h = _hash_token(f"uni::{tok}")
             key = f"arch_hash::{h}"
@@ -157,7 +154,6 @@ def _vectorize_predicted(
             key = f"arch_hash::{h}"
             if key in name_to_idx:
                 X[i, name_to_idx[key]] += 1.0
-        # size features (partial)
         for col, val in [
             ("size::n_genes", row["n_genes"]),
             ("size::n_domain_annotations", row["n_domain_annotations"]),
@@ -171,10 +167,34 @@ def _vectorize_predicted(
     return meta.reset_index(drop=True), X
 
 
-def run_apply(k: int = 5) -> pd.DataFrame:
+def run_apply(
+    k: int = 5,
+    input_path: str | Path | None = None,
+    genome: str | None = None,
+) -> pd.DataFrame:
+    """Score predicted BGCs against MIBiG.
+
+    input_path:
+      None / missing → curated demo CSV under data/external/
+      .csv           → domains table
+      .json / .gbk   → antiSMASH output
+      directory      → antiSMASH region GBKs or JSON
+    """
     ensure_dirs()
-    pred_path = _ensure_curated_predicted()
-    pred_domains = pd.read_csv(pred_path)
+    if input_path is None:
+        pred_path = _ensure_curated_predicted()
+        pred_domains = pd.read_csv(pred_path)
+        source = "demo_csv"
+    else:
+        pred_path = Path(input_path)
+        pred_domains = load_predicted_domains(pred_path, genome=genome)
+        source = str(pred_path)
+        # cache normalized table for inspection
+        EXTERNAL.mkdir(parents=True, exist_ok=True)
+        cache = EXTERNAL / "last_apply_domains.csv"
+        pred_domains.to_csv(cache, index=False)
+        LOG.info("Cached normalized domains → %s", cache)
+
     feature_names = pd.read_csv(PROCESSED / "feature_names.csv")["feature"].tolist()
     X_ref = np.load(PROCESSED / "feature_matrix.npy")
     meta_ref = pd.read_parquet(PROCESSED / "feature_meta.parquet")
@@ -197,12 +217,10 @@ def run_apply(k: int = 5) -> pd.DataFrame:
     nearest_idx = idxs[:, 0]
     nearest_dist = dists[:, 0]
 
-    # novelty relative to MIBiG reference distance distribution
     ref_nn = NearestNeighbors(n_neighbors=min(k + 1, len(Z_ref)), metric="euclidean")
     ref_nn.fit(Z_ref)
     ref_dists, _ = ref_nn.kneighbors(Z_ref)
     ref_knn = ref_dists[:, 1:].mean(axis=1)
-    # empirical CDF rank vs MIBiG self-distances
     novelty = np.array([(ref_knn < d).mean() for d in knn_mean], dtype=float)
 
     out = meta_pred.copy()
@@ -211,12 +229,13 @@ def run_apply(k: int = 5) -> pd.DataFrame:
     out["nearest_dist"] = nearest_dist
     out["nearest_mibig"] = meta_ref["bgc_id"].iloc[nearest_idx].to_numpy()
     out["neighbor_class"] = meta_ref["biosynth_class"].iloc[nearest_idx].to_numpy()
+    out["source"] = source
     out = out.sort_values("novelty", ascending=False).reset_index(drop=True)
     out.insert(0, "rank", np.arange(1, len(out) + 1))
 
     REPORTS.mkdir(parents=True, exist_ok=True)
     out_path = REPORTS / "predicted_novelty_ranking.csv"
     out.to_csv(out_path, index=False)
-    LOG.info("Predicted BGC novelty ranking:\n%s", out.to_string(index=False))
+    LOG.info("Predicted BGC novelty ranking (%d BGCs from %s):\n%s", len(out), source, out.head(20).to_string(index=False))
     LOG.info("Wrote %s", out_path)
     return out

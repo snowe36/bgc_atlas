@@ -1,10 +1,13 @@
 # bgc_atlas
 
-**A reproducible framework for learning and validating representations of microbial biosynthetic space** — map biosynthetic gene cluster (BGC) neighborhoods, rank architecture-novel regions, and stress-test those rankings with leakage checks, size-confound audits, and a prospective (time-split) holdout. Interpretable CPU baselines first; optional GPU-accelerated protein language model embeddings for ablation.
+**A reproducible framework for evaluating whether learned representations of microbial biosynthetic gene clusters can identify unexplored regions of chemical space.** Combines interpretable architecture features, protein language model embeddings, rigorous leakage audits, and prospective validation.
 
 [![CI](https://github.com/snowe36/bgc_atlas/actions/workflows/ci.yml/badge.svg)](https://github.com/snowe36/bgc_atlas/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)
+![uv](https://img.shields.io/badge/uv-package%20manager-de5fe9.svg)
+![PyTorch](https://img.shields.io/badge/PyTorch-optional%20GPU-ee4c2c.svg)
+![HuggingFace](https://img.shields.io/badge/HuggingFace-ESM2-ffd21e.svg)
 
 Repo: [github.com/snowe36/bgc_atlas](https://github.com/snowe36/bgc_atlas)
 
@@ -14,7 +17,7 @@ Repo: [github.com/snowe36/bgc_atlas](https://github.com/snowe36/bgc_atlas)
 
 Microbial genomes encode far more biosynthetic gene clusters than have been experimentally characterized ([MIBiG](https://mibig.secondarymetabolites.org/); [antiSMASH](https://docs.antismash.secondarymetabolites.org/)). Rule-based tools already answer "is this a BGC, and what class?" well. The harder ML question is:
 
-**Can we learn a representation of biosynthetic architecture space such that distance from known neighborhoods is a useful discovery signal — and can we validate that claim rigorously?**
+**Can representation learning actually predict discovery — and can we validate that claim rigorously?**
 
 This is a representation-learning / novelty-ranking problem with explicit negative controls, not a classification demo.
 
@@ -39,12 +42,21 @@ This is a representation-learning / novelty-ranking problem with explicit negati
 | Representation recovers known classes | RF macro-F1 **0.76**, weighted-F1 **0.79** (5-fold CV) |
 | Class-label leakage into novelty features | **None** |
 | Novelty ↔ cluster size (Spearman) | **0.55** — moderate size confound; not the whole story |
-| Prospective holdout: do newer MIBiG entries score as novel? | **Not supported** (held-out mean 0.40 vs random-control 0.50; p=0.997) — reported as a negative result |
-| Holdout excluding major families (PKS/NRPS/hybrid) | Still negative (held-out mean **0.31** vs control **0.49**; n=117) |
-| Hashed vs ESM2 alone (class recovery) | ~tied (0.78 vs 0.76 macro-F1) |
-| Combined hashed + ESM2 | **0.83** macro-F1 — complementary signal |
-| Do novelty *rankings* agree across representations? | **No** (Spearman ρ=**-0.42**; top-decile overlap **1.5%**) |
-| Disagreement by class | Strongest in **other / NRPS / PKS**; near-zero in **hybrid** |
+| Prospective holdout | Architecture novelty alone is **insufficient** as a discovery predictor (held-out mean 0.40 vs control 0.50) |
+| Hashed vs ESM2-650M alone (class recovery) | ~tied (0.78 vs **0.80** macro-F1) |
+| Combined hashed + ESM2-650M | **0.84** macro-F1 — complementary signal for annotation |
+| Do novelty *rankings* agree across representations? | **No** (Spearman ρ=**-0.38**; top-decile overlap **1.7%**) |
+| Disagreement by class | Strongest anti-agree in **other / NRPS**; **hybrid** positively correlates (ρ=+0.23) |
+
+---
+
+## Research takeaway
+
+Three conclusions emerged:
+
+1. **Architecture features** capture recognizable biosynthetic classes.
+2. **ESM2 embeddings** provide complementary biological signal and modestly improve classification.
+3. **Novelty ranking** is highly representation-dependent and does not yet translate into prospective discovery prediction.
 
 ---
 
@@ -64,7 +76,7 @@ CPU pipeline (locked deps via [`uv.lock`](uv.lock); CI on every push):
 bgc-download → bgc-featurize → bgc-sanity → bgc-atlas → bgc-novelty → bgc-validate → bgc-apply → bgc-temporal
 ```
 
-Optional GPU step (needs `uv sync --extra embed` for `torch` + HuggingFace `transformers`):
+Optional GPU step (ESM2-650M + length-weighted pooling; `uv sync --extra embed`):
 
 ```bash
 uv sync --extra embed
@@ -152,58 +164,100 @@ MIBiG's changelog carries a real submission date per entry. Fit the reference ma
 
 ![Prospective novelty: random vs. true post-cutoff holdout](reports/figures/temporal_holdout.png)
 
-**This does not support the hypothesis.** Post-cutoff entries scored *less* architecture-novel than a random control. Restricting to non-major families (RiPP / terpene / other) makes the gap *worse*, not better — so the negative result is not explained by incremental PKS/NRPS variants alone. Reported honestly rather than reframed after the fact.
+Prospective validation revealed that **architecture novelty alone is insufficient as a discovery predictor**. Post-cutoff entries scored *less* architecture-novel than a random control; restricting to non-major families (RiPP / terpene / other) does not reverse the result. That is the scientific conclusion: distance from known architecture neighborhoods, under this representation, does not forecast which BGCs enter MIBiG next.
 
 ---
 
-## GPU / protein language model embeddings
+## Protein language model embeddings
 
-After validating the CPU discovery strategy, ask whether a protein language model changes the picture. [`scripts/run_esm_embed.py`](scripts/run_esm_embed.py) embeds MIBiG CDS translations with **ESM2** (`facebook/esm2_t30_150M_UR50D`) via HuggingFace `transformers` and mean-pools per BGC (GPU-only step; ~10 min on an A40). Install with `uv sync --extra embed`.
+After validating the CPU discovery strategy, ask whether a protein language model changes the picture.
 
-**Classification ablation** (`bgc-ablation` → [`reports/ablation_metrics.json`](reports/ablation_metrics.json)):
+**Hypothesis:** sequence-derived embeddings may capture evolutionary and functional relationships missed by architecture-only features.
+
+[`scripts/run_esm_embed.py`](scripts/run_esm_embed.py) embeds MIBiG CDS translations with **ESM2** via HuggingFace `transformers` and pools per BGC. Current defaults (override with flags):
+
+| Knob | Legacy (150M) | Current default |
+|------|---------------|-----------------|
+| Model | `esm2_t30_150M` | `esm2_t33_650M` |
+| Pooling | uniform mean | **length-weighted** (longer enzymes count more) |
+| Max AA / proteins | 700 / 60 | 1024 / 80 |
+| Cache | BGC matrix only | + protein-level cache + `esm_embed_manifest.json` |
+
+```bash
+uv sync --extra embed
+# full GPU embed (writes esm_embeddings.npy + protein cache + manifest)
+python scripts/run_esm_embed.py
+# re-pool without GPU after the first run
+python scripts/run_esm_embed.py --from-cache --pooling mean
+# legacy 150M mean-pool bake-off
+python scripts/run_esm_embed.py --model facebook/esm2_t30_150M_UR50D --pooling mean --max-aa 700
+uv run bgc-ablation && uv run bgc-novelty-compare
+```
+
+**Classification ablation** (ESM2-650M + length-weighted → [`reports/ablation_metrics.json`](reports/ablation_metrics.json); legacy 150M mean-pool in parentheses):
 
 | Representation | Macro-F1 | Weighted-F1 |
 |----------------|---------:|------------:|
 | Hashed architecture (CPU baseline) | 0.78 | 0.81 |
-| ESM2 (150M) alone | 0.76 | 0.76 |
-| **Combined (hashed + ESM2)** | **0.83** | **0.85** |
+| ESM2 alone | **0.80** (legacy: 0.76) | **0.80** (legacy: 0.76) |
+| **Combined (hashed + ESM2)** | **0.84** (legacy: 0.83) | **0.84** (legacy: 0.85) |
 
 ![Representation ablation](reports/figures/ablation_representation_comparison.png)
 
-ESM2 alone is not better than hand-built architecture features for class recovery, but it carries complementary signal.
+ESM2-650M alone edges the hashed baseline on macro-F1 (0.80 vs 0.78); combined still wins. Labels follow `esm_embed_manifest.json` (`esm2-t33_650M_length_weighted`).
+
+**Result:** ESM improves class recovery but produces substantially different novelty rankings.
 
 **Novelty ranking comparison** (`bgc-novelty-compare` → [`reports/novelty_representation_comparison.json`](reports/novelty_representation_comparison.json)):
 
 | Comparison | Spearman ρ | Top-decile Jaccard |
 |------------|-----------:|-------------------:|
-| Hashed vs. ESM2 novelty | **-0.42** | **1.5%** |
-| Hashed vs. combined | 0.06 | 19.5% |
-| ESM2 vs. combined | — | 46.7% |
+| Hashed vs. ESM2 novelty | **-0.38** (legacy: -0.42) | **1.7%** (legacy: 1.5%) |
+| Hashed vs. combined | -0.12 (legacy: +0.06) | 10.7% (legacy: 19.5%) |
+| ESM2 vs. combined | — | **67.6%** (legacy: 46.7%) |
 
 ![Novelty representation comparison](reports/figures/novelty_representation_comparison.png)
 
-Hashed and ESM2 novelty pick almost entirely different top hits. "Architecture-novel" is representation-dependent — which is why the validation and holdout checks matter more than any single ranking.
+Rankings still barely agree at the top — representation dependence remains. Combined novelty tracks ESM2 more tightly under the 650M setup (Jaccard 68% vs 47% under the legacy 150M bake-off), so the joint space is ESM-dominated.
+
+The combined representation improves class recovery but does not recover the same novelty landscape as architecture features, suggesting that **representation fusion improves annotation but does not necessarily stabilize discovery ranking**.
 
 **Class-stratified disagreement** ([`reports/novelty_disagreement_by_class.csv`](reports/novelty_disagreement_by_class.csv)):
 
 | Class | n | Spearman ρ (hashed vs ESM2) | Top-decile Jaccard |
 |-------|--:|----------------------------:|-------------------:|
-| other | 474 | **-0.42** | 1.1% |
-| NRPS | 538 | **-0.38** | 1.9% |
-| PKS | 695 | **-0.31** | 3.7% |
-| terpene | 166 | -0.28 | 3.0% |
-| RiPP | 359 | -0.22 | 5.9% |
-| hybrid | 404 | **-0.02** | 2.6% |
+| other | 474 | **-0.40** | 2.2% |
+| NRPS | 538 | **-0.31** | 1.9% |
+| PKS | 695 | -0.27 | 3.7% |
+| terpene | 166 | -0.25 | 0.0% |
+| RiPP | 359 | -0.16 | 1.4% |
+| hybrid | 404 | **+0.23** (legacy: −0.02) | **11.1%** |
 
 ![Class-stratified novelty disagreement](reports/figures/novelty_disagreement_by_class.png)
 
-Disagreement is strongest in **other / NRPS / PKS**. Hybrids are the exception (near-zero rank correlation): the two representations do not systematically anti-agree there, but top-decile overlap remains tiny.
+Disagreement is strongest in **other / NRPS**. With ESM2-650M, hybrids flip to a *positive* rank correlation (ρ=+0.23) with modestly higher top-decile overlap (11%) — the rest of the classes still anti-agree.
 
 ---
 
-## Apply to new genomes (demo)
+## Apply to new genomes
 
-**Demonstration only — not a discovery claim.** Curated predicted BGC domain tables in [`data/external/`](data/external/) illustrate scoring against the MIBiG manifold ([`reports/predicted_novelty_ranking.csv`](reports/predicted_novelty_ranking.csv)):
+Score predicted BGCs against the MIBiG manifold (`bgc-apply` → [`reports/predicted_novelty_ranking.csv`](reports/predicted_novelty_ranking.csv)). Supports antiSMASH region GenBanks and JSON.
+
+```bash
+# curated demo (default)
+uv run bgc-apply
+
+# antiSMASH region GenBanks (preferred — domains from aSDomain / PFAM_domain)
+uv run bgc-apply --input /path/to/antismash_outdir --genome MyStreptomyces
+
+# antiSMASH JSON (areas/products; CDS domains when present)
+uv run bgc-apply --input /path/to/result.json
+
+# pre-normalized domains CSV (genome,bgc_id,predicted_class,gene_order,domain_id,n_genes)
+uv run bgc-apply --input data/external/predicted_domains.csv
+```
+
+Demo ranking (illustration only):
 
 | Rank | Genome (demo label) | BGC | Predicted class | Score | Nearest MIBiG |
 |-----:|---------------------|-----|-----------------|------:|---------------|
@@ -231,20 +285,23 @@ Disagreement is strongest in **other / NRPS / PKS**. Hybrids are the exception (
 
 - Scores reflect **architecture** divergence, not proven new chemistry
 - Novelty correlates moderately with cluster size (Spearman **0.55**)
-- Temporal holdout did **not** confirm that novelty predicts which entries get added to MIBiG next — including after excluding major families
-- Novelty rankings are **representation-dependent** (hashed vs ESM2 barely agree; class-stratified)
+- Architecture novelty alone does not forecast which entries enter MIBiG next
+- Novelty rankings are **representation-dependent** (hashed vs ESM2 barely agree)
 - Product-class / bioactivity prediction are out of scope
 - Domains are inferred from CDS products (raw MIBiG GenBank lacks antiSMASH domain calls)
-- ESM2 uses 150M mean-pooled embeddings (700 aa / 60 proteins per BGC caps)
-- Predicted set is a curated demo, not antiSMASH-DB scale
+- ESM2-650M + length-weighted embeddings improve class recovery but do not stabilize novelty rankings with hashed architecture
+- antiSMASH ingest supports region GBK/JSON; still not a full antiSMASH-DB-scale discovery campaign
 
 ---
 
 ## Future directions
 
+The natural next step is **contrastive / metric learning with a biological objective**: pull together evolutionarily related BGCs, separate unrelated architectures, and evaluate whether learned distances improve prospective discovery prediction. That moves from representation analysis to method development.
+
+Also worth exploring:
+
 - Longer lead-time temporal cutoffs (and organism-stratified holdouts)
-- Larger ESM2 checkpoint + domain-aware pooling
-- Richer antiSMASH domain calls; larger predicted-genome prioritization sets
+- Larger predicted-genome prioritization sets (antiSMASH-DB scale)
 
 ---
 
@@ -260,7 +317,7 @@ bash scripts/reproduce.sh
 uv run pytest -q
 ```
 
-Optional GPU path:
+Optional GPU path (ESM2-650M + length-weighted):
 
 ```bash
 uv sync --extra embed   # torch + transformers
@@ -275,13 +332,13 @@ UMAP for 2-D maps: `uv sync --extra umap` (PCA is the default).
 ## Project layout
 
 ```text
-src/bgcatlas/        package (config, data, featurize, models, atlas, novelty)
-scripts/             reproduce.sh + run_esm_embed.py (GPU-only)
+src/bgcatlas/        package (config, embed_pool, data/antismash, featurize, models, atlas, novelty)
+scripts/             reproduce.sh + run_esm_embed.py (GPU ESM2)
 uv.lock              locked dependency versions
 data/raw|processed/  MIBiG download + feature matrices (gitignored bulk)
-data/external/       demo predicted BGCs
+data/external/       demo predicted BGCs + last apply cache
 reports/             rankings, metrics, figures
-tests/               unit tests + fixtures
+tests/               unit tests + antiSMASH fixtures
 .github/workflows/   CI (uv sync + ruff + pytest)
 ```
 

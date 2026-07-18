@@ -70,7 +70,7 @@ def run_novelty_representation_comparison(
     k: int = DEFAULT_NOVELTY_K, top_frac: float = 0.1
 ) -> dict:
     ensure_dirs()
-    meta, X_hash, X_esm = _load_aligned()
+    meta, X_hash, X_esm, esm_label = _load_aligned()
     X_combined = np.hstack(
         [
             StandardScaler(with_mean=False).fit_transform(X_hash),
@@ -106,6 +106,7 @@ def run_novelty_representation_comparison(
         "k": k,
         "top_frac": top_frac,
         "n_top": n_top,
+        "esm_representation": esm_label,
         "spearman_hashed_vs_esm": float(rho_hash_esm),
         "spearman_hashed_vs_esm_pvalue": float(p_hash_esm),
         "spearman_hashed_vs_combined": float(rho_hash_combined),

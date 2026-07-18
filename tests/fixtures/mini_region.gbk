@@ -1,0 +1,56 @@
+LOCUS       MINIREG001             1203 bp    DNA     linear       18-JUL-2026
+DEFINITION  Synthetic antiSMASH-like region for unit tests.
+ACCESSION   MINIREG001
+VERSION     MINIREG001
+KEYWORDS    .
+SOURCE      synthetic
+  ORGANISM  synthetic
+FEATURES             Location/Qualifiers
+     source          1..1200
+                     /organism="synthetic"
+     region          1..1200
+                     /product="NRPS"
+                     /product="T1PKS"
+     CDS             1..300
+                     /locus_tag="gene1"
+                     /product="nonribosomal peptide synthase"
+                     /translation="MKTAYIAKQRQISFVKSHFSRQLEERLGLIEVQAPILSRVGDGTQDNLSGAEK"
+     aSDomain        10..90
+                     /domain="Condensation"
+                     /locus_tag="gene1"
+     aSDomain        100..200
+                     /domain="AMP-binding"
+                     /locus_tag="gene1"
+     CDS             400..900
+                     /locus_tag="gene2"
+                     /product="type I polyketide synthase"
+                     /translation="MVLSEGEWQLVLHVWAKVEADVAGHGQDILIRLFKSHPETLEKFDRVKHLKTEA"
+     aSDomain        420..600
+                     /domain="PKS_KS"
+                     /locus_tag="gene2"
+     aSDomain        620..800
+                     /domain="PKS_AT"
+                     /locus_tag="gene2"
+ORIGIN
+        1 atgaaaacgg cttacatcgc gaaacaacgt caaatcagct ttgtgaaatc gcatttcagc
+       61 cgtcaactgg aagaacgtct gggcctgatt gaagtgcagg cgccgattct gagccgtgtt
+      121 ggcgatggca cgcaggataa cctgagcggc gcggagaaaa tgaaaacggc ttacatcgcg
+      181 aaacaacgtc aaatcagctt tgtgaaatcg catttcagcc gtcaactgga agaacgtctg
+      241 ggcctgattg aagtgcaggc gccgattctg agccgtgttg gcgatggcac gcaggataac
+      301 ctgagcggcg cggagaaaat gaaaatgaaa atgaaaatga aaatgaaaat gaaaatgaaa
+      361 atgaaaatga aaatgaaaat gaaaatgaaaa tggtgctgag cgaaggcgaa tggcagctgg
+      421 tgctgcatgt gtgggcgaaa gtggaagcgg atgtggcggg ccatggccag gatattctga
+      481 ttcgtctgtt taaatcgcat ccggaaacgc tggaaaaatt tgatcgtgtg aaacatctga
+      541 aaaccgaagc gatggtgctg agcgaaggcg aatggcagct ggtgctgcat gtgtgggcga
+      601 aagtggaagc ggatgtggcg ggccatggcc aggatattct gattcgtctg tttaaatcgc
+      661 atccggaaac gctggaaaaa tttgatcgtg tgaaacatct gaaaaccgaa gcgatggtgc
+      721 tgagcgaagg cgaatggcag ctggtgctgc atgtgtgggc gaaagtggaa gcggatgtgg
+      781 cgggccatgg ccaggatatt ctgattcgtc tgtttaaatc gcatccggaa acgctggaaa
+      841 aatttgatcg tgtgaaacat ctgaaaaccg aagcgatggt gctgagcgaa ggcgaatggc
+      901 agctggtgct gcatgtgtgg gcgaaagtgg aagcggatgt ggcgggccat ggccaggata
+      961 ttctgattcg tctgtttaaa tcgcatccgg aaacgctgga aaaatttgat cgtgtgaaac
+     1021 atctgaaaac cgaagcgatg gtgctgagcg aaggcgaatg gcagctggtg ctgcatgtgt
+     1081 gggcgaaagt ggaagcggat gtggcgggcc atggccagga tattctgatt cgtctgttta
+     1141 aatcgcatcc ggaaacgctg gaaaaatttg atcgtgtgaa acatctgaaa accgaagcgt
+     1201 aa
+//
