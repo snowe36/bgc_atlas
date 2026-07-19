@@ -1,6 +1,6 @@
 # bgc_atlas
 
-**A reproducible framework for evaluating whether learned representations of microbial biosynthetic gene clusters can identify unexplored regions of chemical space.** Combines interpretable architecture features, protein language model embeddings, rigorous leakage audits, and prospective validation.
+**A reproducible framework for evaluating whether learned representations of microbial biosynthetic gene clusters can identify unexplored regions of chemical space.** Combines interpretable architecture features, protein language model embeddings, a contrastive BGC set-encoder, rigorous leakage audits, and prospective validation.
 
 [![CI](https://github.com/snowe36/bgc_atlas/actions/workflows/ci.yml/badge.svg)](https://github.com/snowe36/bgc_atlas/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
@@ -30,6 +30,7 @@ This is a representation-learning / novelty-ranking problem with explicit negati
 3. **Map** the space (PCA atlas) and **rank** clusters by leave-one-out kNN novelty
 4. **Validate** against label leakage, size confounds, and a prospective temporal holdout
 5. **Ablate** against optional ESM2 protein-language-model embeddings (GPU) — same CV protocol, honest comparison
+6. **Learn** a contrastive BGC set-encoder over cached ESM2 protein vectors (GPU) and re-test the same honest suite
 
 ![Biosynthetic space by class](reports/figures/atlas_by_class.png)
 
@@ -47,16 +48,20 @@ This is a representation-learning / novelty-ranking problem with explicit negati
 | Combined hashed + ESM2-650M | **0.84** macro-F1 — complementary signal for annotation |
 | Do novelty *rankings* agree across representations? | **No** (Spearman ρ=**-0.38**; top-decile overlap **1.7%**) |
 | Disagreement by class | Strongest anti-agree in **other / NRPS**; **hybrid** positively correlates (ρ=+0.23) |
+| Learned encoder (SupCon + attention, leakage-safe) class recovery | macro-F1 **0.89**† alone; **0.90** with hashed (†label-informed) |
+| Size confound under learned novelty | Spearman **~0.00** (vs **0.53** for hashed architecture) |
+| Learned prospective holdout | Still null (held-out **0.51** vs control **0.50**; p=0.45) — no longer *anti*-novel like architecture |
 
 ---
 
 ## Research takeaway
 
-Three conclusions emerged:
+Four conclusions emerged:
 
 1. **Architecture features** capture recognizable biosynthetic classes.
 2. **ESM2 embeddings** provide complementary biological signal and modestly improve classification.
 3. **Novelty ranking** is highly representation-dependent and does not yet translate into prospective discovery prediction.
+4. A **learned contrastive BGC encoder** can erase the size confound under a leakage-safe temporal split (SupCon class-F1 is label-informed) — but still does **not** forecast which BGCs enter MIBiG next.
 
 ---
 
@@ -239,6 +244,50 @@ Disagreement is strongest in **other / NRPS**. With ESM2-650M, hybrids flip to a
 
 ---
 
+## Learned representation (V3)
+
+Contrastive BGC encoder over ESM2 protein embeddings (set pooling → projection head). Sweep: **13** leakage-safe runs (`scripts/run_encoder_sweep.py` → [`reports/encoder_sweep_results.json`](reports/encoder_sweep_results.json)). Hero config chosen for the cleanest size-confound story, not the highest class-F1:
+
+| Knob | Hero |
+|------|------|
+| Objective | **SupCon** (class labels used in the contrastive loss) |
+| Pooling | attention |
+| Embed dim | 256 |
+| Train split | `date_added < 2022-09-16` only (**leakage-safe**) |
+
+Full eval: [`reports/learned_eval_summary.json`](reports/learned_eval_summary.json). Manifest: [`data/processed/learned_embed_manifest.json`](data/processed/learned_embed_manifest.json).
+
+| Check | Architecture (hashed) | Learned (SupCon / attn / 256) |
+|-------|----------------------:|------------------------------:|
+| Class recovery (macro-F1) | 0.78 | **0.89**† |
+| Novelty ↔ gene-count Spearman | **0.53** | **~0.00** |
+| Temporal held-out mean | 0.40 | **0.51** |
+| Temporal control mean | 0.50 | 0.50 |
+| p (held-out > control) | 0.997 | **0.45** |
+| Hashed↔learned novelty Spearman | — | −0.13 (top-decile Jaccard **1.3%**) |
+
+†SupCon class-F1 is **label-informed** (same biosynthetic-class labels enter the training loss). Treat it as an upper-bound sanity check that the embedding space is organized, not as an independent discovery of class structure. SimCLR cells in the sweep sit ~0.50–0.63 macro-F1 without that label channel.
+
+![Learned representation summary](reports/figures/learned_representation_summary.png)
+
+![Encoder sweep](reports/figures/encoder_sweep_summary.png)
+
+**Honest read:** the learned space largely removes the architecture-novelty size confound and flips the temporal comparison from clearly worse-than-control to roughly tied with control. That is progress on representation hygiene, not a claim that contrastive novelty predicts which BGCs enter MIBiG next.
+
+```bash
+uv sync --extra train   # torch (+ CUDA on GPU hosts)
+# leakage-safe hero retrain
+uv run bgc-train-encoder --objective supcon --pooling attention --embed-dim 256 --epochs 40 --prospective -v
+# class recovery + novelty + temporal suite
+uv run bgc-learned-eval -v
+# optional hyperparameter sweep (writes encoder_sweep_results.*)
+python scripts/run_encoder_sweep.py --device cuda   # or --quick --device cpu
+```
+
+GPU launch helpers: [`scripts/runpod/launch_train_job.py`](scripts/runpod/launch_train_job.py) (`--sweep` / `--terminate`).
+
+---
+
 ## Apply to new genomes
 
 Score predicted BGCs against the MIBiG manifold (`bgc-apply` → [`reports/predicted_novelty_ranking.csv`](reports/predicted_novelty_ranking.csv)). Supports antiSMASH region GenBanks and JSON.
@@ -283,10 +332,11 @@ Demo ranking (illustration only):
 
 ## Limitations
 
-- Scores reflect **architecture** divergence, not proven new chemistry
-- Novelty correlates moderately with cluster size (Spearman **0.55**)
-- Architecture novelty alone does not forecast which entries enter MIBiG next
-- Novelty rankings are **representation-dependent** (hashed vs ESM2 barely agree)
+- Scores reflect **architecture** or **learned embedding** divergence, not proven new chemistry
+- Architecture novelty correlates moderately with cluster size (Spearman **0.55**); the learned hero config largely removes this, but that alone is not discovery signal
+- Neither architecture nor contrastive novelty yet forecasts which entries enter MIBiG next
+- Novelty rankings are **representation-dependent** (hashed vs ESM2 vs learned barely agree at the top)
+- SupCon class-recovery numbers use class labels in training — do not overclaim them as unsupervised structure recovery
 - Product-class / bioactivity prediction are out of scope
 - Domains are inferred from CDS products (raw MIBiG GenBank lacks antiSMASH domain calls)
 - ESM2-650M + length-weighted embeddings improve class recovery but do not stabilize novelty rankings with hashed architecture
@@ -296,11 +346,12 @@ Demo ranking (illustration only):
 
 ## Future directions
 
-The natural next step is **contrastive / metric learning with a biological objective**: pull together evolutionarily related BGCs, separate unrelated architectures, and evaluate whether learned distances improve prospective discovery prediction. That moves from representation analysis to method development.
+Contrastive learning (SimCLR / SupCon over ESM2 protein sets) is implemented and swept; the open question is no longer “can we train an encoder?” but **whether a better biological objective or evaluation design yields a real prospective win**.
 
-Also worth exploring:
+Worth exploring next:
 
-- Longer lead-time temporal cutoffs (and organism-stratified holdouts)
+- Self-supervised objectives that do **not** use biosynthetic-class labels (and still keep size confound low)
+- Longer lead-time temporal cutoffs and organism-stratified holdouts
 - Larger predicted-genome prioritization sets (antiSMASH-DB scale)
 
 ---
@@ -323,6 +374,14 @@ Optional GPU path (ESM2-650M + length-weighted):
 uv sync --extra embed   # torch + transformers
 python scripts/run_esm_embed.py
 uv run bgc-ablation && uv run bgc-novelty-compare
+```
+
+Optional contrastive encoder (requires protein cache from the embed step):
+
+```bash
+uv sync --extra train
+uv run bgc-train-encoder --objective supcon --pooling attention --embed-dim 256 --prospective -v
+uv run bgc-learned-eval -v
 ```
 
 UMAP for 2-D maps: `uv sync --extra umap` (PCA is the default).

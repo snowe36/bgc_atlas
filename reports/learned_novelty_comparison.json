@@ -1,0 +1,15 @@
+{
+  "n_bgcs": 2636,
+  "k": 5,
+  "learned_representation": "learned_supcon_attention_d256_pre_2022-09-16",
+  "spearman_hashed_vs_learned": -0.13189606003172102,
+  "spearman_hashed_vs_learned_pvalue": 1.0585086905586586e-11,
+  "top_decile_jaccard_hashed_vs_learned": 0.013435700575815739,
+  "size_confound_spearman_hashed": 0.534209268874415,
+  "size_confound_spearman_learned": 0.0003015053399249533,
+  "size_confound_delta": -0.5339077635344901,
+  "spearman_hashed_vs_esm": -0.3767753522209056,
+  "spearman_hashed_vs_esm_pvalue": 1.1070403591614563e-89,
+  "spearman_learned_vs_esm": 0.19713141728476904,
+  "spearman_learned_vs_esm_pvalue": 1.668777652260028e-24
+}

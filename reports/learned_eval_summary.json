@@ -1,0 +1,48 @@
+{
+  "learned_representation": "learned_supcon_attention_d256_pre_2022-09-16",
+  "class_recovery": {
+    "hashed_architecture": {
+      "macro_f1": 0.7841851485440968,
+      "weighted_f1": 0.8098003538571367,
+      "model": "rf"
+    },
+    "esm2": {
+      "macro_f1": 0.7954424440221252,
+      "weighted_f1": 0.7971524551013585,
+      "model": "logreg"
+    },
+    "learned_supcon_attention_d256_pre_2022-09-16": {
+      "macro_f1": 0.8906249899091131,
+      "weighted_f1": 0.8879038393230826,
+      "model": "logreg"
+    },
+    "combined_hashed+learned_supcon_attention_d256_pre_2022-09-16": {
+      "macro_f1": 0.8973708743804352,
+      "weighted_f1": 0.8936964481402153,
+      "model": "rf"
+    },
+    "combined_esm+learned_supcon_attention_d256_pre_2022-09-16": {
+      "macro_f1": 0.8923745916925648,
+      "weighted_f1": 0.8877242166947034,
+      "model": "rf"
+    }
+  },
+  "novelty": {
+    "spearman_hashed_vs_learned": -0.13189606003172102,
+    "top_decile_jaccard_hashed_vs_learned": 0.013435700575815739,
+    "size_confound_spearman_hashed": 0.534209268874415,
+    "size_confound_spearman_learned": 0.0003015053399249533
+  },
+  "temporal": {
+    "heldout_novelty_mean": 0.5092056742925948,
+    "control_mean": 0.5021639344262296,
+    "p_value": 0.44851625210743196,
+    "heldout_more_novel": false,
+    "leakage_safe": true,
+    "architecture_baseline": {
+      "heldout_novelty_mean": 0.3973440464233903,
+      "random_control_novelty_mean_of_means": 0.4948408293561743,
+      "p_value_heldout_gt_control": 0.9974008043878545
+    }
+  }
+}
