@@ -125,18 +125,13 @@ def _vectorize_predicted(
     feature_names: list[str],
 ) -> tuple[pd.DataFrame, np.ndarray]:
     """Build feature matrix aligned to MIBiG feature vocabulary."""
-    meta = (
-        pred_domains.groupby(["genome", "bgc_id", "predicted_class"], as_index=False)
-        .agg(n_genes=("n_genes", "first"), n_domain_annotations=("domain_id", "count"))
+    meta = pred_domains.groupby(["genome", "bgc_id", "predicted_class"], as_index=False).agg(
+        n_genes=("n_genes", "first"), n_domain_annotations=("domain_id", "count")
     )
     name_to_idx = {n: i for i, n in enumerate(feature_names)}
     X = np.zeros((len(meta), len(feature_names)), dtype=np.float32)
 
-    ordered = (
-        pred_domains.sort_values(["bgc_id", "gene_order"])
-        .groupby("bgc_id")["domain_id"]
-        .apply(list)
-    )
+    ordered = pred_domains.sort_values(["bgc_id", "gene_order"]).groupby("bgc_id")["domain_id"].apply(list)
     for i, row in meta.iterrows():
         bgc_id = row["bgc_id"]
         seq = ordered.get(bgc_id, [])
@@ -236,6 +231,11 @@ def run_apply(
     REPORTS.mkdir(parents=True, exist_ok=True)
     out_path = REPORTS / "predicted_novelty_ranking.csv"
     out.to_csv(out_path, index=False)
-    LOG.info("Predicted BGC novelty ranking (%d BGCs from %s):\n%s", len(out), source, out.head(20).to_string(index=False))
+    LOG.info(
+        "Predicted BGC novelty ranking (%d BGCs from %s):\n%s",
+        len(out),
+        source,
+        out.head(20).to_string(index=False),
+    )
     LOG.info("Wrote %s", out_path)
     return out

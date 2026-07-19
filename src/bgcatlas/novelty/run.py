@@ -86,9 +86,7 @@ def run_novelty(k: int = 5) -> pd.DataFrame:
     LOG.info("Top-5 novel BGCs:\n%s", ranking.head(5).to_string(index=False))
 
     # overlay on atlas
-    plot = atlas.merge(
-        out[["bgc_id", "novelty"]], on="bgc_id", how="left"
-    )
+    plot = atlas.merge(out[["bgc_id", "novelty"]], on="bgc_id", how="left")
     thr = plot["novelty"].quantile(0.9)
     plot["high_novelty"] = plot["novelty"] >= thr
 

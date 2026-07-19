@@ -45,9 +45,7 @@ def build_feature_matrix(
     id_to_idx = {b: i for i, b in enumerate(bgcs["bgc_id"].tolist())}
 
     ordered = (
-        dom.sort_values(["bgc_id", "gene_order"])
-        .groupby("bgc_id")["domain_id"]
-        .apply(list)
+        dom.sort_values(["bgc_id", "gene_order"]).groupby("bgc_id")["domain_id"].apply(list)
         if len(dom)
         else pd.Series(dtype=object)
     )
@@ -72,9 +70,7 @@ def build_feature_matrix(
         ("n_compounds", 0),
     ]:
         if col in bgcs.columns:
-            vals = pd.to_numeric(bgcs[col], errors="coerce").fillna(default).to_numpy(
-                dtype=np.float32
-            )
+            vals = pd.to_numeric(bgcs[col], errors="coerce").fillna(default).to_numpy(dtype=np.float32)
         else:
             vals = np.full(len(bgcs), float(default), dtype=np.float32)
         size_cols.append(f"size::{col}")
@@ -120,7 +116,5 @@ def run_featurize() -> None:
     np.save(PROCESSED / "feature_matrix.npy", X)
     meta.to_parquet(PROCESSED / "feature_meta.parquet", index=False)
     meta.to_csv(PROCESSED / "feature_meta.csv", index=False)
-    pd.Series(feature_names, name="feature").to_csv(
-        PROCESSED / "feature_names.csv", index=False
-    )
+    pd.Series(feature_names, name="feature").to_csv(PROCESSED / "feature_names.csv", index=False)
     LOG.info("Wrote features to %s", PROCESSED)

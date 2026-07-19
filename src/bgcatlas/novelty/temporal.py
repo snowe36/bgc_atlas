@@ -86,9 +86,7 @@ def _run_holdout_on_indices(
         rest_pos = perm[n_ctrl:]
         Z_rest, rest_knn_mean, _, _ = _fit_reference(X_ref[rest_pos], k=k)
         scaler_c = StandardScaler(with_mean=False).fit(X_ref[rest_pos])
-        pca_c = PCA(n_components=Z_rest.shape[1], random_state=42).fit(
-            scaler_c.transform(X_ref[rest_pos])
-        )
+        pca_c = PCA(n_components=Z_rest.shape[1], random_state=42).fit(scaler_c.transform(X_ref[rest_pos]))
         Z_ctrl = pca_c.transform(scaler_c.transform(X_ref[ctrl_pos]))
         ctrl_novelty = _score_query(Z_rest, rest_knn_mean, Z_ctrl, k=k)
         control_means.append(float(np.mean(ctrl_novelty)))
@@ -99,9 +97,7 @@ def _run_holdout_on_indices(
     ctrl_pos, rest_pos = perm[:n_ctrl], perm[n_ctrl:]
     Z_rest, rest_knn_mean, _, _ = _fit_reference(X_ref[rest_pos], k=k)
     scaler_c = StandardScaler(with_mean=False).fit(X_ref[rest_pos])
-    pca_c = PCA(n_components=Z_rest.shape[1], random_state=42).fit(
-        scaler_c.transform(X_ref[rest_pos])
-    )
+    pca_c = PCA(n_components=Z_rest.shape[1], random_state=42).fit(scaler_c.transform(X_ref[rest_pos]))
     Z_ctrl_plot = pca_c.transform(scaler_c.transform(X_ref[ctrl_pos]))
     control_novelty_sample = _score_query(Z_rest, rest_knn_mean, Z_ctrl_plot, k=k)
 
@@ -110,9 +106,7 @@ def _run_holdout_on_indices(
     meta_held = meta.iloc[held_idx].reset_index(drop=True).copy()
     meta_held["temporal_novelty"] = held_novelty
     by_class = (
-        meta_held.groupby("biosynth_class")["temporal_novelty"]
-        .agg(["count", "mean", "median"])
-        .reset_index()
+        meta_held.groupby("biosynth_class")["temporal_novelty"].agg(["count", "mean", "median"]).reset_index()
     )
 
     return {
@@ -178,9 +172,7 @@ def run_temporal_holdout(
     non_major: dict | None = None
     if len(subset_held) >= 5 and len(subset_ref) >= 20:
         try:
-            nm = _run_holdout_on_indices(
-                X, meta, subset_ref, subset_held, k, n_controls, seed + 1
-            )
+            nm = _run_holdout_on_indices(X, meta, subset_ref, subset_held, k, n_controls, seed + 1)
             nm.pop("_held_novelty", None)
             nm.pop("_control_novelty_sample", None)
             nm.pop("_meta_held", None)
@@ -214,18 +206,14 @@ def run_temporal_holdout(
             pd.DataFrame(
                 {"novelty": control_novelty_sample, "group": "random control\n(held from reference)"}
             ),
-            pd.DataFrame(
-                {"novelty": held_novelty, "group": f"post-{cutoff}\n(true temporal holdout)"}
-            ),
+            pd.DataFrame({"novelty": held_novelty, "group": f"post-{cutoff}\n(true temporal holdout)"}),
         ]
     )
     fig, ax = plt.subplots(figsize=(6.5, 4.5))
     sns.boxplot(data=plot_df, x="group", y="novelty", hue="group", legend=False, ax=ax)
     sns.stripplot(data=plot_df, x="group", y="novelty", color="black", size=3, alpha=0.35, ax=ax)
     ax.axhline(0.5, color="gray", linestyle="--", linewidth=1, label="null (0.5)")
-    ax.set_title(
-        f"Prospective novelty: random vs. true post-cutoff holdout\n(Mann-Whitney p={p_value:.3g})"
-    )
+    ax.set_title(f"Prospective novelty: random vs. true post-cutoff holdout\n(Mann-Whitney p={p_value:.3g})")
     ax.set_ylabel("novelty percentile vs. reference manifold")
     ax.set_xlabel("")
     fig.tight_layout()

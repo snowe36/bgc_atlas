@@ -223,9 +223,7 @@ def run_embed(args: argparse.Namespace) -> None:
         "from_cache": False,
         "representation_label": representation_label(args.model, args.pooling),
     }
-    _write_outputs(
-        outdir, bgc_ids, bgc_embeds, counts, all_embeds, protein_meta, manifest
-    )
+    _write_outputs(outdir, bgc_ids, bgc_embeds, counts, all_embeds, protein_meta, manifest)
 
 
 def main() -> None:

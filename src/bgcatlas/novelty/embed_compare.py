@@ -37,9 +37,7 @@ def _pca_novelty(X: np.ndarray, standardize_with_mean: bool, k: int = DEFAULT_NO
     return score_novelty(Z, k=k)["novelty"]
 
 
-def _class_stratified_disagreement(
-    out: pd.DataFrame, top_frac: float
-) -> tuple[list[dict], pd.DataFrame]:
+def _class_stratified_disagreement(out: pd.DataFrame, top_frac: float) -> tuple[list[dict], pd.DataFrame]:
     """Per-class Spearman + top-decile overlap for hashed vs ESM2 novelty."""
     rows: list[dict] = []
     for cls, sub in out.groupby("biosynth_class"):
@@ -66,9 +64,7 @@ def _class_stratified_disagreement(
     return rows, by_class
 
 
-def run_novelty_representation_comparison(
-    k: int = DEFAULT_NOVELTY_K, top_frac: float = 0.1
-) -> dict:
+def run_novelty_representation_comparison(k: int = DEFAULT_NOVELTY_K, top_frac: float = 0.1) -> dict:
     ensure_dirs()
     meta, X_hash, X_esm, esm_label = _load_aligned()
     X_combined = np.hstack(
@@ -92,7 +88,11 @@ def run_novelty_representation_comparison(
     def _top_set(col: str) -> set[str]:
         return set(out.nlargest(n_top, col)["bgc_id"])
 
-    top_hash, top_esm, top_combined = _top_set("novelty_hashed"), _top_set("novelty_esm"), _top_set("novelty_combined")
+    top_hash, top_esm, top_combined = (
+        _top_set("novelty_hashed"),
+        _top_set("novelty_esm"),
+        _top_set("novelty_combined"),
+    )
 
     def _jaccard(a: set, b: set) -> float:
         return len(a & b) / len(a | b) if (a | b) else 0.0
@@ -126,7 +126,9 @@ def run_novelty_representation_comparison(
     by_class_df.to_csv(REPORTS / "novelty_disagreement_by_class.csv", index=False)
 
     fig, axes = plt.subplots(1, 2, figsize=(11, 4.8))
-    sns.scatterplot(data=out, x="novelty_hashed", y="novelty_esm", hue="biosynth_class", s=14, alpha=0.6, ax=axes[0])
+    sns.scatterplot(
+        data=out, x="novelty_hashed", y="novelty_esm", hue="biosynth_class", s=14, alpha=0.6, ax=axes[0]
+    )
     axes[0].set_title(f"Hashed vs. ESM2 novelty (Spearman ρ={rho_hash_esm:.2f})")
     axes[0].plot([0, 1], [0, 1], "--", color="gray", linewidth=1)
     sns.scatterplot(

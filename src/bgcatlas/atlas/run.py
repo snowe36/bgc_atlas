@@ -19,7 +19,9 @@ LOG = logging.getLogger(__name__)
 CLASS_ORDER = ["NRPS", "PKS", "RiPP", "terpene", "hybrid", "other"]
 
 
-def _robust_limits(vals: np.ndarray, lo: float = 1.0, hi: float = 99.0, pad: float = 0.15) -> tuple[float, float]:
+def _robust_limits(
+    vals: np.ndarray, lo: float = 1.0, hi: float = 99.0, pad: float = 0.15
+) -> tuple[float, float]:
     """Percentile-based axis limits so a handful of extreme outliers don't collapse the plot."""
     p_lo, p_hi = np.percentile(vals, [lo, hi])
     span = max(p_hi - p_lo, 1e-9)
@@ -29,7 +31,10 @@ def _robust_limits(vals: np.ndarray, lo: float = 1.0, hi: float = 99.0, pad: flo
 def _annotate_offframe(ax, coords: np.ndarray, xlim: tuple[float, float], ylim: tuple[float, float]) -> None:
     """Note how many points fall outside the zoomed-in view instead of silently clipping them."""
     off = (
-        (coords[:, 0] < xlim[0]) | (coords[:, 0] > xlim[1]) | (coords[:, 1] < ylim[0]) | (coords[:, 1] > ylim[1])
+        (coords[:, 0] < xlim[0])
+        | (coords[:, 0] > xlim[1])
+        | (coords[:, 1] < ylim[0])
+        | (coords[:, 1] > ylim[1])
     ).sum()
     if off:
         ax.text(

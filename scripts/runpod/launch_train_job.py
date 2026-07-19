@@ -69,9 +69,7 @@ def _load_api_key() -> str:
             key, val = key.strip(), val.strip().strip('"').strip("'")
             if key in ("RUNPOD_API_KEY", "API_KEY") and val:
                 return val
-    raise SystemExit(
-        "No RunPod API key found. Set RUNPOD_API_KEY (or API_KEY) in .env or the environment."
-    )
+    raise SystemExit("No RunPod API key found. Set RUNPOD_API_KEY (or API_KEY) in .env or the environment.")
 
 
 def _ssh_opts(port: int) -> list[str]:
@@ -197,24 +195,7 @@ def run_bootstrap(ip: str, port: int, env_vars: dict[str, str]) -> int:
 
 
 def rsync_down(ip: str, port: int) -> None:
-    patterns = [
-        "data/processed/learned_embeddings.npy",
-        "data/processed/learned_bgc_ids.csv",
-        "data/processed/learned_embed_manifest.json",
-        "artifacts/bgc_encoder.pt",
-        "reports/learned_*.json",
-        "reports/learned_*.csv",
-        "reports/learned_*.png",
-        "reports/figures/learned_*.png",
-        "reports/encoder_sweep_results.json",
-        "reports/train_encoder_run.log",
-        "reports/learned_train_history.json",
-    ]
-    for pattern in patterns:
-        # rsync with wildcards needs remote shell expansion via trailing path tricks;
-        # pull known concrete files + figures dir.
-        pass
-
+    # Pull known concrete files (rsync wildcards need remote shell expansion).
     concrete = [
         "data/processed/learned_embeddings.npy",
         "data/processed/learned_bgc_ids.csv",
@@ -348,9 +329,7 @@ def main(argv: list[str] | None = None) -> int:
         print("[launch] Done. See data/processed/learned_*.npy and reports/learned_*.json")
     finally:
         if args.keep_alive:
-            ssh_hint = (
-                f"ssh {' '.join(_ssh_opts(port))} root@{ip}" if ip else "(pod never became reachable)"
-            )
+            ssh_hint = f"ssh {' '.join(_ssh_opts(port))} root@{ip}" if ip else "(pod never became reachable)"
             print(
                 f"[launch] --keep-alive set: leaving pod {pod_id} running.\n"
                 f"  SSH:  {ssh_hint}\n"

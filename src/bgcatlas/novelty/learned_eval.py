@@ -80,14 +80,16 @@ def run_learned_class_recovery(n_splits: int = 5) -> dict:
     esm_path = PROCESSED / "esm_embeddings.npy"
     esm_ids = PROCESSED / "esm_bgc_ids.csv"
     if esm_path.exists() and esm_ids.exists():
-        meta_e, X_h2, X_esm = load_aligned_representation(
-            emb_path=esm_path, ids_path=esm_ids, label="esm"
-        )
+        meta_e, X_h2, X_esm = load_aligned_representation(emb_path=esm_path, ids_path=esm_ids, label="esm")
         # Align to learned meta via bgc_id
-        merged = meta[["bgc_id"]].reset_index().merge(
-            meta_e[["bgc_id"]].reset_index().rename(columns={"index": "_e"}),
-            on="bgc_id",
-            how="inner",
+        merged = (
+            meta[["bgc_id"]]
+            .reset_index()
+            .merge(
+                meta_e[["bgc_id"]].reset_index().rename(columns={"index": "_e"}),
+                on="bgc_id",
+                how="inner",
+            )
         )
         X_esm_al = X_esm[merged["_e"].to_numpy()]
         # Restrict hash/learned/y to the intersection
@@ -177,10 +179,14 @@ def run_learned_novelty_compare(k: int = DEFAULT_NOVELTY_K, top_frac: float = 0.
             ids_path=PROCESSED / "esm_bgc_ids.csv",
             label="esm",
         )
-        merged = out[["bgc_id"]].reset_index().merge(
-            meta_e[["bgc_id"]].reset_index().rename(columns={"index": "_e"}),
-            on="bgc_id",
-            how="inner",
+        merged = (
+            out[["bgc_id"]]
+            .reset_index()
+            .merge(
+                meta_e[["bgc_id"]].reset_index().rename(columns={"index": "_e"}),
+                on="bgc_id",
+                how="inner",
+            )
         )
         novelty_esm_full = _pca_novelty(X_esm, k=k)
         out["novelty_esm"] = np.nan
@@ -226,8 +232,13 @@ def run_learned_novelty_compare(k: int = DEFAULT_NOVELTY_K, top_frac: float = 0.
 
     fig, axes = plt.subplots(1, 2, figsize=(11, 4.8))
     sns.scatterplot(
-        data=out, x="novelty_hashed", y="novelty_learned", hue="biosynth_class",
-        s=14, alpha=0.6, ax=axes[0],
+        data=out,
+        x="novelty_hashed",
+        y="novelty_learned",
+        hue="biosynth_class",
+        s=14,
+        alpha=0.6,
+        ax=axes[0],
     )
     axes[0].set_title(f"Hashed vs learned novelty (ρ={rho_hl:.2f})")
     axes[0].plot([0, 1], [0, 1], "--", color="gray", linewidth=1)
@@ -242,8 +253,12 @@ def run_learned_novelty_compare(k: int = DEFAULT_NOVELTY_K, top_frac: float = 0.
         }
     )
     sns.barplot(
-        data=size_df, x="representation", y="spearman_novelty_vs_n_genes",
-        hue="representation", legend=False, ax=axes[1],
+        data=size_df,
+        x="representation",
+        y="spearman_novelty_vs_n_genes",
+        hue="representation",
+        legend=False,
+        ax=axes[1],
     )
     axes[1].axhline(0, color="gray", linestyle="--", linewidth=1)
     axes[1].set_title("Size confound (lower |ρ| is better)")
@@ -254,7 +269,9 @@ def run_learned_novelty_compare(k: int = DEFAULT_NOVELTY_K, top_frac: float = 0.
 
     LOG.info(
         "Learned novelty: hashed-vs-learned ρ=%.3f; size confound %.3f → %.3f",
-        rho_hl, size_h, size_l,
+        rho_hl,
+        size_h,
+        size_l,
     )
     return audit
 
@@ -286,7 +303,10 @@ def run_learned_temporal_holdout(
     held_idx = np.where(is_held.to_numpy())[0]
     LOG.info(
         "Learned temporal holdout @ %s (%s): %d ref / %d held-out",
-        cutoff, label, len(ref_idx), len(held_idx),
+        cutoff,
+        label,
+        len(ref_idx),
+        len(held_idx),
     )
 
     # Standardize for PCA-style distances (learned embeds are already L2-normed
@@ -320,9 +340,8 @@ def run_learned_temporal_holdout(
         "cutoff_date": cutoff,
         "k": k,
         "encoder_train_cutoff": man.get("train_cutoff"),
-        "leakage_safe": man.get("train_cutoff") == cutoff or (
-            man.get("train_cutoff") is not None and str(man.get("train_cutoff")) <= cutoff
-        ),
+        "leakage_safe": man.get("train_cutoff") == cutoff
+        or (man.get("train_cutoff") is not None and str(man.get("train_cutoff")) <= cutoff),
         **core,
         "architecture_baseline": {
             "heldout_novelty_mean": arch_baseline.get("heldout_novelty_mean") if arch_baseline else None,
@@ -347,18 +366,14 @@ def run_learned_temporal_holdout(
             pd.DataFrame(
                 {"novelty": control_novelty_sample, "group": "random control\n(held from reference)"}
             ),
-            pd.DataFrame(
-                {"novelty": held_novelty, "group": f"post-{cutoff}\n(true temporal holdout)"}
-            ),
+            pd.DataFrame({"novelty": held_novelty, "group": f"post-{cutoff}\n(true temporal holdout)"}),
         ]
     )
     fig, ax = plt.subplots(figsize=(6.5, 4.5))
     sns.boxplot(data=plot_df, x="group", y="novelty", hue="group", legend=False, ax=ax)
     sns.stripplot(data=plot_df, x="group", y="novelty", color="black", size=3, alpha=0.35, ax=ax)
     ax.axhline(0.5, color="gray", linestyle="--", linewidth=1)
-    ax.set_title(
-        f"Learned prospective novelty ({label})\n(Mann-Whitney p={p_value:.3g})"
-    )
+    ax.set_title(f"Learned prospective novelty ({label})\n(Mann-Whitney p={p_value:.3g})")
     ax.set_ylabel("novelty percentile vs. reference manifold")
     ax.set_xlabel("")
     fig.tight_layout()

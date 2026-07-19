@@ -230,7 +230,10 @@ def main() -> None:
         nn_org = nov_i.loc[nn, "organism"] if nn in nov_i.index else None
         uniq = bgc_domains.get(bid, [])
         rare = sorted(
-            [{"domain": d, "n_bgcs": int(domain_freq[d]), "frac": float(domain_freq[d] / n_bgcs)} for d in uniq],
+            [
+                {"domain": d, "n_bgcs": int(domain_freq[d]), "frac": float(domain_freq[d] / n_bgcs)}
+                for d in uniq
+            ],
             key=lambda x: x["n_bgcs"],
         )[:6]
         esm_nov = float(cmp_i.loc[bid, "novelty_esm"]) if bid in cmp_i.index else None

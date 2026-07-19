@@ -217,10 +217,7 @@ def load_protein_cache(
 def _class_label_map(feature_meta: pd.DataFrame) -> dict[str, int]:
     classes = sorted(feature_meta["biosynth_class"].astype(str).unique())
     mapping = {c: i for i, c in enumerate(classes)}
-    return {
-        row.bgc_id: mapping[str(row.biosynth_class)]
-        for row in feature_meta.itertuples(index=False)
-    }
+    return {row.bgc_id: mapping[str(row.biosynth_class)] for row in feature_meta.itertuples(index=False)}
 
 
 def _resolve_bgc_ids(
@@ -377,7 +374,9 @@ def train_encoder(cfg: TrainConfig | None = None, outdir: Path | None = None) ->
         mean_loss = epoch_loss / max(n_batches, 1)
         history.append({"epoch": epoch, "loss": mean_loss, "lr": float(scheduler.get_last_lr()[0])})
         if epoch == 1 or epoch % 5 == 0 or epoch == cfg.epochs:
-            LOG.info("epoch %03d/%d  loss=%.4f  lr=%.2e", epoch, cfg.epochs, mean_loss, scheduler.get_last_lr()[0])
+            LOG.info(
+                "epoch %03d/%d  loss=%.4f  lr=%.2e", epoch, cfg.epochs, mean_loss, scheduler.get_last_lr()[0]
+            )
 
     elapsed = time.time() - t0
 
@@ -401,9 +400,7 @@ def train_encoder(cfg: TrainConfig | None = None, outdir: Path | None = None) ->
 
     # Suffix tag for leakage-safe runs
     split_tag = f"pre_{cfg.train_cutoff}" if cfg.train_cutoff else "all"
-    representation_label = (
-        f"learned_{cfg.objective}_{cfg.pooling}_d{cfg.embed_dim}_{split_tag}"
-    )
+    representation_label = f"learned_{cfg.objective}_{cfg.pooling}_d{cfg.embed_dim}_{split_tag}"
     manifest = {
         "representation_label": representation_label,
         "objective": cfg.objective,

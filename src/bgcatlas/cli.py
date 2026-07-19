@@ -47,9 +47,7 @@ def featurize_main(argv: list[str] | None = None) -> int:
 
 
 def sanity_main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(
-        description="Benchmark representations via biosynth-class recovery"
-    )
+    parser = argparse.ArgumentParser(description="Benchmark representations via biosynth-class recovery")
     parser.add_argument("-v", "--verbose", action="store_true")
     parser.add_argument("--cv", type=int, default=5)
     args = parser.parse_args(argv)
@@ -261,9 +259,7 @@ def learned_eval_main(argv: list[str] | None = None) -> int:
     _setup_logging(args.verbose)
     from bgcatlas.novelty.learned_eval import run_learned_eval_suite
 
-    run_learned_eval_suite(
-        n_splits=args.cv, k=args.k, cutoff=args.cutoff, n_controls=args.n_controls
-    )
+    run_learned_eval_suite(n_splits=args.cv, k=args.k, cutoff=args.cutoff, n_controls=args.n_controls)
     return 0
 
 

@@ -132,9 +132,7 @@ class BGCSetEncoder(nn.Module):
         """Contrastive projection head; L2-normalized (B, proj_dim)."""
         return F.normalize(self.projector(z), dim=-1)
 
-    def forward(
-        self, x: torch.Tensor, mask: torch.Tensor, *, project: bool = False
-    ) -> torch.Tensor:
+    def forward(self, x: torch.Tensor, mask: torch.Tensor, *, project: bool = False) -> torch.Tensor:
         z = self.encode(x, mask)
         if project:
             return self.project(z)

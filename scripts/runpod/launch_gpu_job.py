@@ -56,9 +56,7 @@ def _load_api_key() -> str:
             key, val = key.strip(), val.strip().strip('"').strip("'")
             if key in ("RUNPOD_API_KEY", "API_KEY") and val:
                 return val
-    raise SystemExit(
-        "No RunPod API key found. Set RUNPOD_API_KEY (or API_KEY) in .env or the environment."
-    )
+    raise SystemExit("No RunPod API key found. Set RUNPOD_API_KEY (or API_KEY) in .env or the environment.")
 
 
 def _ssh_opts(port: int) -> list[str]:
@@ -110,7 +108,9 @@ def rsync_up(ip: str, port: int) -> None:
     if not proteins.exists():
         raise SystemExit(f"Missing {proteins}; run bgc-download first.")
 
-    subprocess.run(["ssh", *_ssh_opts(port), f"root@{ip}", f"mkdir -p {REMOTE_DIR}/data/processed"], check=True)
+    subprocess.run(
+        ["ssh", *_ssh_opts(port), f"root@{ip}", f"mkdir -p {REMOTE_DIR}/data/processed"], check=True
+    )
     excludes = []
     for e in RSYNC_EXCLUDES:
         excludes += ["--exclude", e]

@@ -23,7 +23,6 @@ import itertools
 import json
 import logging
 import time
-from pathlib import Path
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -160,7 +159,12 @@ def main() -> int:
         )
 
     _plot_sweep(results)
-    LOG.info("Sweep done: %d runs in %.0fs → %s", len(results), time.time() - t0, REPORTS / "encoder_sweep_results.json")
+    LOG.info(
+        "Sweep done: %d runs in %.0fs → %s",
+        len(results),
+        time.time() - t0,
+        REPORTS / "encoder_sweep_results.json",
+    )
     return 0
 
 

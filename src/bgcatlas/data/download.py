@@ -29,12 +29,15 @@ def _download_file(url: str, dest: Path) -> None:
     with requests.get(url, stream=True, timeout=120) as resp:
         resp.raise_for_status()
         total = int(resp.headers.get("content-length", 0))
-        with open(dest, "wb") as fh, tqdm(
-            total=total or None,
-            unit="B",
-            unit_scale=True,
-            desc=dest.name,
-        ) as bar:
+        with (
+            open(dest, "wb") as fh,
+            tqdm(
+                total=total or None,
+                unit="B",
+                unit_scale=True,
+                desc=dest.name,
+            ) as bar,
+        ):
             for chunk in resp.iter_content(chunk_size=1 << 20):
                 if chunk:
                     fh.write(chunk)

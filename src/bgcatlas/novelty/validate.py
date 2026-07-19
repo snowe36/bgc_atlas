@@ -32,9 +32,7 @@ def run_validate() -> dict:
 
     # Stratified novelty summary
     by_class = (
-        scores.groupby("biosynth_class")["novelty"]
-        .agg(["count", "mean", "median", "std"])
-        .reset_index()
+        scores.groupby("biosynth_class")["novelty"].agg(["count", "mean", "median", "std"]).reset_index()
     )
 
     # Same-class neighbor rate among top-decile novelty

@@ -129,7 +129,7 @@ def _parse_one_json(path: Path) -> dict[str, Any] | None:
 def _changelog_dates(changelog: dict[str, Any]) -> tuple[str | None, str | None]:
     """Earliest ("Submitted") and most recent revision dates from MIBiG's changelog."""
     dates: list[str] = []
-    for release in (changelog.get("releases") or []):
+    for release in changelog.get("releases") or []:
         d = release.get("date")
         if isinstance(d, str) and re.match(r"^\d{4}-\d{2}-\d{2}$", d):
             dates.append(d)

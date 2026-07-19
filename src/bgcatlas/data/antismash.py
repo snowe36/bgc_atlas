@@ -72,17 +72,19 @@ def _domains_from_gbk_record(record, genome: str, bgc_id: str) -> list[dict]:
 
     # Prefer explicit domain features from antiSMASH
     domain_feats = [
-        f
-        for f in record.features
-        if f.type in {"aSDomain", "PFAM_domain", "CDS_motif", "antismash_domain"}
+        f for f in record.features if f.type in {"aSDomain", "PFAM_domain", "CDS_motif", "antismash_domain"}
     ]
     if domain_feats:
         for feat in sorted(domain_feats, key=lambda f: int(f.location.start)):
             dom = (
-                (feat.qualifiers.get("domain") or feat.qualifiers.get("aSDomain") or feat.qualifiers.get("description") or [""])[0]
-            )
-            dom = str(dom).strip() or (
-                (feat.qualifiers.get("label") or feat.qualifiers.get("note") or ["domain"])[0]
+                feat.qualifiers.get("domain")
+                or feat.qualifiers.get("aSDomain")
+                or feat.qualifiers.get("description")
+                or [""]
+            )[0]
+            dom = (
+                str(dom).strip()
+                or ((feat.qualifiers.get("label") or feat.qualifiers.get("note") or ["domain"])[0])
             )
             order += 1
             rows.append(
