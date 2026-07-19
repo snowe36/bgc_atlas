@@ -1,4 +1,4 @@
-"""Console entry points: bgc-download, bgc-featurize, bgc-sanity, bgc-atlas, bgc-novelty, bgc-validate, bgc-apply."""
+"""CLI entry points for the bgc-* console scripts."""
 
 from __future__ import annotations
 
@@ -97,9 +97,7 @@ def validate_main(argv: list[str] | None = None) -> int:
 def apply_main(argv: list[str] | None = None) -> int:
     from bgcatlas.config import DEFAULT_NOVELTY_K
 
-    parser = argparse.ArgumentParser(
-        description="Score predicted BGCs (demo CSV or antiSMASH GBK/JSON) against the MIBiG manifold"
-    )
+    parser = argparse.ArgumentParser(description="Score predicted BGCs against MIBiG")
     parser.add_argument("-v", "--verbose", action="store_true")
     parser.add_argument(
         "--input",
@@ -120,10 +118,7 @@ def apply_main(argv: list[str] | None = None) -> int:
 def temporal_main(argv: list[str] | None = None) -> int:
     from bgcatlas.config import DEFAULT_NOVELTY_K, DEFAULT_TEMPORAL_CUTOFF
 
-    parser = argparse.ArgumentParser(
-        description="Prospective validation: fit on pre-cutoff MIBiG entries, "
-        "score post-cutoff entries as a held-out temporal novelty test"
-    )
+    parser = argparse.ArgumentParser(description="Temporal holdout novelty test")
     parser.add_argument("-v", "--verbose", action="store_true")
     parser.add_argument(
         "--cutoff",
@@ -142,7 +137,7 @@ def temporal_main(argv: list[str] | None = None) -> int:
 
 def ablation_main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Compare hashed-architecture vs ESM2 vs combined representations"
+        description="Class recovery: hashed vs ESM2 vs combined"
     )
     parser.add_argument("-v", "--verbose", action="store_true")
     parser.add_argument("--cv", type=int, default=5)
@@ -158,7 +153,7 @@ def novelty_compare_main(argv: list[str] | None = None) -> int:
     from bgcatlas.config import DEFAULT_NOVELTY_K
 
     parser = argparse.ArgumentParser(
-        description="Compare novelty rankings across hashed/ESM2/combined representations"
+        description="Compare novelty rankings across representations"
     )
     parser.add_argument("-v", "--verbose", action="store_true")
     parser.add_argument("-k", type=int, default=DEFAULT_NOVELTY_K)
@@ -187,7 +182,7 @@ def train_encoder_main(argv: list[str] | None = None) -> int:
     )
 
     parser = argparse.ArgumentParser(
-        description="Train a contrastive BGC set-encoder over cached ESM2 protein embeddings"
+        description="Train contrastive BGC set-encoder on cached ESM2 proteins"
     )
     parser.add_argument("-v", "--verbose", action="store_true")
     parser.add_argument(
@@ -213,7 +208,7 @@ def train_encoder_main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--prospective",
         action="store_true",
-        help=f"Leakage-safe: train only on BGCs with date_added < {DEFAULT_TEMPORAL_CUTOFF}",
+        help=f"Train only on BGCs with date_added < {DEFAULT_TEMPORAL_CUTOFF}",
     )
     parser.add_argument(
         "--train-cutoff",
@@ -248,7 +243,7 @@ def learned_eval_main(argv: list[str] | None = None) -> int:
     from bgcatlas.config import DEFAULT_NOVELTY_K, DEFAULT_TEMPORAL_CUTOFF
 
     parser = argparse.ArgumentParser(
-        description="Evaluate learned BGC embeddings: class recovery, novelty, temporal holdout"
+        description="Eval learned embeddings (class recovery, novelty, temporal)"
     )
     parser.add_argument("-v", "--verbose", action="store_true")
     parser.add_argument("--cv", type=int, default=5)

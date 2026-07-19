@@ -1,22 +1,7 @@
-"""Train a contrastive BGC set-encoder over cached ESM2 protein embeddings.
+"""Contrastive BGC set-encoder over cached ESM2 protein vectors.
 
-Objectives
-----------
-- simclr : NT-Xent with two augmented views per BGC (protein subset + feature dropout)
-- supcon : supervised contrastive loss using biosynth_class labels
-
-Leakage-safe prospective mode
------------------------------
-Pass ``train_cutoff`` (ISO date) to train *only* on BGCs with ``date_added < cutoff``.
-All BGCs (including post-cutoff) are still embedded for evaluation; the temporal
-holdout then scores post-cutoff novelty against a pre-cutoff reference manifold.
-
-Outputs (ESM-compatible contract)
----------------------------------
-- ``learned_embeddings.npy``          (n_bgc, embed_dim) float32
-- ``learned_bgc_ids.csv``              bgc_id, n_proteins_embedded
-- ``learned_embed_manifest.json``      hyperparams + split info
-- ``artifacts/bgc_encoder.pt``         checkpoint (state_dict + config)
+simclr / supcon; optional ``train_cutoff`` for leakage-safe temporal split.
+Writes learned_embeddings.npy, learned_bgc_ids.csv, manifest, and artifacts/bgc_encoder.pt.
 """
 
 from __future__ import annotations
@@ -114,10 +99,8 @@ class BGCProteinDataset(Dataset):
         self.class_labels = class_labels or {}
         self.input_dim = int(protein_embeds.shape[1])
 
-        # Pre-group protein rows per BGC (sorted by aa_length desc — matches ESM cache)
         meta = protein_meta.reset_index(drop=True)
         if "emb_idx" in meta.columns:
-            # emb_idx indexes into the protein embedding matrix
             groups: dict[str, list[int]] = {}
             for row in meta.itertuples(index=False):
                 groups.setdefault(row.bgc_id, []).append(int(row.emb_idx))
@@ -242,7 +225,7 @@ def _resolve_bgc_ids(
             f"Too few pre-cutoff BGCs for training ({len(train_ids)}) at cutoff={train_cutoff}"
         )
     LOG.info(
-        "Leakage-safe split @ %s: %d train / %d total BGCs with protein embeddings",
+        "Train split @ %s: %d train / %d total BGCs with protein embeddings",
         train_cutoff,
         len(train_ids),
         len(all_ids),
@@ -351,7 +334,6 @@ def train_encoder(cfg: TrainConfig | None = None, outdir: Path | None = None) ->
                 p2 = model(x2, m2, project=True)
                 loss = nt_xent_loss(p1, p2, temperature=cfg.temperature)
             elif cfg.objective == "supcon":
-                # Two views; concatenate and use class labels (duplicate labels)
                 p1 = model(x1, m1, project=True)
                 p2 = model(x2, m2, project=True)
                 z = torch.cat([p1, p2], dim=0)
@@ -380,7 +362,6 @@ def train_encoder(cfg: TrainConfig | None = None, outdir: Path | None = None) ->
 
     elapsed = time.time() - t0
 
-    # Embed all BGCs (including post-cutoff held-out ones)
     embeddings, n_prots = embed_all(
         model,
         all_ids,
@@ -398,7 +379,6 @@ def train_encoder(cfg: TrainConfig | None = None, outdir: Path | None = None) ->
     np.save(emb_path, embeddings)
     pd.DataFrame({"bgc_id": all_ids, "n_proteins_embedded": n_prots}).to_csv(ids_path, index=False)
 
-    # Suffix tag for leakage-safe runs
     split_tag = f"pre_{cfg.train_cutoff}" if cfg.train_cutoff else "all"
     representation_label = f"learned_{cfg.objective}_{cfg.pooling}_d{cfg.embed_dim}_{split_tag}"
     manifest = {
@@ -436,7 +416,6 @@ def train_encoder(cfg: TrainConfig | None = None, outdir: Path | None = None) ->
         },
         ckpt_path,
     )
-    # Also stash history for sweeps
     hist_path = REPORTS / "learned_train_history.json"
     hist_path.write_text(json.dumps({"history": history, "manifest": manifest}, indent=2), encoding="utf-8")
 

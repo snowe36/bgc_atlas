@@ -22,14 +22,14 @@ CLASS_ORDER = ["NRPS", "PKS", "RiPP", "terpene", "hybrid", "other"]
 def _robust_limits(
     vals: np.ndarray, lo: float = 1.0, hi: float = 99.0, pad: float = 0.15
 ) -> tuple[float, float]:
-    """Percentile-based axis limits so a handful of extreme outliers don't collapse the plot."""
+    """Percentile axis limits (ignore extreme outliers)."""
     p_lo, p_hi = np.percentile(vals, [lo, hi])
     span = max(p_hi - p_lo, 1e-9)
     return p_lo - pad * span, p_hi + pad * span
 
 
 def _annotate_offframe(ax, coords: np.ndarray, xlim: tuple[float, float], ylim: tuple[float, float]) -> None:
-    """Note how many points fall outside the zoomed-in view instead of silently clipping them."""
+    """Annotate count of points outside axis limits."""
     off = (
         (coords[:, 0] < xlim[0])
         | (coords[:, 0] > xlim[1])
@@ -70,7 +70,6 @@ def run_atlas() -> pd.DataFrame:
     X = np.load(PROCESSED / "feature_matrix.npy")
     meta = pd.read_parquet(PROCESSED / "feature_meta.parquet")
 
-    # high-D PCA for downstream novelty (saved here for reuse)
     Xs = StandardScaler(with_mean=False).fit_transform(X)
     n_comp = min(PCA_N_COMPONENTS, X.shape[0] - 1, X.shape[1])
     pca = PCA(n_components=n_comp, random_state=42)
@@ -90,7 +89,6 @@ def run_atlas() -> pd.DataFrame:
     atlas.to_parquet(PROCESSED / "atlas_coords.parquet", index=False)
     atlas.to_csv(PROCESSED / "atlas_coords.csv", index=False)
 
-    # class-colored scatter
     fig, ax = plt.subplots(figsize=(8, 6))
     plot_df = atlas.copy()
     plot_df["biosynth_class"] = pd.Categorical(
@@ -118,7 +116,6 @@ def run_atlas() -> pd.DataFrame:
     fig.savefig(FIGURES / "atlas_by_class.png", dpi=150)
     plt.close(fig)
 
-    # density by class facets
     g = sns.FacetGrid(
         plot_df.dropna(subset=["biosynth_class"]),
         col="biosynth_class",

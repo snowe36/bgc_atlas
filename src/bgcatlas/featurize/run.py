@@ -27,20 +27,17 @@ def build_feature_matrix(
     dom = domains[domains["feature_type"] == "domain"].copy()
     dom = dom[dom["domain_id"].astype(str).str.len() > 0]
 
-    # domain counts per BGC
     counts = (
         dom.groupby(["bgc_id", "domain_id"]).size().unstack(fill_value=0)
         if len(dom)
         else pd.DataFrame(index=bgcs["bgc_id"])
     )
 
-    # drop rare domains
     if len(counts.columns):
         freq = (counts > 0).sum(axis=0)
         keep = freq[freq >= MIN_DOMAIN_FREQ].index
         counts = counts.reindex(columns=keep, fill_value=0)
 
-    # ordered architecture hashed bigrams
     arch_hash = np.zeros((len(bgcs), N_HASH_DIMS), dtype=np.float32)
     id_to_idx = {b: i for i, b in enumerate(bgcs["bgc_id"].tolist())}
 
@@ -58,7 +55,6 @@ def build_feature_matrix(
         for a, b in zip(seq, seq[1:], strict=False):
             arch_hash[i, _hash_token(f"bi::{a}::{b}")] += 1.0
 
-    # size / composition numeric features
     size_cols = []
     size_mat = []
     for col, default in [
@@ -77,7 +73,6 @@ def build_feature_matrix(
         size_mat.append(vals)
     size_arr = np.column_stack(size_mat) if size_mat else np.zeros((len(bgcs), 0))
 
-    # align domain counts to bgc order
     counts = counts.reindex(bgcs["bgc_id"].tolist(), fill_value=0)
     dom_names = [f"dom::{c}" for c in counts.columns.astype(str)]
     hash_names = [f"arch_hash::{i}" for i in range(N_HASH_DIMS)]
@@ -106,7 +101,6 @@ def run_featurize() -> None:
     bgcs = pd.read_parquet(PROCESSED / "mibig_bgcs.parquet")
     domains = pd.read_parquet(PROCESSED / "mibig_domains.parquet")
 
-    # keep BGCs with sequence evidence
     if "n_genes" in bgcs.columns:
         bgcs = bgcs[bgcs["n_genes"].fillna(0) > 0].copy()
     LOG.info("Featurizing %d BGCs with gene annotations", len(bgcs))

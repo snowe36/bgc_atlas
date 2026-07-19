@@ -1,13 +1,4 @@
-"""Ingest antiSMASH outputs into the predicted-domain table schema used by apply.
-
-Supported inputs:
-  - directory of antiSMASH region GenBank files (`*.region*.gbk`, `*.gbk`)
-  - antiSMASH JSON (`records[*].areas` product list + optional CDS annotations)
-  - already-normalized domains CSV (genome, bgc_id, predicted_class, gene_order, domain_id, n_genes)
-
-The GenBank path is preferred for domain richness; JSON is useful for region
-inventory when full GBK isn't available.
-"""
+"""Load antiSMASH GBK/JSON (or domains CSV) into the apply domains schema."""
 
 from __future__ import annotations
 
@@ -39,7 +30,6 @@ def _normalize_product_class(products: list[str]) -> str:
     """Map antiSMASH product labels onto the MIBiG coarse classes used elsewhere."""
     if not products:
         return "other"
-    # antiSMASH often uses T1PKS / NRPS / terpene / RiPP-like labels
     mapped: list[str] = []
     for p in products:
         pl = p.lower()
@@ -70,7 +60,6 @@ def _domains_from_gbk_record(record, genome: str, bgc_id: str) -> list[dict]:
     rows: list[dict] = []
     order = 0
 
-    # Prefer explicit domain features from antiSMASH
     domain_feats = [
         f for f in record.features if f.type in {"aSDomain", "PFAM_domain", "CDS_motif", "antismash_domain"}
     ]
@@ -99,10 +88,9 @@ def _domains_from_gbk_record(record, genome: str, bgc_id: str) -> list[dict]:
             )
         return rows
 
-    # Fallback: CDS products as architecture tokens (same spirit as MIBiG featurize)
+    # Fallback: CDS products (+ sec_met hints when present)
     for feat in cds_features:
         prod = (feat.qualifiers.get("product") or ["hypothetical"])[0]
-        # also harvest sec_met / gene_functions domain hints when present
         extras = []
         for key in ("sec_met_domain", "sec_met", "gene_functions", "domain"):
             extras.extend(feat.qualifiers.get(key) or [])

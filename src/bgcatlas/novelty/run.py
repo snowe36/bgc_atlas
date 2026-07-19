@@ -30,7 +30,6 @@ def score_novelty(Z: np.ndarray, k: int = 5) -> dict[str, np.ndarray]:
     nearest_idx = neighbor_idxs[:, 0]
     nearest_dist = neighbor_dists[:, 0]
 
-    # rank-normalize to [0,1]
     def _rank01(x: np.ndarray) -> np.ndarray:
         order = x.argsort().argsort().astype(np.float64)
         if len(x) <= 1:
@@ -85,7 +84,6 @@ def run_novelty(k: int = 5) -> pd.DataFrame:
     out.to_parquet(PROCESSED / "novelty_scores.parquet", index=False)
     LOG.info("Top-5 novel BGCs:\n%s", ranking.head(5).to_string(index=False))
 
-    # overlay on atlas
     plot = atlas.merge(out[["bgc_id", "novelty"]], on="bgc_id", how="left")
     thr = plot["novelty"].quantile(0.9)
     plot["high_novelty"] = plot["novelty"] >= thr
@@ -109,7 +107,7 @@ def run_novelty(k: int = 5) -> pd.DataFrame:
         ax=ax,
         label="top-decile novelty",
     )
-    ax.set_title("Unexplored regions of biosynthetic space")
+    ax.set_title("High-novelty BGCs on the atlas")
     ax.set_xlabel("embed-1")
     ax.set_ylabel("embed-2")
     ax.legend()

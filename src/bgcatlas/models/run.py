@@ -32,7 +32,6 @@ def run_sanity(n_splits: int = 5) -> dict:
     meta = pd.read_parquet(PROCESSED / "feature_meta.parquet")
     y = meta["biosynth_class"].astype(str).to_numpy()
 
-    # drop ultra-rare classes for stable CV
     counts = pd.Series(y).value_counts()
     keep = counts[counts >= n_splits].index
     mask = np.isin(y, keep)
@@ -89,7 +88,6 @@ def run_sanity(n_splits: int = 5) -> dict:
     fig.savefig(FIGURES / "sanity_confusion_matrix.png", dpi=150)
     plt.close(fig)
 
-    # per-class F1 bar
     report = results[best_name]["report"]
     rows = [
         {"class": k, "f1": v["f1-score"], "support": v["support"]}

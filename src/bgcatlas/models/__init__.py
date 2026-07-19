@@ -1,1 +1,1 @@
-"""Representation sanity-check models."""
+"""Class-recovery models and contrastive encoder."""

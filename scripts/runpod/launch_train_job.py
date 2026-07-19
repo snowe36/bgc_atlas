@@ -1,22 +1,5 @@
 #!/usr/bin/env python3
-"""Orchestrate contrastive BGC encoder training on RunPod.
-
-Creates a pod, syncs code + cached protein embeddings + feature_meta,
-runs bootstrap_train.sh, pulls learned embeddings + reports back, stops the pod.
-
-Usage:
-    uv run python scripts/runpod/launch_train_job.py
-    uv run python scripts/runpod/launch_train_job.py --sweep
-    uv run python scripts/runpod/launch_train_job.py --objective supcon --pooling deepsets
-
-Prerequisites:
-    - RunPod API key in .env as RUNPOD_API_KEY (or API_KEY)
-    - SSH public key added to RunPod account
-    - data/processed/esm_protein_embeddings.npy + esm_protein_meta.csv
-    - data/processed/feature_meta.parquet (+ feature_matrix.npy for eval)
-
-Safety: pod-side watchdog self-terminates after --max-runtime-hours (default 2h).
-"""
+"""Create a RunPod job, sync data, train the contrastive BGC encoder, pull results."""
 
 from __future__ import annotations
 
@@ -43,7 +26,6 @@ RSYNC_EXCLUDES = [
     "*.egg-info",
 ]
 
-# Artifacts required on the pod for train + eval
 REQUIRED_PROCESSED = [
     "esm_protein_embeddings.npy",
     "esm_protein_meta.csv",
@@ -119,8 +101,7 @@ def wait_for_ssh(runpod_mod, pod_id: str, timeout_s: int) -> tuple[str, int]:
 def rsync_up(ip: str, port: int) -> None:
     processed = ROOT / "data" / "processed"
     missing = [n for n in REQUIRED_PROCESSED if not (processed / n).exists()]
-    # ESM BGC matrix is optional for train (only needed for full learned-eval bake-off)
-    soft = {"esm_embeddings.npy", "esm_bgc_ids.csv"}
+    soft = {"esm_embeddings.npy", "esm_bgc_ids.csv"}  # optional for train
     hard_missing = [n for n in missing if n not in soft]
     if hard_missing:
         raise SystemExit(
@@ -164,7 +145,6 @@ def rsync_up(ip: str, port: int) -> None:
             ],
             check=True,
         )
-    # Architecture temporal baseline for side-by-side figure (optional)
     arch_temp = ROOT / "reports" / "temporal_holdout.json"
     if arch_temp.exists():
         subprocess.run(
@@ -254,7 +234,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--keep-frac", type=float, default=0.7)
     parser.add_argument("--feat-dropout", type=float, default=0.1)
     parser.add_argument("--seed", type=int, default=42)
-    parser.add_argument("--no-prospective", action="store_true", help="Train on all BGCs (not leakage-safe)")
+    parser.add_argument("--no-prospective", action="store_true", help="Train on all BGCs (ignore date cutoff)")
     parser.add_argument("--sweep", action="store_true", help="Run scripts/run_encoder_sweep.py on the pod")
     parser.add_argument("--keep-alive", action="store_true")
     parser.add_argument("--terminate", action="store_true")

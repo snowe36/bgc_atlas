@@ -1,14 +1,4 @@
-"""Honest evaluation of a learned BGC representation.
-
-Runs the same checks as the hashed / ESM2 paths:
-1. Class recovery (via generalized ablation loader)
-2. Novelty-ranking agreement vs hashed / ESM2
-3. Size-confound (Spearman novelty ↔ n_genes)
-4. Prospective temporal holdout on the learned embedding matrix
-
-Expects ``learned_embeddings.npy`` + ``learned_bgc_ids.csv`` (+ optional manifest)
-under ``data/processed/``, produced by ``bgc-train-encoder``.
-"""
+"""Eval for learned embeddings: class recovery, novelty agreement, size confound, temporal holdout."""
 
 from __future__ import annotations
 
@@ -52,7 +42,7 @@ def _pca_novelty(X: np.ndarray, k: int = DEFAULT_NOVELTY_K) -> np.ndarray:
 
 
 def run_learned_class_recovery(n_splits: int = 5) -> dict:
-    """Class-recovery bake-off: hashed / ESM / learned / combined variants."""
+    """Class recovery F1 for hashed / ESM / learned / combined."""
     ensure_dirs()
     label = _learned_label()
     meta, X_hash, X_learned = load_aligned_representation(
@@ -66,7 +56,6 @@ def run_learned_class_recovery(n_splits: int = 5) -> dict:
     mask = np.isin(y, keep)
     X_hash, X_learned, y, meta = X_hash[mask], X_learned[mask], y[mask], meta.loc[mask].reset_index(drop=True)
 
-    # Optional ESM if present
     variants: dict[str, np.ndarray] = {
         "hashed_architecture": X_hash,
         label: X_learned,
@@ -81,7 +70,6 @@ def run_learned_class_recovery(n_splits: int = 5) -> dict:
     esm_ids = PROCESSED / "esm_bgc_ids.csv"
     if esm_path.exists() and esm_ids.exists():
         meta_e, X_h2, X_esm = load_aligned_representation(emb_path=esm_path, ids_path=esm_ids, label="esm")
-        # Align to learned meta via bgc_id
         merged = (
             meta[["bgc_id"]]
             .reset_index()
@@ -92,7 +80,6 @@ def run_learned_class_recovery(n_splits: int = 5) -> dict:
             )
         )
         X_esm_al = X_esm[merged["_e"].to_numpy()]
-        # Restrict hash/learned/y to the intersection
         idx = merged["index"].to_numpy()
         X_hash = X_hash[idx]
         X_learned = X_learned[idx]
@@ -162,7 +149,6 @@ def run_learned_novelty_compare(k: int = DEFAULT_NOVELTY_K, top_frac: float = 0.
         ids_path=PROCESSED / "learned_bgc_ids.csv",
         label=label,
     )
-    # hashed features are sparse counts — match existing embed_compare convention
     from bgcatlas.novelty.embed_compare import _pca_novelty as _pca_nov_flagged
 
     novelty_hash = _pca_nov_flagged(X_hash, standardize_with_mean=False, k=k)
@@ -282,12 +268,7 @@ def run_learned_temporal_holdout(
     n_controls: int = 50,
     seed: int = 42,
 ) -> dict:
-    """Prospective temporal holdout in *learned* embedding space.
-
-    Uses the same math as ``novelty/temporal.py`` but scores on
-    ``learned_embeddings.npy``. For a leakage-free story the encoder should
-    have been trained with ``--prospective`` / ``train_cutoff=cutoff``.
-    """
+    """Temporal holdout on learned_embeddings.npy (train with --prospective for a fair split)."""
     ensure_dirs()
     label = _learned_label()
     X = np.load(PROCESSED / "learned_embeddings.npy")
@@ -309,16 +290,12 @@ def run_learned_temporal_holdout(
         len(held_idx),
     )
 
-    # Standardize for PCA-style distances (learned embeds are already L2-normed
-    # but we still run through the same _run_holdout_on_indices path which fits
-    # StandardScaler+PCA on the reference).
     core = _run_holdout_on_indices(X, meta, ref_idx, held_idx, k, n_controls, seed)
     held_novelty = core.pop("_held_novelty")
     control_novelty_sample = core.pop("_control_novelty_sample")
     meta_held = core.pop("_meta_held")
     p_value = core["p_value_heldout_gt_control"]
 
-    # Load architecture baseline for side-by-side if present
     arch_baseline = None
     arch_path = REPORTS / "temporal_holdout.json"
     if arch_path.exists():
@@ -431,10 +408,9 @@ def run_learned_eval_suite(
 
 
 def _write_summary_figure(summary: dict) -> None:
-    """One hero comparison figure for the README."""
+    """Summary figure: class recovery, size confound, temporal."""
     fig, axes = plt.subplots(1, 3, figsize=(12.5, 4.2))
 
-    # Class recovery bars
     cr = summary["class_recovery"]
     names = list(cr.keys())
     f1s = [cr[n]["macro_f1"] for n in names]
@@ -446,7 +422,6 @@ def _write_summary_figure(summary: dict) -> None:
     axes[0].axvline(0.84, color="gray", linestyle="--", linewidth=1, label="hash+ESM 0.84")
     axes[0].legend(fontsize=7)
 
-    # Size confound
     nov = summary["novelty"]
     axes[1].bar(
         ["hashed", "learned"],
@@ -457,7 +432,6 @@ def _write_summary_figure(summary: dict) -> None:
     axes[1].set_ylabel("Spearman(novelty, n_genes)")
     axes[1].set_title("Size confound")
 
-    # Temporal
     temp = summary["temporal"]
     arch = temp.get("architecture_baseline") or {}
     groups = ["arch\nheldout", "arch\ncontrol", "learned\nheldout", "learned\ncontrol"]

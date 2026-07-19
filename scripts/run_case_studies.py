@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
-"""Biological case studies: where high architecture-novelty lands in phylogeny & chemistry.
+"""Myxo enrichment stats + a few high-novelty MIBiG neighborhoods.
 
-Writes:
-  reports/biological_case_studies.json
-  reports/figures/biological_case_studies.png
+Writes reports/biological_case_studies.json and figures/biological_case_studies.png.
 """
 
 from __future__ import annotations
@@ -35,49 +33,27 @@ MYXO_GENERA = {
     "Pyxidicoccus",
 }
 
-# Hand-picked neighborhoods: each demonstrates a different scientific point.
+# Figure examples.
 CASE_STUDIES = [
     {
         "bgc_id": "BGC0000103",
-        "title": "Mycolactone — tiny cluster, alien PKS architecture",
-        "demonstrates": "Small cluster can still be architecturally unusual",
-        "why": (
-            "Only 9 genes, yet rank-2 architecture novelty. The locus packs rare PFAM "
-            "tokens and insertion-element transposases beside modular PKS machinery — "
-            "a pathogen toxin neighborhood far from typical Streptomyces type-I islands."
-        ),
+        "title": "Mycolactone",
+        "why": "Only 9 genes but rank-2 architecture novelty; rare PFAM tokens next to modular PKS.",
     },
     {
         "bgc_id": "BGC0002490",
-        "title": "Yersinopine — plague metallophore with almost unique domains",
-        "demonstrates": "Rare domain vocabulary / unexplored architectural space",
-        "why": (
-            "A 6-gene 'other' cluster from Yersinia pestis whose nearest MIBiG neighbor "
-            "is a Pseudomonas PKS (class mismatch). DUF6 appears in only three MIBiG "
-            "entries; the architecture looks like a transport/metallophore island, not "
-            "a classical NRPS siderophore."
-        ),
+        "title": "Yersinopine",
+        "why": "6-gene Y. pestis cluster; DUF6 in only three MIBiG entries; nearest neighbor is a Pseudomonas PKS.",
     },
     {
         "bgc_id": "BGC0001313",
-        "title": "Arabidiol–baruol — plant terpene island in a microbial atlas",
-        "demonstrates": "Cross-kingdom chemical vocabulary in the same atlas",
-        "why": (
-            "Arabidopsis CYP702/CYP705 P450s plus cellulose synthase-like proteins and "
-            "pentacyclic triterpene synthases — a eukaryotic domain vocabulary with "
-            "almost no bacterial analogue, so the neighborhood sits at the atlas edge."
-        ),
+        "title": "Arabidiol–baruol",
+        "why": "Arabidopsis P450s + cellulose synthase-like proteins; basically no bacterial analogue in the atlas.",
     },
     {
         "bgc_id": "BGC0001884",
-        "title": "Aranazole — architecture says weird; ESM says familiar",
-        "demonstrates": "Representation disagreement reveals hidden biology",
-        "why": (
-            "Fischerella NRPS–PKS hybrid with halogenase + P450 tailoring. Architecture "
-            "novelty is extreme (~0.99) while ESM novelty is only moderate (~0.59): "
-            "sequence space recognizes related enzymes; domain organization does not. "
-            "That disagreement is often where interesting discovery lives."
-        ),
+        "title": "Aranazole",
+        "why": "Architecture novelty ~0.99 vs ESM ~0.59 — sequence space knows the enzymes, domain order looks strange.",
     },
 ]
 
@@ -130,16 +106,16 @@ def _myxo_vs_strep(nov: pd.DataFrame, size_max: int | None) -> dict:
     n_myxo_rest = int(len(myxo) - n_myxo_top)
     n_strep_top = int((strep >= thr).sum())
     n_strep_rest = int(len(strep) - n_strep_top)
-    # Odds ratio for top-decile membership (Myxo vs Streptomyces)
-    # Woolf logit CI; Haldane–Anscombe +0.5 if any cell is zero
-    a_ci, b_ci, c_ci, d_ci = float(n_myxo_top), float(n_myxo_rest), float(n_strep_top), float(n_strep_rest)
-    if min(a_ci, b_ci, c_ci, d_ci) == 0:
-        a_ci, b_ci, c_ci, d_ci = a_ci + 0.5, b_ci + 0.5, c_ci + 0.5, d_ci + 0.5
-    odds_ratio = float((a_ci / b_ci) / (c_ci / d_ci))
-    se_log_or = float(np.sqrt(1 / a_ci + 1 / b_ci + 1 / c_ci + 1 / d_ci))
+
+    # Odds ratio for top-decile membership; Woolf logit CI (+0.5 if any cell is 0)
+    a, b, c, d = float(n_myxo_top), float(n_myxo_rest), float(n_strep_top), float(n_strep_rest)
+    if min(a, b, c, d) == 0:
+        a, b, c, d = a + 0.5, b + 0.5, c + 0.5, d + 0.5
+    odds_ratio = float((a / b) / (c / d))
+    se = float(np.sqrt(1 / a + 1 / b + 1 / c + 1 / d))
     z = float(norm.ppf(0.975))
-    or_ci_low = float(np.exp(np.log(odds_ratio) - z * se_log_or))
-    or_ci_high = float(np.exp(np.log(odds_ratio) + z * se_log_or))
+    or_lo = float(np.exp(np.log(odds_ratio) - z * se))
+    or_hi = float(np.exp(np.log(odds_ratio) + z * se))
     enrich_ratio = float((n_myxo_top / len(myxo)) / (n_strep_top / len(strep)))
     u_stat, p_value = mannwhitneyu(myxo, strep, alternative="greater")
 
@@ -184,7 +160,7 @@ def _myxo_vs_strep(nov: pd.DataFrame, size_max: int | None) -> dict:
         "frac_top_decile_streptomyces": float(n_strep_top / len(strep)),
         "top_decile_enrichment_ratio": enrich_ratio,
         "odds_ratio_top_decile": odds_ratio,
-        "odds_ratio_top_decile_ci95": [or_ci_low, or_ci_high],
+        "odds_ratio_top_decile_ci95": [or_lo, or_hi],
         "contingency_top_decile": {
             "myxo_top": n_myxo_top,
             "myxo_rest": n_myxo_rest,
@@ -226,8 +202,6 @@ def main() -> None:
         r = nov_i.loc[bid]
         m = meta_i.loc[bid]
         nn = r["nearest_mibig"]
-        nn_compounds = nov_i.loc[nn, "compounds"] if nn in nov_i.index else None
-        nn_org = nov_i.loc[nn, "organism"] if nn in nov_i.index else None
         uniq = bgc_domains.get(bid, [])
         rare = sorted(
             [
@@ -248,8 +222,8 @@ def main() -> None:
                 "rank": int(r["rank"]),
                 "nearest_mibig": nn,
                 "neighbor_class": r["neighbor_class"],
-                "nearest_compounds": nn_compounds,
-                "nearest_organism": nn_org,
+                "nearest_compounds": nov_i.loc[nn, "compounds"] if nn in nov_i.index else None,
+                "nearest_organism": nov_i.loc[nn, "organism"] if nn in nov_i.index else None,
                 "novelty_esm": esm_nov,
                 "rarest_domains": rare,
                 "domain_types": m["domain_types"],
@@ -257,16 +231,6 @@ def main() -> None:
         )
 
     report = {
-        "observed": (
-            "Myxobacterial BGCs occupy regions of architectural space with higher "
-            "novelty scores than Streptomyces BGCs; the enrichment persists after "
-            "restricting to n_genes≤60."
-        ),
-        "interpretation": (
-            "This suggests lineage-specific expansion of biosynthetic design patterns "
-            "(a 'biosynthetic grammar'), measured relative to the architecture "
-            "representation — not a claim of evolutionary innovation per se."
-        ),
         "size_filter_n_genes_max": 60,
         "phylogeny": {
             "unrestricted": unrestricted,
@@ -277,36 +241,18 @@ def main() -> None:
     out_json = REPORTS / "biological_case_studies.json"
     out_json.write_text(json.dumps(report, indent=2), encoding="utf-8")
 
-    # Figure: size-control survival + violin + atlas callouts
     sns.set_theme(style="whitegrid", context="talk")
     fig, axes = plt.subplots(1, 3, figsize=(15.5, 5.0))
+    palette = {"Myxobacteria": "#c44e52", "Streptomyces": "#4c72b0"}
 
-    # Panel A — top-decile % before/after size control
     bar_df = pd.DataFrame(
         [
-            {
-                "filter": "all sizes",
-                "group": "Myxobacteria",
-                "frac": unrestricted["frac_top_decile_myxo"],
-            },
-            {
-                "filter": "all sizes",
-                "group": "Streptomyces",
-                "frac": unrestricted["frac_top_decile_streptomyces"],
-            },
-            {
-                "filter": "≤60 genes",
-                "group": "Myxobacteria",
-                "frac": size_ctrl["frac_top_decile_myxo"],
-            },
-            {
-                "filter": "≤60 genes",
-                "group": "Streptomyces",
-                "frac": size_ctrl["frac_top_decile_streptomyces"],
-            },
+            {"filter": "all sizes", "group": "Myxobacteria", "frac": unrestricted["frac_top_decile_myxo"]},
+            {"filter": "all sizes", "group": "Streptomyces", "frac": unrestricted["frac_top_decile_streptomyces"]},
+            {"filter": "≤60 genes", "group": "Myxobacteria", "frac": size_ctrl["frac_top_decile_myxo"]},
+            {"filter": "≤60 genes", "group": "Streptomyces", "frac": size_ctrl["frac_top_decile_streptomyces"]},
         ]
     )
-    palette = {"Myxobacteria": "#c44e52", "Streptomyces": "#4c72b0"}
     sns.barplot(
         data=bar_df,
         x="filter",
@@ -327,9 +273,7 @@ def main() -> None:
     )
     axes[0].legend(title="", loc="upper right", fontsize=9)
 
-    # Panel B — size-controlled score distributions
     order = ["Myxobacteria", "Streptomyces", "Other"]
-    full_palette = {**palette, "Other": "#cccccc"}
     plot_df = nov2[nov2["group"].isin(order)]
     sns.violinplot(
         data=plot_df,
@@ -337,7 +281,7 @@ def main() -> None:
         y="novelty",
         order=order,
         hue="group",
-        palette=full_palette,
+        palette={**palette, "Other": "#cccccc"},
         legend=False,
         cut=0,
         inner="quartile",
@@ -352,7 +296,6 @@ def main() -> None:
     axes[1].set_xlabel("")
     axes[1].set_ylabel("novelty score")
 
-    # Panel C — atlas callouts
     atlas = coords.merge(nov[["bgc_id", "novelty"]], on="bgc_id", how="left")
     atlas["genus"] = atlas["organism"].map(_genus)
     atlas["is_myxo"] = atlas["genus"].isin(MYXO_GENERA)
@@ -408,7 +351,6 @@ def main() -> None:
     plt.close(fig)
     print(f"Wrote {out_json}")
     print(f"Wrote {fig_path}")
-    ci_lo, ci_hi = size_ctrl["odds_ratio_top_decile_ci95"]
     print(
         f"Size-controlled: OR={size_ctrl['odds_ratio_top_decile']:.2f} "
         f"(95% CI {ci_lo:.2f}–{ci_hi:.2f}) "

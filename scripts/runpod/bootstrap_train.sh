@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-# Pod-side entrypoint for contrastive BGC encoder training (bgc_atlas V3).
-# Uploaded and executed by launch_train_job.py — not meant to run on your laptop.
+# Pod-side encoder train entrypoint (uploaded by launch_train_job.py).
 set -uo pipefail
 
 REPO_DIR="${REPO_DIR:-/workspace/bgc_atlas}"

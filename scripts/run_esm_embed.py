@@ -1,21 +1,10 @@
 #!/usr/bin/env python
-"""Embed MIBiG CDS protein sequences with ESM2 and pool to per-BGC vectors (V2).
-
-Standalone by design: this is the one GPU-dependent step in the pipeline, meant
-to run on a rented GPU pod (see README "GPU embeddings" section), not as part
-of the CPU-only local pipeline.
-
-V2 upgrades vs V1:
-  - default model is ESM2 650M (150M still available via --model)
-  - length-weighted BGC pooling (biosynthetic enzymes count more than tiny ORFs)
-  - protein-level cache so pooling can be re-run without GPU
-  - manifest JSON recording model / pooling / caps for ablation labels
+"""Embed MIBiG CDS proteins with ESM2 and pool to per-BGC vectors (GPU step).
 
 Usage:
     uv sync --extra embed
     python scripts/run_esm_embed.py
-    # or: python scripts/run_esm_embed.py --model facebook/esm2_t30_150M_UR50D --pooling mean
-    # re-pool from cache (CPU): python scripts/run_esm_embed.py --from-cache --pooling length_weighted
+    python scripts/run_esm_embed.py --from-cache --pooling length_weighted
 """
 
 from __future__ import annotations

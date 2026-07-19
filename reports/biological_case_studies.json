@@ -1,6 +1,4 @@
 {
-  "observed": "Myxobacterial BGCs occupy regions of architectural space with higher novelty scores than Streptomyces BGCs; the enrichment persists after restricting to n_genes\u226460.",
-  "interpretation": "This suggests lineage-specific expansion of biosynthetic design patterns (a 'biosynthetic grammar'), measured relative to the architecture representation \u2014 not a claim of evolutionary innovation per se.",
   "size_filter_n_genes_max": 60,
   "phylogeny": {
     "unrestricted": {
@@ -251,9 +249,8 @@
   "case_studies": [
     {
       "bgc_id": "BGC0000103",
-      "title": "Mycolactone \u2014 tiny cluster, alien PKS architecture",
-      "demonstrates": "Small cluster can still be architecturally unusual",
-      "why": "Only 9 genes, yet rank-2 architecture novelty. The locus packs rare PFAM tokens and insertion-element transposases beside modular PKS machinery \u2014 a pathogen toxin neighborhood far from typical Streptomyces type-I islands.",
+      "title": "Mycolactone",
+      "why": "Only 9 genes but rank-2 architecture novelty; rare PFAM tokens next to modular PKS.",
       "organism": "Mycobacterium ulcerans Agy99",
       "biosynth_class": "PKS",
       "compounds": "mycolactone B",
@@ -301,9 +298,8 @@
     },
     {
       "bgc_id": "BGC0002490",
-      "title": "Yersinopine \u2014 plague metallophore with almost unique domains",
-      "demonstrates": "Rare domain vocabulary / unexplored architectural space",
-      "why": "A 6-gene 'other' cluster from Yersinia pestis whose nearest MIBiG neighbor is a Pseudomonas PKS (class mismatch). DUF6 appears in only three MIBiG entries; the architecture looks like a transport/metallophore island, not a classical NRPS siderophore.",
+      "title": "Yersinopine",
+      "why": "6-gene Y. pestis cluster; DUF6 in only three MIBiG entries; nearest neighbor is a Pseudomonas PKS.",
       "organism": "Yersinia pestis CO92",
       "biosynth_class": "other",
       "compounds": "yersinopine",
@@ -351,9 +347,8 @@
     },
     {
       "bgc_id": "BGC0001313",
-      "title": "Arabidiol\u2013baruol \u2014 plant terpene island in a microbial atlas",
-      "demonstrates": "Cross-kingdom chemical vocabulary in the same atlas",
-      "why": "Arabidopsis CYP702/CYP705 P450s plus cellulose synthase-like proteins and pentacyclic triterpene synthases \u2014 a eukaryotic domain vocabulary with almost no bacterial analogue, so the neighborhood sits at the atlas edge.",
+      "title": "Arabidiol\u2013baruol",
+      "why": "Arabidopsis P450s + cellulose synthase-like proteins; basically no bacterial analogue in the atlas.",
       "organism": "Arabidopsis thaliana",
       "biosynth_class": "terpene",
       "compounds": "arabidiol-baruol",
@@ -396,9 +391,8 @@
     },
     {
       "bgc_id": "BGC0001884",
-      "title": "Aranazole \u2014 architecture says weird; ESM says familiar",
-      "demonstrates": "Representation disagreement reveals hidden biology",
-      "why": "Fischerella NRPS\u2013PKS hybrid with halogenase + P450 tailoring. Architecture novelty is extreme (~0.99) while ESM novelty is only moderate (~0.59): sequence space recognizes related enzymes; domain organization does not. That disagreement is often where interesting discovery lives.",
+      "title": "Aranazole",
+      "why": "Architecture novelty ~0.99 vs ESM ~0.59 \u2014 sequence space knows the enzymes, domain order looks strange.",
       "organism": "Fischerella sp. PCC 9339",
       "biosynth_class": "hybrid",
       "compounds": "aranazole A;aranazole B;aranazole C;aranazole D",

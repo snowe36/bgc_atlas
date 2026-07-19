@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Reproduce the biosynthetic architecture atlas end-to-end (CPU-only).
+# CPU pipeline: download → temporal.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -20,6 +20,5 @@ uv run bgc-validate
 uv run bgc-apply
 uv run bgc-temporal
 
-echo "Done. See reports/novelty_ranking.csv, reports/biological_case_studies.json, and reports/figures/"
-echo "(GPU embeddings are optional and not run here — see 'GPU / protein language model embeddings' in README.md;"
-echo " once data/processed/esm_embeddings.npy exists, also run: uv run bgc-ablation && uv run bgc-novelty-compare)"
+echo "Done. See reports/ and reports/figures/"
+echo "Optional GPU: docs/esm.md (then bgc-ablation && bgc-novelty-compare)"

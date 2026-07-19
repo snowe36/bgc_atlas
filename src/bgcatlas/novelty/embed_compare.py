@@ -1,13 +1,4 @@
-"""How much does the novelty ranking change if we score in ESM2 space instead
-of (or in addition to) the hashed-architecture space?
-
-Reuses the same leave-one-out kNN novelty definition as `novelty/run.py`, just
-applied to three different PCA embeddings, then compares the resulting
-rankings via rank correlation and top-decile overlap. This is a robustness
-check on the *headline* novelty ranking: if it changes wildly with the
-representation, the ranking is representation-specific, not a property of
-the BGCs themselves.
-"""
+"""Compare LOO-kNN novelty across hashed / ESM / combined (Spearman + top-decile Jaccard)."""
 
 from __future__ import annotations
 

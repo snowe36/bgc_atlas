@@ -1,18 +1,5 @@
 #!/usr/bin/env python3
-"""Orchestrate V2 ESM embed on RunPod: create pod, sync code+proteins, run
-bootstrap.sh, pull embeddings back, stop the pod.
-
-Usage:
-    uv run python scripts/runpod/launch_gpu_job.py
-
-Prerequisites:
-    - RunPod API key in .env as RUNPOD_API_KEY (or API_KEY)
-    - SSH public key added to RunPod account (Settings > SSH Keys)
-    - local: `uv sync --extra embed` (or pip install runpod) for the SDK
-    - data/processed/mibig_proteins.parquet present
-
-Safety: pod-side watchdog self-terminates after --max-runtime-hours (default 2h).
-"""
+"""Create a RunPod job, sync proteins, run ESM embed, pull embeddings."""
 
 from __future__ import annotations
 
@@ -37,7 +24,6 @@ RSYNC_EXCLUDES = [
     ".mypy_cache",
     ".ruff_cache",
     "*.egg-info",
-    # keep processed tiny; only proteins needed on pod (see rsync include below)
 ]
 
 
@@ -114,7 +100,6 @@ def rsync_up(ip: str, port: int) -> None:
     excludes = []
     for e in RSYNC_EXCLUDES:
         excludes += ["--exclude", e]
-    # Sync code (exclude bulky processed except we push proteins separately)
     excludes += ["--exclude", "data/processed"]
     subprocess.run(
         [

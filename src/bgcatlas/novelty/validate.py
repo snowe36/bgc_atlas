@@ -21,26 +21,21 @@ def run_validate() -> dict:
     scores = pd.read_parquet(PROCESSED / "novelty_scores.parquet")
     names = pd.read_csv(PROCESSED / "feature_names.csv")["feature"].tolist()
 
-    # Integrity: class labels must not appear as features
     forbidden = [n for n in names if "biosynth_class" in n.lower() or n.startswith("class::")]
     class_leak = len(forbidden) > 0
 
-    # Size outliers among top novelty (possible contig/genome mis-parses)
     top = scores.nsmallest(50, "rank") if "rank" in scores.columns else scores.nlargest(50, "novelty")
     size_flag = top["n_genes"] > meta["n_genes"].quantile(0.99)
     n_size_outliers = int(size_flag.sum())
 
-    # Stratified novelty summary
     by_class = (
         scores.groupby("biosynth_class")["novelty"].agg(["count", "mean", "median", "std"]).reset_index()
     )
 
-    # Same-class neighbor rate among top-decile novelty
     thr = scores["novelty"].quantile(0.9)
     high = scores[scores["novelty"] >= thr]
     same_class = (high["biosynth_class"] == high["neighbor_class"]).mean()
 
-    # Rank correlation of novelty with n_genes (should not be the whole story)
     corr_genes, _ = spearmanr(scores["novelty"], scores["n_genes"])
 
     audit = {

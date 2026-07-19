@@ -1,1 +1,1 @@
-"""Novelty scoring and discovery ranking."""
+"""Novelty scoring."""

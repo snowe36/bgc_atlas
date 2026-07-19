@@ -71,7 +71,7 @@ def test_supcon_unique_labels_returns_zero():
 
 
 def test_train_writes_esm_compatible_outputs(tmp_path, monkeypatch):
-    """End-to-end tiny train on synthetic protein cache → output contract."""
+    """Tiny train → output contract."""
     from bgcatlas.models import train_contrastive as tc
 
     rng = np.random.default_rng(0)

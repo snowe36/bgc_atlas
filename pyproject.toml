@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "bgc-atlas"
 version = "0.3.0"
-description = "V3: map biosynthetic space, validate novelty rankings, ESM2 ablations, learned contrastive BGC encoder (MIBiG)"
+description = "Biosynthetic gene cluster atlas and novelty scoring on MIBiG"
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
@@ -27,10 +27,8 @@ dependencies = [
 [project.optional-dependencies]
 dev = ["pytest>=7.4", "ruff>=0.9"]
 umap = ["umap-learn>=0.5.5"]
-# HuggingFace transformers — matches scripts/run_esm_embed.py (not fair-esm)
 embed = ["torch>=2.2", "transformers>=4.40"]
-# Contrastive BGC encoder training (torch only; uses cached ESM protein embeds).
-# Pin numpy<2 for torch 2.2.x binary wheels (common on Intel Mac / older CUDA images).
+# numpy<2 for torch 2.2.x wheels on older platforms
 train = ["torch>=2.2,<2.6", "numpy>=1.24,<2"]
 
 [project.scripts]

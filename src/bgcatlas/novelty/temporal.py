@@ -1,13 +1,4 @@
-"""Prospective validation: does architecture-novelty predict *future* MIBiG entries?
-
-MIBiG's changelog carries a real submission date per BGC. We fit the reference
-manifold + novelty model on entries added before a cutoff, then ask whether
-entries added *after* the cutoff (which the model never saw) score as
-architecture-novel relative to a size-matched random holdout control. This is
-the BGC analogue of a prospective / time-split evaluation: if the novelty
-score is more than a rank-ordering artifact, chronologically newer entries
-should skew novel relative to a random slice of the same reference corpus.
-"""
+"""Time-split holdout: pre-cutoff manifold vs post-cutoff vs size-matched control."""
 
 from __future__ import annotations
 
@@ -135,12 +126,7 @@ def run_temporal_holdout(
     n_controls: int = 50,
     seed: int = 42,
 ) -> dict:
-    """Fit on pre-cutoff BGCs, score post-cutoff BGCs as a prospective novelty test.
-
-    Also reports a non-major-family subset (excluding PKS/NRPS/hybrid) to test
-    whether the negative result is driven by incremental variants of well-studied
-    families.
-    """
+    """Pre-cutoff fit, post-cutoff score; also reports non-major-family subset."""
     ensure_dirs()
     X = np.load(PROCESSED / "feature_matrix.npy")
     meta = pd.read_parquet(PROCESSED / "feature_meta.parquet")
@@ -164,7 +150,6 @@ def run_temporal_holdout(
     meta_held = core.pop("_meta_held")
     p_value = core["p_value_heldout_gt_control"]
 
-    # Non-major-family subset: keep only RiPP / terpene / other in both sides
     major = set(MAJOR_FAMILIES)
     keep = ~meta["biosynth_class"].isin(major)
     subset_ref = np.where((~is_held & keep).to_numpy())[0]

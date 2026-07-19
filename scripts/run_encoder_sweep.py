@@ -1,18 +1,9 @@
 #!/usr/bin/env python
-"""Sweep contrastive BGC encoder hyperparameters and collect honest-eval metrics.
-
-Grid (compact — fits a ~$5–15 A40 hour):
-  objective × pooling × embed_dim × keep_frac × seed
-
-For each config:
-  1. Train with --prospective (leakage-safe temporal split)
-  2. Run learned eval suite (class recovery, novelty, temporal)
-  3. Record key metrics into reports/encoder_sweep_results.json
+"""Grid-train contrastive encoder + run_learned_eval_suite → encoder_sweep_results.json.
 
 Usage:
     uv sync --extra train
     python scripts/run_encoder_sweep.py --device cuda
-    # quick local smoke:
     python scripts/run_encoder_sweep.py --quick --device cpu
 """
 
@@ -47,9 +38,7 @@ def build_grid(quick: bool) -> list[dict]:
                 "epochs": 3,
             }
         ]
-    # Compact grid (~12 cells): fits a ~1h A40 job with full honest eval each.
-    # Covers objective × pooling × embed_dim; keep_frac/seed held at defaults,
-    # plus one seed-replicate on the default config.
+    # ~12 cells: objective × pooling × embed_dim (+ one seed replicate).
     grid = []
     for obj, pool, dim in itertools.product(
         ["simclr", "supcon"],
@@ -117,7 +106,6 @@ def main() -> int:
         )
         try:
             manifest = train_encoder(cfg)
-            # Keep eval lean during sweeps (honest protocol, smaller CV/controls).
             summary = run_learned_eval_suite(
                 n_splits=3 if args.quick else 5,
                 n_controls=10 if args.quick else 25,
@@ -139,7 +127,6 @@ def main() -> int:
                 "temporal_p": summary["temporal"]["p_value"],
                 "temporal_win": summary["temporal"]["heldout_more_novel"],
             }
-            # Prefer best learned macro-F1 among keys containing "learned"
             learned_f1s = [
                 v["macro_f1"]
                 for k, v in summary["class_recovery"].items()
@@ -204,7 +191,6 @@ def _plot_sweep(results: list[dict]) -> None:
     fig.savefig(FIGURES / "encoder_sweep_summary.png", dpi=150)
     plt.close(fig)
 
-    # Also write a CSV for easy inspection
     df.to_csv(REPORTS / "encoder_sweep_results.csv", index=False)
 
 

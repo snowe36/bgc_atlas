@@ -1,11 +1,4 @@
-"""Set encoder: pool variable-length ESM2 protein vectors into a BGC embedding.
-
-Architecture (small, trainable over frozen protein embeddings):
-  per-protein MLP → set pooling (attention | mean | deepsets) → BGC embedding
-  + optional projection head for contrastive training (SimCLR / SupCon).
-
-Inputs are already-computed ESM2 protein embeddings (see scripts/run_esm_embed.py).
-"""
+"""Pool protein ESM embeddings into a BGC vector (attention / mean / deepsets)."""
 
 from __future__ import annotations
 
@@ -53,22 +46,7 @@ class DeepSetsPooling(nn.Module):
 
 
 class BGCSetEncoder(nn.Module):
-    """Encode a set of protein ESM embeddings into one BGC vector.
-
-    Parameters
-    ----------
-    input_dim : int
-        Protein embedding dim (1280 for ESM2-650M).
-    hidden_dim : int
-        Width of the per-protein MLP.
-    embed_dim : int
-        Output BGC embedding dimension (used for novelty / ablation).
-    proj_dim : int
-        Contrastive projection-head dimension.
-    pooling : {'attention', 'mean', 'deepsets'}
-    dropout : float
-        Dropout inside the per-protein MLP (training only).
-    """
+    """Set encoder over padded protein embeddings → L2-normalized BGC vector."""
 
     def __init__(
         self,
@@ -171,7 +149,6 @@ def supcon_loss(
     sim = z @ z.T / temperature
     labels = labels.view(-1, 1)
     mask_pos = (labels == labels.T).fill_diagonal_(False)
-    # For numerical stability
     logits_max, _ = sim.max(dim=1, keepdim=True)
     logits = sim - logits_max.detach()
     exp_logits = torch.exp(logits) * (~torch.eye(b, device=device, dtype=torch.bool)).float()
@@ -179,7 +156,6 @@ def supcon_loss(
 
     pos_counts = mask_pos.sum(dim=1).clamp(min=1)
     mean_log_prob_pos = (mask_pos.float() * log_prob).sum(dim=1) / pos_counts
-    # Only average over samples that have ≥1 positive
     has_pos = mask_pos.any(dim=1)
     if not has_pos.any():
         return z.new_zeros(())

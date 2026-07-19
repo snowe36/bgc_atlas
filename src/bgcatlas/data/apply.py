@@ -184,7 +184,6 @@ def run_apply(
         pred_path = Path(input_path)
         pred_domains = load_predicted_domains(pred_path, genome=genome)
         source = str(pred_path)
-        # cache normalized table for inspection
         EXTERNAL.mkdir(parents=True, exist_ok=True)
         cache = EXTERNAL / "last_apply_domains.csv"
         pred_domains.to_csv(cache, index=False)

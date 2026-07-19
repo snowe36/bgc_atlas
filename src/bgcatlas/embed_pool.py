@@ -11,12 +11,7 @@ def pool_bgcs(
     aa_lengths: np.ndarray,
     pooling: str,
 ) -> tuple[list[str], np.ndarray, np.ndarray]:
-    """Pool protein embeddings → per-BGC matrix.
-
-    pooling:
-      mean             — uniform mean of protein vectors
-      length_weighted  — weight by aa length (enzyme / domain-aware)
-    """
+    """Pool protein embeddings → per-BGC matrix (mean | length_weighted)."""
     unique = sorted(set(bgc_ids.tolist()))
     id_to_pos = {b: i for i, b in enumerate(unique)}
     dim = embeds.shape[1]

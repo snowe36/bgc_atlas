@@ -1,11 +1,4 @@
-"""Ablation: hashed-architecture vs ESM2 protein-embedding vs combined features.
-
-Answers the question the README's own "Future directions" raised: does a real
-protein language model add signal beyond the CPU-only hashed architecture
-representation, for the one thing we can actually check (biosynth-class
-recovery)? Requires `esm_embeddings.npy` / `esm_bgc_ids.csv`, produced by the
-GPU-side `scripts/run_esm_embed.py` job (see README "GPU embeddings").
-"""
+"""Class-recovery F1: hashed vs ESM vs combined. Needs esm_embeddings.npy."""
 
 from __future__ import annotations
 
@@ -45,21 +38,9 @@ def load_aligned_representation(
     ids_path=None,
     label: str | None = None,
 ) -> tuple[pd.DataFrame, np.ndarray, np.ndarray]:
-    """Align hashed architecture features with any BGC embedding matrix.
+    """Align hashed features with a BGC embedding matrix by bgc_id.
 
-    Parameters
-    ----------
-    emb_path, ids_path
-        Paths to ``*.npy`` embedding matrix and ``*_bgc_ids.csv`` (must contain
-        a ``bgc_id`` column). Defaults to the ESM2 artifacts.
-    label
-        Optional name used only for logging.
-
-    Returns
-    -------
-    meta, X_hash, X_emb
-        Rows are BGCs present in *both* the hashed feature matrix and the
-        embedding file, aligned by ``bgc_id``.
+    Returns (meta, X_hash, X_emb).
     """
     from pathlib import Path
 

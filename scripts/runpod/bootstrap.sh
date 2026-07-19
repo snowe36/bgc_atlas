@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-# Pod-side entrypoint for V2 ESM2 embedding (bgc_atlas).
-# Uploaded and executed by launch_gpu_job.py — not meant to run on your laptop.
+# Pod-side ESM embed entrypoint (uploaded by launch_gpu_job.py).
 set -uo pipefail
 
 REPO_DIR="${REPO_DIR:-/workspace/bgc_atlas}"
