@@ -1,0 +1,448 @@
+{
+  "observed": "Myxobacterial BGCs occupy regions of architectural space with higher novelty scores than Streptomyces BGCs; the enrichment persists after restricting to n_genes\u226460.",
+  "interpretation": "This suggests lineage-specific expansion of biosynthetic design patterns (a 'biosynthetic grammar'), measured relative to the architecture representation \u2014 not a claim of evolutionary innovation per se.",
+  "size_filter_n_genes_max": 60,
+  "phylogeny": {
+    "unrestricted": {
+      "size_filter_n_genes_max": null,
+      "n_myxo": 84,
+      "n_streptomyces": 840,
+      "median_myxo": 0.7313473379210431,
+      "median_streptomyces": 0.6222383194494748,
+      "frac_top_decile_myxo": 0.2976190476190476,
+      "frac_top_decile_streptomyces": 0.13452380952380952,
+      "top_decile_enrichment_ratio": 2.2123893805309733,
+      "odds_ratio_top_decile": 2.726113694315284,
+      "odds_ratio_top_decile_ci95": [
+        1.6403239456340069,
+        4.530626949703451
+      ],
+      "contingency_top_decile": {
+        "myxo_top": 25,
+        "myxo_rest": 59,
+        "streptomyces_top": 113,
+        "streptomyces_rest": 727
+      },
+      "cohens_d": 0.3141983882872887,
+      "cliffs_delta": 0.195578231292517,
+      "mannwhitney_u": 42180.0,
+      "mannwhitney_p": 0.0015461566833152355,
+      "groups": [
+        {
+          "group": "Myxobacteria",
+          "n": 84,
+          "mean_novelty": 0.6649311843534951,
+          "median_novelty": 0.7313473379210431,
+          "frac_top_decile": 0.2976190476190476
+        },
+        {
+          "group": "Other",
+          "n": 1838,
+          "mean_novelty": 0.457828494115338,
+          "median_novelty": 0.4398768562115175,
+          "frac_top_decile": 0.07562568008705114
+        },
+        {
+          "group": "Streptomyces",
+          "n": 840,
+          "mean_novelty": 0.5757821527741847,
+          "median_novelty": 0.6222383194494748,
+          "frac_top_decile": 0.13452380952380952
+        }
+      ],
+      "genus_enrichment_top_decile": [
+        {
+          "genus": "Gynuella",
+          "n_top_decile": 5,
+          "n_total": 6,
+          "enrichment": 8.309265944645006
+        },
+        {
+          "genus": "Sorangium",
+          "n_top_decile": 11,
+          "n_total": 21,
+          "enrichment": 5.222967165205432
+        },
+        {
+          "genus": "Solanum",
+          "n_top_decile": 3,
+          "n_total": 7,
+          "enrichment": 4.273336771531717
+        },
+        {
+          "genus": "Actinomadura",
+          "n_top_decile": 7,
+          "n_total": 18,
+          "enrichment": 3.877657440834336
+        },
+        {
+          "genus": "Candidatus",
+          "n_top_decile": 5,
+          "n_total": 13,
+          "enrichment": 3.835045820605387
+        },
+        {
+          "genus": "Stigmatella",
+          "n_top_decile": 4,
+          "n_total": 14,
+          "enrichment": 2.8488911810211452
+        },
+        {
+          "genus": "Amycolatopsis",
+          "n_top_decile": 10,
+          "n_total": 36,
+          "enrichment": 2.7697553148816687
+        },
+        {
+          "genus": "Burkholderia",
+          "n_top_decile": 8,
+          "n_total": 39,
+          "enrichment": 2.04535777098954
+        },
+        {
+          "genus": "Micromonospora",
+          "n_top_decile": 6,
+          "n_total": 39,
+          "enrichment": 1.534018328242155
+        },
+        {
+          "genus": "Salinispora",
+          "n_top_decile": 3,
+          "n_total": 20,
+          "enrichment": 1.495667870036101
+        },
+        {
+          "genus": "uncultured",
+          "n_top_decile": 5,
+          "n_total": 36,
+          "enrichment": 1.3848776574408344
+        },
+        {
+          "genus": "Streptomyces",
+          "n_top_decile": 113,
+          "n_total": 840,
+          "enrichment": 1.3413529310641226
+        }
+      ]
+    },
+    "size_controlled_n_genes_le_60": {
+      "size_filter_n_genes_max": 60,
+      "n_myxo": 84,
+      "n_streptomyces": 826,
+      "median_myxo": 0.7313473379210431,
+      "median_streptomyces": 0.616171676928649,
+      "frac_top_decile_myxo": 0.30952380952380953,
+      "frac_top_decile_streptomyces": 0.13196125907990314,
+      "top_decile_enrichment_ratio": 2.3455657492354742,
+      "odds_ratio_top_decile": 2.9487503954444794,
+      "odds_ratio_top_decile_ci95": [
+        1.7803703258072099,
+        4.883887789295551
+      ],
+      "contingency_top_decile": {
+        "myxo_top": 26,
+        "myxo_rest": 58,
+        "streptomyces_top": 109,
+        "streptomyces_rest": 717
+      },
+      "cohens_d": 0.3354723705691906,
+      "cliffs_delta": 0.21001960106076328,
+      "mannwhitney_u": 41978.0,
+      "mannwhitney_p": 0.0007507399159967742,
+      "groups": [
+        {
+          "group": "Myxobacteria",
+          "n": 84,
+          "mean_novelty": 0.6649311843534951,
+          "median_novelty": 0.7313473379210431,
+          "frac_top_decile": 0.30952380952380953
+        },
+        {
+          "group": "Other",
+          "n": 1817,
+          "mean_novelty": 0.45386383619472187,
+          "median_novelty": 0.4346251358203549,
+          "frac_top_decile": 0.0759493670886076
+        },
+        {
+          "group": "Streptomyces",
+          "n": 826,
+          "mean_novelty": 0.5701370174156992,
+          "median_novelty": 0.616171676928649,
+          "frac_top_decile": 0.13196125907990314
+        }
+      ],
+      "genus_enrichment_top_decile": [
+        {
+          "genus": "Gynuella",
+          "n_top_decile": 5,
+          "n_total": 6,
+          "enrichment": 8.324175824175825
+        },
+        {
+          "genus": "Sorangium",
+          "n_top_decile": 11,
+          "n_total": 21,
+          "enrichment": 5.232339089481947
+        },
+        {
+          "genus": "Chondromyces",
+          "n_top_decile": 3,
+          "n_total": 6,
+          "enrichment": 4.994505494505495
+        },
+        {
+          "genus": "Solanum",
+          "n_top_decile": 3,
+          "n_total": 7,
+          "enrichment": 4.2810047095761385
+        },
+        {
+          "genus": "Candidatus",
+          "n_top_decile": 5,
+          "n_total": 13,
+          "enrichment": 3.841927303465765
+        },
+        {
+          "genus": "Actinomadura",
+          "n_top_decile": 6,
+          "n_total": 16,
+          "enrichment": 3.7458791208791213
+        },
+        {
+          "genus": "Stigmatella",
+          "n_top_decile": 4,
+          "n_total": 14,
+          "enrichment": 2.8540031397174257
+        },
+        {
+          "genus": "Amycolatopsis",
+          "n_top_decile": 7,
+          "n_total": 32,
+          "enrichment": 2.1850961538461537
+        },
+        {
+          "genus": "Burkholderia",
+          "n_top_decile": 8,
+          "n_total": 38,
+          "enrichment": 2.1029496818970506
+        },
+        {
+          "genus": "Micromonospora",
+          "n_top_decile": 6,
+          "n_total": 36,
+          "enrichment": 1.664835164835165
+        },
+        {
+          "genus": "Salinispora",
+          "n_top_decile": 3,
+          "n_total": 19,
+          "enrichment": 1.577212261422788
+        },
+        {
+          "genus": "uncultured",
+          "n_top_decile": 5,
+          "n_total": 35,
+          "enrichment": 1.4270015698587126
+        }
+      ]
+    }
+  },
+  "case_studies": [
+    {
+      "bgc_id": "BGC0000103",
+      "title": "Mycolactone \u2014 tiny cluster, alien PKS architecture",
+      "demonstrates": "Small cluster can still be architecturally unusual",
+      "why": "Only 9 genes, yet rank-2 architecture novelty. The locus packs rare PFAM tokens and insertion-element transposases beside modular PKS machinery \u2014 a pathogen toxin neighborhood far from typical Streptomyces type-I islands.",
+      "organism": "Mycobacterium ulcerans Agy99",
+      "biosynth_class": "PKS",
+      "compounds": "mycolactone B",
+      "n_genes": 9,
+      "novelty": 0.9996378123868164,
+      "rank": 2,
+      "nearest_mibig": "BGC0000038",
+      "neighbor_class": "PKS",
+      "nearest_compounds": "coelimycin P1",
+      "nearest_organism": "Streptomyces coelicolor A3(2)",
+      "novelty_esm": 0.8905123339658444,
+      "rarest_domains": [
+        {
+          "domain": "PF00665",
+          "n_bgcs": 1,
+          "frac": 0.0003837298541826554
+        },
+        {
+          "domain": "PF01548",
+          "n_bgcs": 1,
+          "frac": 0.0003837298541826554
+        },
+        {
+          "domain": "PF00698",
+          "n_bgcs": 3,
+          "frac": 0.0011511895625479663
+        },
+        {
+          "domain": "PF02801",
+          "n_bgcs": 4,
+          "frac": 0.0015349194167306216
+        },
+        {
+          "domain": "PF00109",
+          "n_bgcs": 6,
+          "frac": 0.0023023791250959325
+        },
+        {
+          "domain": "PF00550",
+          "n_bgcs": 13,
+          "frac": 0.0049884881043745204
+        }
+      ],
+      "domain_types": "ACP;CDS_other;Hydrolase;PF00109;PF00550;PF00665;PF00698;PF01548;PF02801;PKS_AT;PKS_DH;PKS_Docking;PKS_ER;PKS_KR;PKS_KS;PKS_module;Thioesterase;polyketide_synthase;thioesterase"
+    },
+    {
+      "bgc_id": "BGC0002490",
+      "title": "Yersinopine \u2014 plague metallophore with almost unique domains",
+      "demonstrates": "Rare domain vocabulary / unexplored architectural space",
+      "why": "A 6-gene 'other' cluster from Yersinia pestis whose nearest MIBiG neighbor is a Pseudomonas PKS (class mismatch). DUF6 appears in only three MIBiG entries; the architecture looks like a transport/metallophore island, not a classical NRPS siderophore.",
+      "organism": "Yersinia pestis CO92",
+      "biosynth_class": "other",
+      "compounds": "yersinopine",
+      "n_genes": 6,
+      "novelty": 0.9943860919956538,
+      "rank": 15,
+      "nearest_mibig": "BGC0002060",
+      "neighbor_class": "PKS",
+      "nearest_compounds": "secimide",
+      "nearest_organism": "Pseudomonas syringae pv. syringae B728a",
+      "novelty_esm": 0.9005692599620494,
+      "rarest_domains": [
+        {
+          "domain": "PF00892",
+          "n_bgcs": 1,
+          "frac": 0.0003837298541826554
+        },
+        {
+          "domain": "DUF6",
+          "n_bgcs": 3,
+          "frac": 0.0011511895625479663
+        },
+        {
+          "domain": "PF01032",
+          "n_bgcs": 4,
+          "frac": 0.0015349194167306216
+        },
+        {
+          "domain": "PF01497",
+          "n_bgcs": 4,
+          "frac": 0.0015349194167306216
+        },
+        {
+          "domain": "PF00005",
+          "n_bgcs": 10,
+          "frac": 0.003837298541826554
+        },
+        {
+          "domain": "Hypothetical",
+          "n_bgcs": 1364,
+          "frac": 0.523407521105142
+        }
+      ],
+      "domain_types": "CDS_other;DUF6;Hypothetical;PF00005;PF00892;PF01032;PF01497"
+    },
+    {
+      "bgc_id": "BGC0001313",
+      "title": "Arabidiol\u2013baruol \u2014 plant terpene island in a microbial atlas",
+      "demonstrates": "Cross-kingdom chemical vocabulary in the same atlas",
+      "why": "Arabidopsis CYP702/CYP705 P450s plus cellulose synthase-like proteins and pentacyclic triterpene synthases \u2014 a eukaryotic domain vocabulary with almost no bacterial analogue, so the neighborhood sits at the atlas edge.",
+      "organism": "Arabidopsis thaliana",
+      "biosynth_class": "terpene",
+      "compounds": "arabidiol-baruol",
+      "n_genes": 30,
+      "novelty": 0.9876856211517566,
+      "rank": 34,
+      "nearest_mibig": "BGC0002395",
+      "neighbor_class": "terpene",
+      "nearest_compounds": "hordediene;11-hydroxy-hordetriene;hordetriene",
+      "nearest_organism": "Hordeum vulgare subsp. vulgare",
+      "novelty_esm": 0.8451612903225807,
+      "rarest_domains": [
+        {
+          "domain": "terpene_synthase",
+          "n_bgcs": 15,
+          "frac": 0.005755947812739831
+        },
+        {
+          "domain": "Terpene_synth",
+          "n_bgcs": 82,
+          "frac": 0.031465848042977744
+        },
+        {
+          "domain": "P450",
+          "n_bgcs": 499,
+          "frac": 0.19148119723714505
+        },
+        {
+          "domain": "Regulator",
+          "n_bgcs": 931,
+          "frac": 0.3572524942440522
+        },
+        {
+          "domain": "CDS_other",
+          "n_bgcs": 2308,
+          "frac": 0.8856485034535687
+        }
+      ],
+      "domain_types": "CDS_other;P450;Regulator;Terpene_synth;terpene_synthase"
+    },
+    {
+      "bgc_id": "BGC0001884",
+      "title": "Aranazole \u2014 architecture says weird; ESM says familiar",
+      "demonstrates": "Representation disagreement reveals hidden biology",
+      "why": "Fischerella NRPS\u2013PKS hybrid with halogenase + P450 tailoring. Architecture novelty is extreme (~0.99) while ESM novelty is only moderate (~0.59): sequence space recognizes related enzymes; domain organization does not. That disagreement is often where interesting discovery lives.",
+      "organism": "Fischerella sp. PCC 9339",
+      "biosynth_class": "hybrid",
+      "compounds": "aranazole A;aranazole B;aranazole C;aranazole D",
+      "n_genes": 16,
+      "novelty": 0.9871423397319812,
+      "rank": 36,
+      "nearest_mibig": "BGC0000128",
+      "neighbor_class": "PKS",
+      "nearest_compounds": "pyoluteorin",
+      "nearest_organism": "Pseudomonas sp. M18",
+      "novelty_esm": 0.5848197343453511,
+      "rarest_domains": [
+        {
+          "domain": "DH",
+          "n_bgcs": 11,
+          "frac": 0.00422102839600921
+        },
+        {
+          "domain": "ER",
+          "n_bgcs": 11,
+          "frac": 0.00422102839600921
+        },
+        {
+          "domain": "KS",
+          "n_bgcs": 18,
+          "frac": 0.006907137375287797
+        },
+        {
+          "domain": "KR",
+          "n_bgcs": 23,
+          "frac": 0.008825786646201074
+        },
+        {
+          "domain": "TE",
+          "n_bgcs": 23,
+          "frac": 0.008825786646201074
+        },
+        {
+          "domain": "AT",
+          "n_bgcs": 29,
+          "frac": 0.011128165771297006
+        }
+      ],
+      "domain_types": "ACP;AMP-binding;AT;CDS_other;DH;ER;Halogenase;KR;KS;MT;Methyltransferase;NRPS_module;P450;PCP;PKS_AT;PKS_DH2;PKS_ER;PKS_KR;PKS_KS;PKS_PP;PKS_module;Redox;TE"
+    }
+  ]
+}

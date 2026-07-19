@@ -15,10 +15,11 @@ uv run bgc-featurize
 uv run bgc-sanity
 uv run bgc-atlas
 uv run bgc-novelty
+uv run python scripts/run_case_studies.py
 uv run bgc-validate
 uv run bgc-apply
 uv run bgc-temporal
 
-echo "Done. See reports/novelty_ranking.csv and reports/figures/"
+echo "Done. See reports/novelty_ranking.csv, reports/biological_case_studies.json, and reports/figures/"
 echo "(GPU embeddings are optional and not run here — see 'GPU / protein language model embeddings' in README.md;"
 echo " once data/processed/esm_embeddings.npy exists, also run: uv run bgc-ablation && uv run bgc-novelty-compare)"
