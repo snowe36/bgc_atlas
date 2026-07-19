@@ -37,7 +37,7 @@ wheels = [
 
 [[package]]
 name = "bgc-atlas"
-version = "0.2.0"
+version = "0.3.0"
 source = { editable = "." }
 dependencies = [
     { name = "biopython" },
@@ -64,6 +64,9 @@ embed = [
     { name = "torch" },
     { name = "transformers" },
 ]
+train = [
+    { name = "torch" },
+]
 umap = [
     { name = "umap-learn" },
 ]
@@ -83,11 +86,12 @@ requires-dist = [
     { name = "scipy", specifier = ">=1.11" },
     { name = "seaborn", specifier = ">=0.13" },
     { name = "torch", marker = "extra == 'embed'", specifier = ">=2.2" },
+    { name = "torch", marker = "extra == 'train'", specifier = ">=2.2" },
     { name = "tqdm", specifier = ">=4.66" },
     { name = "transformers", marker = "extra == 'embed'", specifier = ">=4.40" },
     { name = "umap-learn", marker = "extra == 'umap'", specifier = ">=0.5.5" },
 ]
-provides-extras = ["dev", "umap", "embed"]
+provides-extras = ["dev", "umap", "embed", "train"]
 
 [[package]]
 name = "biopython"

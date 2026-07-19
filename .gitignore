@@ -32,6 +32,21 @@ reports/figures/*.svg
 !reports/figures/novelty_disagreement_by_class.png
 !reports/figures/temporal_holdout.png
 !reports/figures/ablation_representation_comparison.png
+# V3 learned-representation results
+!reports/learned_eval_summary.json
+!reports/learned_ablation_metrics.json
+!reports/learned_novelty_comparison.json
+!reports/learned_temporal_holdout.json
+!reports/encoder_sweep_results.json
+!reports/encoder_sweep_results.csv
+!reports/figures/learned_representation_summary.png
+!reports/figures/learned_ablation_comparison.png
+!reports/figures/learned_novelty_comparison.png
+!reports/figures/learned_temporal_holdout.png
+!reports/figures/encoder_sweep_summary.png
+
+# Encoder checkpoints (large; regenerate with bgc-train-encoder)
+artifacts/
 
 # Python
 __pycache__/
