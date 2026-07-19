@@ -40,37 +40,69 @@ def _esm_representation_label() -> str:
     return "esm2"
 
 
-def _load_aligned() -> tuple[pd.DataFrame, np.ndarray, np.ndarray, str]:
-    """Return (meta, X_hash, X_esm, esm_label) for BGCs present in both representations."""
+def load_aligned_representation(
+    emb_path=None,
+    ids_path=None,
+    label: str | None = None,
+) -> tuple[pd.DataFrame, np.ndarray, np.ndarray]:
+    """Align hashed architecture features with any BGC embedding matrix.
+
+    Parameters
+    ----------
+    emb_path, ids_path
+        Paths to ``*.npy`` embedding matrix and ``*_bgc_ids.csv`` (must contain
+        a ``bgc_id`` column). Defaults to the ESM2 artifacts.
+    label
+        Optional name used only for logging.
+
+    Returns
+    -------
+    meta, X_hash, X_emb
+        Rows are BGCs present in *both* the hashed feature matrix and the
+        embedding file, aligned by ``bgc_id``.
+    """
+    from pathlib import Path
+
+    emb_path = Path(emb_path) if emb_path is not None else PROCESSED / "esm_embeddings.npy"
+    ids_path = Path(ids_path) if ids_path is not None else PROCESSED / "esm_bgc_ids.csv"
+    if not emb_path.exists() or not ids_path.exists():
+        raise FileNotFoundError(
+            f"{emb_path.name} / {ids_path.name} not found under {emb_path.parent}. "
+            "Produce embeddings first (scripts/run_esm_embed.py or bgc-train-encoder)."
+        )
+
     X_hash_full = np.load(PROCESSED / "feature_matrix.npy")
     meta_full = pd.read_parquet(PROCESSED / "feature_meta.parquet")
-
-    esm_path = PROCESSED / "esm_embeddings.npy"
-    ids_path = PROCESSED / "esm_bgc_ids.csv"
-    if not esm_path.exists() or not ids_path.exists():
-        raise FileNotFoundError(
-            "esm_embeddings.npy / esm_bgc_ids.csv not found. Run scripts/run_esm_embed.py "
-            "(on a GPU pod) and copy the outputs into data/processed/ first."
-        )
-    X_esm_full = np.load(esm_path)
-    esm_ids = pd.read_csv(ids_path)
-    esm_label = _esm_representation_label()
+    X_emb_full = np.load(emb_path)
+    emb_ids = pd.read_csv(ids_path)
 
     meta_full = meta_full.reset_index(drop=True)
     meta_full["_row"] = np.arange(len(meta_full))
-    esm_ids = esm_ids.reset_index(drop=True)
-    esm_ids["_esm_row"] = np.arange(len(esm_ids))
+    emb_ids = emb_ids.reset_index(drop=True)
+    emb_ids["_emb_row"] = np.arange(len(emb_ids))
 
-    merged = meta_full.merge(esm_ids[["bgc_id", "_esm_row"]], on="bgc_id", how="inner")
+    merged = meta_full.merge(emb_ids[["bgc_id", "_emb_row"]], on="bgc_id", how="inner")
+    tag = label or emb_path.stem
     LOG.info(
-        "Ablation: %d / %d BGCs have both hashed features and ESM embeddings (%s)",
+        "Aligned: %d / %d BGCs have both hashed features and %s embeddings",
         len(merged),
         len(meta_full),
-        esm_label,
+        tag,
     )
     X_hash = X_hash_full[merged["_row"].to_numpy()]
-    X_esm = X_esm_full[merged["_esm_row"].to_numpy()]
-    meta = merged.drop(columns=["_row", "_esm_row"]).reset_index(drop=True)
+    X_emb = X_emb_full[merged["_emb_row"].to_numpy()]
+    meta = merged.drop(columns=["_row", "_emb_row"]).reset_index(drop=True)
+    return meta, X_hash, X_emb
+
+
+def _load_aligned() -> tuple[pd.DataFrame, np.ndarray, np.ndarray, str]:
+    """Return (meta, X_hash, X_esm, esm_label) for BGCs present in both representations."""
+    esm_label = _esm_representation_label()
+    meta, X_hash, X_esm = load_aligned_representation(
+        emb_path=PROCESSED / "esm_embeddings.npy",
+        ids_path=PROCESSED / "esm_bgc_ids.csv",
+        label=esm_label,
+    )
     return meta, X_hash, X_esm, esm_label
 
 
