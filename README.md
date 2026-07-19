@@ -1,6 +1,8 @@
 # bgc_atlas
 
-**A reproducible framework for evaluating whether learned representations of microbial biosynthetic gene clusters can identify unexplored regions of chemical space.** Combines interpretable architecture features, protein language model embeddings, a contrastive BGC set-encoder, rigorous leakage audits, and prospective validation.
+**Myxobacterial genomes occupy more architecture-novel regions of biosynthetic space than *Streptomyces* — an enrichment that survives a ≤60-gene size control (OR = 2.9, 95% CI 1.8–4.9).** Yet architecture novelty alone does not predict which BGCs enter [MIBiG](https://mibig.secondarymetabolites.org/) next.
+
+A reproducible framework that maps biosynthetic architectural space, audits novelty scores against leakage and confounds, and tests whether representation learning predicts discovery. The models are the instrument; the biological pattern is the result.
 
 [![CI](https://github.com/snowe36/bgc_atlas/actions/workflows/ci.yml/badge.svg)](https://github.com/snowe36/bgc_atlas/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
@@ -13,13 +15,35 @@ Repo: [github.com/snowe36/bgc_atlas](https://github.com/snowe36/bgc_atlas)
 
 ---
 
+## Key findings
+
+| Question | Answer |
+|----------|--------|
+| **What happened?** | **Observed:** myxobacterial BGCs are **2.9× enriched** in the top architecture-novelty decile vs *Streptomyces* after a ≤60-gene filter (OR = 2.9, 95% CI 1.8–4.9; Cliff’s δ = 0.21; Cohen’s *d* = 0.34; *p* = 7.5×10⁻⁴). Separately, architecture novelty does **not** predict future MIBiG entries on a prospective time split (held-out 0.40 vs control 0.50). |
+| **Why trust it?** | Leakage audits pass; the clade signal **persists after size restriction** (the obvious “huge myxo BGCs” confound); prospective validation uses a temporal holdout with a matched random control. |
+| **Why interesting?** | Novelty is phylogenetically structured — consistent with lineage-specific biosynthetic design patterns — yet representation choice reshapes which neighborhoods look novel, and none of the scores yet forecast discovery. |
+
+```text
+✓  Myxobacteria > Streptomyces in architecture novelty
+      └── persists after ≤60-gene restriction
+         OR=2.9 (95% CI 1.8–4.9) · δ=0.21 · d=0.34
+✓  Architecture recovers known biosynthetic classes (RF macro-F1 0.76)
+✓  Prospective result: novelty does not predict MIBiG deposition
+     (architecture underperforms control; learned ties control)
+✓  ESM2 improves class recovery (combined macro-F1 0.84) but novelty
+     rankings barely agree with architecture (ρ=−0.38)
+✓  Entire CPU benchmark is reproducible from raw data with one command
+```
+
+**Observed vs interpretation.** We measure novelty *relative to an architecture representation*, not evolutionary innovation directly. **Observed:** myxobacteria occupy higher-novelty regions of that space, and the gap survives size control. **Interpretation:** this is consistent with lineage-specific expansion of biosynthetic design patterns — a *biosynthetic grammar* in the conceptual sense.
+
+---
+
 ## The problem
 
-Microbial genomes encode far more biosynthetic gene clusters than have been experimentally characterized ([MIBiG](https://mibig.secondarymetabolites.org/); [antiSMASH](https://docs.antismash.secondarymetabolites.org/)). Rule-based tools already answer "is this a BGC, and what class?" well. The harder ML question is:
+Microbial genomes encode far more biosynthetic gene clusters than have been experimentally characterized ([MIBiG](https://mibig.secondarymetabolites.org/); [antiSMASH](https://docs.antismash.secondarymetabolites.org/)). Rule-based tools already answer "is this a BGC, and what class?" well. The harder questions are biological *and* methodological:
 
-**Can representation learning actually predict discovery — and can we validate that claim rigorously?**
-
-This is a representation-learning / novelty-ranking problem with explicit negative controls, not a classification demo.
+**Where does architectural novelty concentrate — and can any representation of it predict discovery under an honest prospective test?**
 
 ---
 
@@ -36,35 +60,6 @@ This is a representation-learning / novelty-ranking problem with explicit negati
 
 ---
 
-## Key results
-
-| Check | Result |
-|-------|--------|
-| Representation recovers known classes | RF macro-F1 **0.76**, weighted-F1 **0.79** (5-fold CV) |
-| Class-label leakage into novelty features | **None** |
-| Novelty ↔ cluster size (Spearman) | **0.55** — moderate size confound; not the whole story |
-| Prospective holdout | Architecture novelty alone is **insufficient** as a discovery predictor (held-out mean 0.40 vs control 0.50) |
-| Hashed vs ESM2-650M alone (class recovery) | ~tied (0.78 vs **0.80** macro-F1) |
-| Combined hashed + ESM2-650M | **0.84** macro-F1 — complementary signal for annotation |
-| Do novelty *rankings* agree across representations? | **No** (Spearman ρ=**-0.38**; top-decile overlap **1.7%**) |
-| Disagreement by class | Strongest anti-agree in **other / NRPS**; **hybrid** positively correlates (ρ=+0.23) |
-| Learned encoder (SupCon + attention, leakage-safe) class recovery | macro-F1 **0.89**† alone; **0.90** with hashed (†label-informed) |
-| Size confound under learned novelty | Spearman **~0.00** (vs **0.53** for hashed architecture) |
-| Learned prospective holdout | Still null (held-out **0.51** vs control **0.50**; p=0.45) — no longer *anti*-novel like architecture |
-
----
-
-## Research takeaway
-
-Four conclusions emerged:
-
-1. **Architecture features** capture recognizable biosynthetic classes.
-2. **ESM2 embeddings** provide complementary biological signal and modestly improve classification.
-3. **Novelty ranking** is highly representation-dependent and does not yet translate into prospective discovery prediction.
-4. A **learned contrastive BGC encoder** can erase the size confound under a leakage-safe temporal split (SupCon class-F1 is label-informed) — but still does **not** forecast which BGCs enter MIBiG next.
-
----
-
 ## Quick start
 
 Requires [uv](https://docs.astral.sh/uv/):
@@ -78,20 +73,17 @@ bash scripts/reproduce.sh && uv run pytest -q
 CPU pipeline (locked deps via [`uv.lock`](uv.lock); CI on every push):
 
 ```text
-bgc-download → bgc-featurize → bgc-sanity → bgc-atlas → bgc-novelty → bgc-validate → bgc-apply → bgc-temporal
+bgc-download → bgc-featurize → bgc-sanity → bgc-atlas → bgc-novelty
+    → run_case_studies.py → bgc-validate → bgc-apply → bgc-temporal
 ```
 
-Optional GPU step (ESM2-650M + length-weighted pooling; `uv sync --extra embed`):
-
-```bash
-uv sync --extra embed
-python scripts/run_esm_embed.py
-uv run bgc-ablation && uv run bgc-novelty-compare
-```
+Optional GPU path (ESM2 + contrastive encoder): see [`docs/esm.md`](docs/esm.md).
 
 ---
 
 ## Representation & class-recovery benchmark
+
+**What this means:** the feature space is biologically meaningful — architecture vectors recover known biosynthetic classes well enough that novelty ranking is not measuring noise.
 
 Interpretable **pathway architecture features** (CPU):
 
@@ -140,25 +132,58 @@ Hybrids and PKS sit higher on average; RiPPs are denser / more self-similar in t
 
 ---
 
+## Biological case studies
+
+**Observed.** Myxobacterial BGCs occupy more architecture-novel regions of biosynthetic space than *Streptomyces* BGCs. The gap is not an artifact of giant clusters:
+
+```text
+Myxobacteria > Streptomyces in architecture novelty
+       |
+       └── persists after ≤60-gene restriction
+              OR = 2.9 (95% CI 1.8–4.9)
+              Cliff’s δ = 0.21 · Cohen’s d = 0.34 · p = 7.5×10⁻⁴
+```
+
+Unrestricted top-decile rates are already skewed (30% myxo vs 14% *Streptomyces*); after the size filter they remain so (31% vs 13%). Genera such as *Sorangium* and *Chondromyces* are ~5× enriched in the top decile relative to their share of the atlas. Full stats: [`reports/biological_case_studies.json`](reports/biological_case_studies.json).
+
+**Interpretation.** This is consistent with lineage-specific expansion of biosynthetic design patterns — a *biosynthetic grammar* in the conceptual sense. It is **not** a claim that we measured evolutionary innovation directly; novelty is always relative to the architecture representation.
+
+![Enrichment survives size control; case-study callouts](reports/figures/biological_case_studies.png)
+
+Four neighborhoods show what the ranking surfaces — each a different scientific point (regenerate with `python scripts/run_case_studies.py`):
+
+| BGC | Host / product | What it demonstrates |
+|-----|----------------|----------------------|
+| [BGC0000103](https://mibig.secondarymetabolites.org/repository/BGC0000103) | *M. ulcerans* · mycolactone | **Small cluster, unusual architecture.** Rank-2 novelty with only 9 genes — rare PFAM tokens + insertion-element transposases beside modular PKS; nearest neighbor is *S. coelicolor* coelimycin. |
+| [BGC0002490](https://mibig.secondarymetabolites.org/repository/BGC0002490) | *Y. pestis* · yersinopine | **Rare domain vocabulary.** A 6-gene *other* cluster nearest a *Pseudomonas* PKS (class mismatch). **DUF6** appears in only three MIBiG entries. |
+| [BGC0001313](https://mibig.secondarymetabolites.org/repository/BGC0001313) | *A. thaliana* · arabidiol–baruol | **Cross-kingdom vocabulary.** Plant CYP702/CYP705 P450s + cellulose synthase-like + triterpene synthases — almost no bacterial analogue, so the neighborhood sits at the atlas edge. |
+| [BGC0001884](https://mibig.secondarymetabolites.org/repository/BGC0001884) | *Fischerella* · aranazoles | **Representation disagreement.** Architecture novelty ≈ 0.99; ESM novelty ≈ 0.59. Sequence space says “familiar enzymes”; domain organization says “weird assembly.” |
+
+**Hypothesis.** Disagreement between representations may identify a third class of candidates: biologically familiar components arranged in unfamiliar architectures — the aranazole pattern generalized.
+
+---
+
 ## Validation
+
+**What this means:** class labels do not leak into novelty features, and architecture novelty is only partly explained by cluster size — so ranking artifacts are measurable, not ignored.
 
 Integrity checks are first-class (`bgc-validate` → [`reports/validation_audit.json`](reports/validation_audit.json)):
 
-| Check | Result |
-|-------|--------|
-| **Class-label leakage into features** | **none** |
-| Top-decile same-class neighbor rate | **0.67** |
-| Novelty ↔ gene-count Spearman | **0.55** (moderate size confound) |
-| Top-50 size outliers flagged | **4** |
-| Checks passed | **yes** |
+| Check | Result | Interpretation |
+|-------|--------|----------------|
+| Class-label leakage into features | **none** | Novelty is not secretly classifying known product families |
+| Top-decile same-class neighbor rate | **0.67** | High-novelty points still sit near same-class architecture |
+| Novelty ↔ gene-count Spearman | **0.55** | Moderate size confound — larger clusters tend to look farther from neighbors, but novelty ≠ size |
+| Top-50 size outliers flagged | **4** | A few extremes, not the whole ranking |
+| Checks passed | **yes** | Audit suite green |
 
 ![Stratified novelty audit](reports/figures/validation_novelty_by_class.png)
-
-Size is a real correlate of architecture-novelty in this space (larger clusters tend to sit farther from neighbors), but ρ=0.55 is not "novelty = size." Leakage and same-class neighbor checks remain clean.
 
 ---
 
 ## Prospective (temporal-holdout) validation
+
+**What this means:** architecture novelty alone does **not** predict which BGCs enter MIBiG next. On a real time split, post-cutoff entries scored *lower* than a size-matched random control.
 
 MIBiG's changelog carries a real submission date per entry. Fit the reference manifold on BGCs added **before** a cutoff, then ask whether entries added **after** score as architecture-novel relative to a size-matched random-holdout control (`bgc-temporal` → [`reports/temporal_holdout.json`](reports/temporal_holdout.json)).
 
@@ -169,84 +194,43 @@ MIBiG's changelog carries a real submission date per entry. Fit the reference ma
 
 ![Prospective novelty: random vs. true post-cutoff holdout](reports/figures/temporal_holdout.png)
 
-Prospective validation revealed that **architecture novelty alone is insufficient as a discovery predictor**. Post-cutoff entries scored *less* architecture-novel than a random control; restricting to non-major families (RiPP / terpene / other) does not reverse the result. That is the scientific conclusion: distance from known architecture neighborhoods, under this representation, does not forecast which BGCs enter MIBiG next.
+That result is deliberate science, not a failed experiment. Plausible reasons architectural novelty and database deposition diverge: researchers preferentially study known attractive taxa; MIBiG expansion is biased toward accessible chemotypes; novelty ≠ experimental tractability; discovery tracks ecology, funding, and sampling — not distance from known neighborhoods. The richer question is *why* the score does not predict deposition.
 
 ---
 
 ## Protein language model embeddings
 
-After validating the CPU discovery strategy, ask whether a protein language model changes the picture.
+**What this means:** frozen ESM2 embeddings improve *annotation* (class recovery) but do **not** replace architectural features for novelty ranking — the two spaces barely agree on which BGCs look novel. Commands and knobs: [`docs/esm.md`](docs/esm.md).
 
-**Hypothesis:** sequence-derived embeddings may capture evolutionary and functional relationships missed by architecture-only features.
+**Classification ablation** (ESM2-650M + length-weighted → [`reports/ablation_metrics.json`](reports/ablation_metrics.json); legacy 150M in parentheses):
 
-[`scripts/run_esm_embed.py`](scripts/run_esm_embed.py) embeds MIBiG CDS translations with **ESM2** via HuggingFace `transformers` and pools per BGC. Current defaults (override with flags):
-
-| Knob | Legacy (150M) | Current default |
-|------|---------------|-----------------|
-| Model | `esm2_t30_150M` | `esm2_t33_650M` |
-| Pooling | uniform mean | **length-weighted** (longer enzymes count more) |
-| Max AA / proteins | 700 / 60 | 1024 / 80 |
-| Cache | BGC matrix only | + protein-level cache + `esm_embed_manifest.json` |
-
-```bash
-uv sync --extra embed
-# full GPU embed (writes esm_embeddings.npy + protein cache + manifest)
-python scripts/run_esm_embed.py
-# re-pool without GPU after the first run
-python scripts/run_esm_embed.py --from-cache --pooling mean
-# legacy 150M mean-pool bake-off
-python scripts/run_esm_embed.py --model facebook/esm2_t30_150M_UR50D --pooling mean --max-aa 700
-uv run bgc-ablation && uv run bgc-novelty-compare
-```
-
-**Classification ablation** (ESM2-650M + length-weighted → [`reports/ablation_metrics.json`](reports/ablation_metrics.json); legacy 150M mean-pool in parentheses):
-
-| Representation | Macro-F1 | Weighted-F1 |
-|----------------|---------:|------------:|
-| Hashed architecture (CPU baseline) | 0.78 | 0.81 |
-| ESM2 alone | **0.80** (legacy: 0.76) | **0.80** (legacy: 0.76) |
-| **Combined (hashed + ESM2)** | **0.84** (legacy: 0.83) | **0.84** (legacy: 0.85) |
+| Representation | Macro-F1 | Weighted-F1 | Interpretation |
+|----------------|---------:|------------:|----------------|
+| Hashed architecture (CPU baseline) | 0.78 | 0.81 | Interpretable baseline |
+| ESM2 alone | **0.80** (0.76) | **0.80** (0.76) | Sequence ≈ architecture for class recovery |
+| **Combined (hashed + ESM2)** | **0.84** (0.83) | **0.84** (0.85) | Complementary — fusion helps annotation |
 
 ![Representation ablation](reports/figures/ablation_representation_comparison.png)
 
-ESM2-650M alone edges the hashed baseline on macro-F1 (0.80 vs 0.78); combined still wins. Labels follow `esm_embed_manifest.json` (`esm2-t33_650M_length_weighted`).
-
-**Result:** ESM improves class recovery but produces substantially different novelty rankings.
-
 **Novelty ranking comparison** (`bgc-novelty-compare` → [`reports/novelty_representation_comparison.json`](reports/novelty_representation_comparison.json)):
 
-| Comparison | Spearman ρ | Top-decile Jaccard |
-|------------|-----------:|-------------------:|
-| Hashed vs. ESM2 novelty | **-0.38** (legacy: -0.42) | **1.7%** (legacy: 1.5%) |
-| Hashed vs. combined | -0.12 (legacy: +0.06) | 10.7% (legacy: 19.5%) |
-| ESM2 vs. combined | — | **67.6%** (legacy: 46.7%) |
+| Comparison | Spearman ρ | Top-decile Jaccard | Interpretation |
+|------------|-----------:|-------------------:|----------------|
+| Hashed vs. ESM2 novelty | **-0.38** | **1.7%** | Nearly orthogonal discovery rankings |
+| Hashed vs. combined | -0.12 | 10.7% | Fusion does not restore architecture novelty |
+| ESM2 vs. combined | — | **67.6%** | Joint space is ESM-dominated |
 
 ![Novelty representation comparison](reports/figures/novelty_representation_comparison.png)
 
-Rankings still barely agree at the top — representation dependence remains. Combined novelty tracks ESM2 more tightly under the 650M setup (Jaccard 68% vs 47% under the legacy 150M bake-off), so the joint space is ESM-dominated.
-
-The combined representation improves class recovery but does not recover the same novelty landscape as architecture features, suggesting that **representation fusion improves annotation but does not necessarily stabilize discovery ranking**.
-
-**Class-stratified disagreement** ([`reports/novelty_disagreement_by_class.csv`](reports/novelty_disagreement_by_class.csv)):
-
-| Class | n | Spearman ρ (hashed vs ESM2) | Top-decile Jaccard |
-|-------|--:|----------------------------:|-------------------:|
-| other | 474 | **-0.40** | 2.2% |
-| NRPS | 538 | **-0.31** | 1.9% |
-| PKS | 695 | -0.27 | 3.7% |
-| terpene | 166 | -0.25 | 0.0% |
-| RiPP | 359 | -0.16 | 1.4% |
-| hybrid | 404 | **+0.23** (legacy: −0.02) | **11.1%** |
-
-![Class-stratified novelty disagreement](reports/figures/novelty_disagreement_by_class.png)
-
-Disagreement is strongest in **other / NRPS**. With ESM2-650M, hybrids flip to a *positive* rank correlation (ρ=+0.23) with modestly higher top-decile overlap (11%) — the rest of the classes still anti-agree.
+**Representation fusion improves annotation but does not stabilize discovery ranking.** Disagreement is strongest in **other / NRPS**; hybrids flip to a modest *positive* correlation under ESM2-650M (ρ=+0.23). Class-level table: [`reports/novelty_disagreement_by_class.csv`](reports/novelty_disagreement_by_class.csv).
 
 ---
 
 ## Learned representation (V3)
 
-Contrastive BGC encoder over ESM2 protein embeddings (set pooling → projection head). Sweep: **13** leakage-safe runs (`scripts/run_encoder_sweep.py` → [`reports/encoder_sweep_results.json`](reports/encoder_sweep_results.json)). Hero config chosen for the cleanest size-confound story, not the highest class-F1:
+**Hero config chosen for the cleanest size-confound story, not the highest class-F1.**
+
+Contrastive BGC encoder over ESM2 protein embeddings (set pooling → projection head). Sweep: **13** leakage-safe runs ([`reports/encoder_sweep_results.json`](reports/encoder_sweep_results.json)). Setup details: [`docs/esm.md`](docs/esm.md).
 
 | Knob | Hero |
 |------|------|
@@ -254,8 +238,6 @@ Contrastive BGC encoder over ESM2 protein embeddings (set pooling → projection
 | Pooling | attention |
 | Embed dim | 256 |
 | Train split | `date_added < 2022-09-16` only (**leakage-safe**) |
-
-Full eval: [`reports/learned_eval_summary.json`](reports/learned_eval_summary.json). Manifest: [`data/processed/learned_embed_manifest.json`](data/processed/learned_embed_manifest.json).
 
 | Check | Architecture (hashed) | Learned (SupCon / attn / 256) |
 |-------|----------------------:|------------------------------:|
@@ -266,26 +248,11 @@ Full eval: [`reports/learned_eval_summary.json`](reports/learned_eval_summary.js
 | p (held-out > control) | 0.997 | **0.45** |
 | Hashed↔learned novelty Spearman | — | −0.13 (top-decile Jaccard **1.3%**) |
 
-†SupCon class-F1 is **label-informed** (same biosynthetic-class labels enter the training loss). Treat it as an upper-bound sanity check that the embedding space is organized, not as an independent discovery of class structure. SimCLR cells in the sweep sit ~0.50–0.63 macro-F1 without that label channel.
+†SupCon class-F1 is **label-informed** — an upper-bound sanity check that the space is organized, not an unsupervised discovery of class structure. SimCLR cells sit ~0.50–0.63 macro-F1 without that label channel.
 
 ![Learned representation summary](reports/figures/learned_representation_summary.png)
 
-![Encoder sweep](reports/figures/encoder_sweep_summary.png)
-
-**Honest read:** the learned space largely removes the architecture-novelty size confound and flips the temporal comparison from clearly worse-than-control to roughly tied with control. That is progress on representation hygiene, not a claim that contrastive novelty predicts which BGCs enter MIBiG next.
-
-```bash
-uv sync --extra train   # torch (+ CUDA on GPU hosts)
-# leakage-safe hero retrain
-uv run bgc-train-encoder --objective supcon --pooling attention --embed-dim 256 --epochs 40 --prospective -v
-# class recovery + novelty + temporal suite
-uv run bgc-learned-eval -v
-# optional hyperparameter sweep (writes encoder_sweep_results.*)
-python scripts/run_encoder_sweep.py --device cuda   # or --quick --device cpu
-```
-
-GPU launch helpers: [`scripts/runpod/launch_train_job.py`](scripts/runpod/launch_train_job.py) (`--sweep` / `--terminate`).
-
+**What this means:** learned representations remove the size confound but still do not solve prospective discovery — progress on representation hygiene, not a claim that contrastive novelty predicts MIBiG deposition.
 ---
 
 ## Apply to new genomes
@@ -332,8 +299,9 @@ Demo ranking (illustration only):
 
 ## Limitations
 
-- Scores reflect **architecture** or **learned embedding** divergence, not proven new chemistry
-- Architecture novelty correlates moderately with cluster size (Spearman **0.55**); the learned hero config largely removes this, but that alone is not discovery signal
+- Scores reflect **architecture** or **learned embedding** divergence, not proven new chemistry or evolutionary innovation
+- The myxobacteria enrichment is novelty *relative to this representation*; lineage-specific “biosynthetic grammar” is an interpretation of that geometric pattern, not a direct evolutionary measurement
+- Architecture novelty correlates moderately with cluster size (Spearman **0.55**); the ≤60-gene control and learned hero config address this, but size is not the only possible confound
 - Neither architecture nor contrastive novelty yet forecasts which entries enter MIBiG next
 - Novelty rankings are **representation-dependent** (hashed vs ESM2 vs learned barely agree at the top)
 - SupCon class-recovery numbers use class labels in training — do not overclaim them as unsupervised structure recovery
@@ -346,13 +314,13 @@ Demo ranking (illustration only):
 
 ## Future directions
 
-Contrastive learning (SimCLR / SupCon over ESM2 protein sets) is implemented and swept; the open question is no longer “can we train an encoder?” but **whether a better biological objective or evaluation design yields a real prospective win**.
+The next gains are more biological than architectural:
 
-Worth exploring next:
-
+- **Why myxobacteria?** Which domain combinations or neighborhood transitions drive the enrichment — a mechanistic reading of the clade signal
+- **Representation disagreement as a discovery filter** — systematically rank BGCs that are ESM-familiar but architecture-novel (the aranazole pattern)
+- **Why novelty ≠ deposition** — taxon bias, chemotype accessibility, and sampling economics as alternatives to “the score is wrong”
 - Self-supervised objectives that do **not** use biosynthetic-class labels (and still keep size confound low)
 - Longer lead-time temporal cutoffs and organism-stratified holdouts
-- Larger predicted-genome prioritization sets (antiSMASH-DB scale)
 
 ---
 
@@ -368,22 +336,7 @@ bash scripts/reproduce.sh
 uv run pytest -q
 ```
 
-Optional GPU path (ESM2-650M + length-weighted):
-
-```bash
-uv sync --extra embed   # torch + transformers
-python scripts/run_esm_embed.py
-uv run bgc-ablation && uv run bgc-novelty-compare
-```
-
-Optional contrastive encoder (requires protein cache from the embed step):
-
-```bash
-uv sync --extra train
-uv run bgc-train-encoder --objective supcon --pooling attention --embed-dim 256 --prospective -v
-uv run bgc-learned-eval -v
-```
-
+Optional GPU path (ESM2 + contrastive encoder): [`docs/esm.md`](docs/esm.md).
 UMAP for 2-D maps: `uv sync --extra umap` (PCA is the default).
 
 ---
@@ -392,11 +345,12 @@ UMAP for 2-D maps: `uv sync --extra umap` (PCA is the default).
 
 ```text
 src/bgcatlas/        package (config, embed_pool, data/antismash, featurize, models, atlas, novelty)
-scripts/             reproduce.sh + run_esm_embed.py (GPU ESM2)
+scripts/             reproduce.sh, run_case_studies.py, run_esm_embed.py
+docs/esm.md          GPU embedding + encoder commands
 uv.lock              locked dependency versions
 data/raw|processed/  MIBiG download + feature matrices (gitignored bulk)
 data/external/       demo predicted BGCs + last apply cache
-reports/             rankings, metrics, figures
+reports/             rankings, metrics, figures, biological_case_studies.json
 tests/               unit tests + antiSMASH fixtures
 .github/workflows/   CI (uv sync + ruff + pytest)
 ```
