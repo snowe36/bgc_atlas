@@ -172,6 +172,101 @@ def novelty_compare_main(argv: list[str] | None = None) -> int:
     return 0
 
 
+def train_encoder_main(argv: list[str] | None = None) -> int:
+    from bgcatlas.config import (
+        DEFAULT_ENCODER_BATCH_SIZE,
+        DEFAULT_ENCODER_EMBED_DIM,
+        DEFAULT_ENCODER_EPOCHS,
+        DEFAULT_ENCODER_FEAT_DROPOUT,
+        DEFAULT_ENCODER_HIDDEN,
+        DEFAULT_ENCODER_KEEP_FRAC,
+        DEFAULT_ENCODER_LR,
+        DEFAULT_ENCODER_OBJECTIVE,
+        DEFAULT_ENCODER_POOLING,
+        DEFAULT_ENCODER_SEED,
+        DEFAULT_ENCODER_TEMPERATURE,
+        DEFAULT_TEMPORAL_CUTOFF,
+    )
+
+    parser = argparse.ArgumentParser(
+        description="Train a contrastive BGC set-encoder over cached ESM2 protein embeddings"
+    )
+    parser.add_argument("-v", "--verbose", action="store_true")
+    parser.add_argument(
+        "--objective",
+        default=DEFAULT_ENCODER_OBJECTIVE,
+        choices=["simclr", "supcon"],
+        help="Contrastive objective",
+    )
+    parser.add_argument(
+        "--pooling",
+        default=DEFAULT_ENCODER_POOLING,
+        choices=["attention", "mean", "deepsets"],
+    )
+    parser.add_argument("--embed-dim", type=int, default=DEFAULT_ENCODER_EMBED_DIM)
+    parser.add_argument("--hidden-dim", type=int, default=DEFAULT_ENCODER_HIDDEN)
+    parser.add_argument("--epochs", type=int, default=DEFAULT_ENCODER_EPOCHS)
+    parser.add_argument("--batch-size", type=int, default=DEFAULT_ENCODER_BATCH_SIZE)
+    parser.add_argument("--lr", type=float, default=DEFAULT_ENCODER_LR)
+    parser.add_argument("--temperature", type=float, default=DEFAULT_ENCODER_TEMPERATURE)
+    parser.add_argument("--keep-frac", type=float, default=DEFAULT_ENCODER_KEEP_FRAC)
+    parser.add_argument("--feat-dropout", type=float, default=DEFAULT_ENCODER_FEAT_DROPOUT)
+    parser.add_argument("--seed", type=int, default=DEFAULT_ENCODER_SEED)
+    parser.add_argument(
+        "--prospective",
+        action="store_true",
+        help=f"Leakage-safe: train only on BGCs with date_added < {DEFAULT_TEMPORAL_CUTOFF}",
+    )
+    parser.add_argument(
+        "--train-cutoff",
+        default=None,
+        help="ISO date; train only on date_added < cutoff (overrides --prospective default)",
+    )
+    parser.add_argument("--device", default=None, help="cuda | mps | cpu (auto if omitted)")
+    args = parser.parse_args(argv)
+    _setup_logging(args.verbose)
+    from bgcatlas.models.train_contrastive import run_train_from_args
+
+    run_train_from_args(
+        objective=args.objective,
+        pooling=args.pooling,
+        embed_dim=args.embed_dim,
+        hidden_dim=args.hidden_dim,
+        epochs=args.epochs,
+        batch_size=args.batch_size,
+        lr=args.lr,
+        temperature=args.temperature,
+        keep_frac=args.keep_frac,
+        feat_dropout=args.feat_dropout,
+        seed=args.seed,
+        train_cutoff=args.train_cutoff,
+        prospective=args.prospective,
+        device=args.device,
+    )
+    return 0
+
+
+def learned_eval_main(argv: list[str] | None = None) -> int:
+    from bgcatlas.config import DEFAULT_NOVELTY_K, DEFAULT_TEMPORAL_CUTOFF
+
+    parser = argparse.ArgumentParser(
+        description="Evaluate learned BGC embeddings: class recovery, novelty, temporal holdout"
+    )
+    parser.add_argument("-v", "--verbose", action="store_true")
+    parser.add_argument("--cv", type=int, default=5)
+    parser.add_argument("-k", type=int, default=DEFAULT_NOVELTY_K)
+    parser.add_argument("--cutoff", default=DEFAULT_TEMPORAL_CUTOFF)
+    parser.add_argument("--n-controls", type=int, default=50)
+    args = parser.parse_args(argv)
+    _setup_logging(args.verbose)
+    from bgcatlas.novelty.learned_eval import run_learned_eval_suite
+
+    run_learned_eval_suite(
+        n_splits=args.cv, k=args.k, cutoff=args.cutoff, n_controls=args.n_controls
+    )
+    return 0
+
+
 if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else ""
     rest = sys.argv[2:]
@@ -186,6 +281,8 @@ if __name__ == "__main__":
         "temporal": temporal_main,
         "ablation": ablation_main,
         "novelty-compare": novelty_compare_main,
+        "train-encoder": train_encoder_main,
+        "learned-eval": learned_eval_main,
     }
     if cmd in dispatch:
         raise SystemExit(dispatch[cmd](rest))

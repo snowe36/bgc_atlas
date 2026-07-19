@@ -1,0 +1,32 @@
+{
+  "n_bgcs": 2636,
+  "n_splits": 5,
+  "learned_representation": "learned_supcon_attention_d256_pre_2022-09-16",
+  "results": {
+    "hashed_architecture": {
+      "model": "rf",
+      "macro_f1": 0.7841851485440968,
+      "weighted_f1": 0.8098003538571367
+    },
+    "esm2": {
+      "model": "logreg",
+      "macro_f1": 0.7954424440221252,
+      "weighted_f1": 0.7971524551013585
+    },
+    "learned_supcon_attention_d256_pre_2022-09-16": {
+      "model": "logreg",
+      "macro_f1": 0.8906249899091131,
+      "weighted_f1": 0.8879038393230826
+    },
+    "combined_hashed+learned_supcon_attention_d256_pre_2022-09-16": {
+      "model": "rf",
+      "macro_f1": 0.8973708743804352,
+      "weighted_f1": 0.8936964481402153
+    },
+    "combined_esm+learned_supcon_attention_d256_pre_2022-09-16": {
+      "model": "rf",
+      "macro_f1": 0.8923745916925648,
+      "weighted_f1": 0.8877242166947034
+    }
+  }
+}
