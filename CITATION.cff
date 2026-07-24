@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: >-
+  If you use this software or the regenerated tables/figures, please cite
+  this repository.
+title: "bgc_atlas: mapping microbial biosynthetic gene cluster space"
+type: software
+version: "0.3.0"
+authors:
+  - family-names: Snow
+    given-names: Eric
+license: MIT
+repository-code: "https://github.com/snowe36/bgc_atlas"
+abstract: >-
+  Mapping microbial biosynthetic gene cluster space to identify unexplored
+  natural product diversity using machine learning, with leakage-aware
+  evaluation of architectural novelty.
+keywords:
+  - biosynthetic gene clusters
+  - natural products
+  - machine learning
+  - microbiology
+  - genome mining
+  - myxobacteria
