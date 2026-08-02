@@ -243,7 +243,7 @@ def main() -> None:
 
     sns.set_theme(style="whitegrid", context="talk")
     fig, axes = plt.subplots(1, 3, figsize=(15.5, 5.0))
-    from bgcatlas.viz.palette import CLADE_COLORS, MUTED, TEXT
+    from bgcatlas.viz.palette import CLADE_COLORS, TEXT
 
     palette = {"Myxobacteria": CLADE_COLORS["Myxobacteria"], "Streptomyces": CLADE_COLORS["Streptomyces"]}
 
