@@ -243,7 +243,9 @@ def main() -> None:
 
     sns.set_theme(style="whitegrid", context="talk")
     fig, axes = plt.subplots(1, 3, figsize=(15.5, 5.0))
-    palette = {"Myxobacteria": "#c44e52", "Streptomyces": "#4c72b0"}
+    from bgcatlas.viz.palette import CLADE_COLORS, MUTED, TEXT
+
+    palette = {"Myxobacteria": CLADE_COLORS["Myxobacteria"], "Streptomyces": CLADE_COLORS["Streptomyces"]}
 
     bar_df = pd.DataFrame(
         [
@@ -281,7 +283,7 @@ def main() -> None:
         y="novelty",
         order=order,
         hue="group",
-        palette={**palette, "Other": "#cccccc"},
+        palette={**palette, "Other": "#D9E2E0"},
         legend=False,
         cut=0,
         inner="quartile",
@@ -314,20 +316,20 @@ def main() -> None:
     qy0 = min(qy0, float(case_pts["dim2"].min()))
     qy1 = max(qy1, float(case_pts["dim2"].max()))
     pad_x, pad_y = 0.12 * (qx1 - qx0), 0.12 * (qy1 - qy0)
-    axes[2].scatter(atlas["dim1"], atlas["dim2"], s=8, c="#dddddd", alpha=0.7, linewidths=0)
+    axes[2].scatter(atlas["dim1"], atlas["dim2"], s=8, c="#D9E2E0", alpha=0.7, linewidths=0)
     myxo_pts = atlas[atlas["is_myxo"]]
     axes[2].scatter(
         myxo_pts["dim1"],
         myxo_pts["dim2"],
         s=22,
-        c="#c44e52",
+        c=CLADE_COLORS["Myxobacteria"],
         alpha=0.85,
         label="Myxobacteria",
         linewidths=0,
     )
     for bid, (label, offset) in labels.items():
         row = atlas.loc[atlas["bgc_id"] == bid].iloc[0]
-        axes[2].scatter([row["dim1"]], [row["dim2"]], s=90, c="#222222", zorder=5)
+        axes[2].scatter([row["dim1"]], [row["dim2"]], s=90, c=TEXT, zorder=5)
         axes[2].annotate(
             label,
             (row["dim1"], row["dim2"]),
@@ -336,7 +338,7 @@ def main() -> None:
             fontsize=9,
             fontweight="bold",
             ha="left" if offset[0] >= 0 else "right",
-            arrowprops={"arrowstyle": "-", "color": "#444444", "lw": 0.8},
+            arrowprops={"arrowstyle": "-", "color": "#5A6F74", "lw": 0.8},
         )
     axes[2].set_xlim(qx0 - pad_x, qx1 + pad_x)
     axes[2].set_ylim(qy0 - pad_y, qy1 + pad_y)

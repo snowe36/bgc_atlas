@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+message: >-
+  If you use this software, please cite this repository and MIBiG as below.
+title: "bgc_atlas: architecture novelty and lineage enrichment on MIBiG"
+type: software
+version: "0.3.0"
+authors:
+  - family-names: Snow
+    given-names: Eric
+license: MIT
+repository-code: "https://github.com/snowe36/bgc_atlas"
+abstract: >-
+  Biosynthetic gene-cluster atlas on MIBiG with architecture featurization,
+  novelty ranking, and a size-controlled myxobacteria enrichment finding —
+  plus a prospective temporal check that novelty does not predict deposition.
+keywords:
+  - biosynthetic gene clusters
+  - MIBiG
+  - natural products
+  - novelty
+  - myxobacteria
+  - machine learning
+preferred-citation:
+  type: generic
+  title: "MIBiG"
+  authors:
+    - name: "MIBiG Consortium"
+  url: "https://mibig.secondarymetabolites.org/"
+  notes: >-
+    Cite MIBiG when redistributing or publishing results derived from the
+    curated BGC repository used by this software.

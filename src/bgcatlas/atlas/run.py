@@ -13,6 +13,7 @@ from sklearn.preprocessing import StandardScaler
 
 from bgcatlas.config import PCA_N_COMPONENTS
 from bgcatlas.paths import FIGURES, PROCESSED, ensure_dirs
+from bgcatlas.viz.palette import CLASS_COLORS, MUTED, PALETTE
 
 LOG = logging.getLogger(__name__)
 
@@ -45,7 +46,7 @@ def _annotate_offframe(ax, coords: np.ndarray, xlim: tuple[float, float], ylim: 
             ha="right",
             va="bottom",
             fontsize=8,
-            color="dimgray",
+            color=MUTED,
         )
 
 
@@ -102,7 +103,7 @@ def run_atlas() -> pd.DataFrame:
         s=18,
         alpha=0.75,
         ax=ax,
-        palette="tab10",
+        palette=CLASS_COLORS,
     )
     ax.set_title(f"Biosynthetic space ({method})")
     ax.set_xlabel(f"{method}-1")
@@ -126,7 +127,7 @@ def run_atlas() -> pd.DataFrame:
         xlim=xlim,
         ylim=ylim,
     )
-    g.map_dataframe(sns.scatterplot, x="dim1", y="dim2", s=10, alpha=0.6, color="steelblue")
+    g.map_dataframe(sns.scatterplot, x="dim1", y="dim2", s=10, alpha=0.6, color=PALETTE["teal"])
     g.figure.suptitle(f"Per-class neighborhoods ({method})", y=1.02)
     g.figure.savefig(FIGURES / "atlas_class_facets.png", dpi=150, bbox_inches="tight")
     plt.close(g.figure)

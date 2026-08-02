@@ -165,14 +165,14 @@ def _plot_sweep(results: list[dict]) -> None:
     # F1 by objective/pooling
     df["cfg"] = df["objective"] + "/" + df["pooling"]
     agg = df.groupby("cfg")["macro_f1_learned"].mean().sort_values()
-    axes[0].barh(agg.index.astype(str), agg.values, color="#4C72B0")
+    axes[0].barh(agg.index.astype(str), agg.values, color="#5FA8A8")
     axes[0].set_xlabel("mean macro-F1 (learned)")
     axes[0].set_title("Class recovery by config")
     axes[0].set_xlim(0, 1)
 
     # Size confound
     agg2 = df.groupby("cfg")["size_confound_learned"].mean().sort_values()
-    axes[1].barh(agg2.index.astype(str), agg2.values, color="#55A868")
+    axes[1].barh(agg2.index.astype(str), agg2.values, color="#8FB996")
     axes[1].axvline(0, color="gray", linestyle="--", linewidth=1)
     axes[1].set_xlabel("mean Spearman(novelty, n_genes)")
     axes[1].set_title("Size confound (lower |ρ| better)")
@@ -180,7 +180,7 @@ def _plot_sweep(results: list[dict]) -> None:
     # Temporal heldout - control
     df["temporal_delta"] = df["temporal_heldout_mean"] - df["temporal_control_mean"]
     agg3 = df.groupby("cfg")["temporal_delta"].mean().sort_values()
-    axes[2].barh(agg3.index.astype(str), agg3.values, color="#C44E52")
+    axes[2].barh(agg3.index.astype(str), agg3.values, color="#E76F51")
     axes[2].axvline(0, color="gray", linestyle="--", linewidth=1)
     axes[2].set_xlabel("heldout − control novelty")
     axes[2].set_title("Prospective signal (want > 0)")
