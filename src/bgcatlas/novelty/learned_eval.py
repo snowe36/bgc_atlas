@@ -415,7 +415,7 @@ def _write_summary_figure(summary: dict) -> None:
     names = list(cr.keys())
     f1s = [cr[n]["macro_f1"] for n in names]
     short = [n.replace("combined_hashed+", "hash+").replace("learned_", "L/")[:22] for n in names]
-    axes[0].barh(short, f1s, color="#4C72B0")
+    axes[0].barh(short, f1s, color="#5FA8A8")
     axes[0].set_xlim(0, 1)
     axes[0].set_xlabel("macro-F1")
     axes[0].set_title("Class recovery")
@@ -426,7 +426,7 @@ def _write_summary_figure(summary: dict) -> None:
     axes[1].bar(
         ["hashed", "learned"],
         [nov["size_confound_spearman_hashed"], nov["size_confound_spearman_learned"]],
-        color=["#DD8452", "#55A868"],
+        color=["#F4A261", "#8FB996"],
     )
     axes[1].axhline(0, color="gray", linestyle="--", linewidth=1)
     axes[1].set_ylabel("Spearman(novelty, n_genes)")
@@ -441,7 +441,7 @@ def _write_summary_figure(summary: dict) -> None:
         temp["heldout_novelty_mean"],
         temp["control_mean"],
     ]
-    colors = ["#DD8452", "#DD8452", "#55A868", "#55A868"]
+    colors = ["#F4A261", "#F4A261", "#8FB996", "#8FB996"]
     axes[2].bar(groups, vals, color=colors)
     axes[2].axhline(0.5, color="gray", linestyle="--", linewidth=1)
     axes[2].set_ylim(0, 1)
