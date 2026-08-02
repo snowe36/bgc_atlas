@@ -9,11 +9,29 @@
 **Question.** Can architecture novelty identify future discoveries?
 **Answer.** Not yet — under a prospective MIBiG time split, architecture novelty underperforms a matched random control (held-out 0.40 vs control 0.50). Architectural novelty and discoverability are not the same thing.
 
+Suite: **BGC (encode)** → [Catalyst](https://github.com/snowe36/catalyst_atlas) (catalyze) → [Metabo](https://github.com/snowe36/metabo_atlas) (observe) → [ABX](https://github.com/snowe36/abx_atlas) (function).
+
 [![CI](https://github.com/snowe36/bgc_atlas/actions/workflows/ci.yml/badge.svg)](https://github.com/snowe36/bgc_atlas/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)
+[![Demo](https://img.shields.io/badge/demo-5%20min-5FA8A8.svg)](demo/)
+[![Citation](https://img.shields.io/badge/CITATION-cff-E9C46A.svg)](CITATION.cff)
 
 Repo: [github.com/snowe36/bgc_atlas](https://github.com/snowe36/bgc_atlas)
+
+---
+
+## 5-minute demo
+
+No fresh MIBiG download required (stages committed hero figures; scores curated predicted BGCs when a local manifold exists):
+
+```bash
+git clone https://github.com/snowe36/bgc_atlas.git && cd bgc_atlas
+bash demo/run_demo.sh
+# or: bgc-demo
+```
+
+Outputs: `demo/outputs/` — start with [`biological_case_studies.png`](reports/figures/biological_case_studies.png).
 
 ---
 
