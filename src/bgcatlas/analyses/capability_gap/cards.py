@@ -7,13 +7,12 @@ from pathlib import Path
 
 import pandas as pd
 
-from bgcatlas.analyses.capability_gap.candidates import best_family_for_bgc
+from bgcatlas.analyses.capability_gap.candidates import best_family_for_bgc, cds_families_homolog
 from bgcatlas.analyses.capability_gap.config import MIN_EXPECTATION, PILOT_GRAMMAR
+from bgcatlas.analyses.capability_gap.homologs import REPRESENTATION
 
-# Candidate maturity: v0 domain bags cannot clear this bar.
-CANDIDATE_SUPPORTED_MIN = 0.6
+CANDIDATE_SUPPORTED_MIN = 0.55
 
-# First-class uncertainty codes (actionable development targets).
 UNCERTAINTY_INSUFFICIENT_FAMILY = "insufficient_family_resolution"
 UNCERTAINTY_MISSING_HOMOLOGY = "missing_homology_cluster"
 UNCERTAINTY_MULTIPLE = "multiple_plausible_candidates"
@@ -27,15 +26,7 @@ def _stars(n: int) -> str:
 
 
 def _stars_from_confidence(c: float) -> str:
-    """Map [0, 1] confidence to 0–5 stars (round half up)."""
     return _stars(int(round(max(0.0, min(1.0, float(c))) * 5)))
-
-
-def _domain_bag_key(family_key: str) -> str:
-    """Prefix so cards never look like catalytic-family accessions."""
-    if family_key.startswith("domain_bag__"):
-        return family_key
-    return f"domain_bag__{family_key}"
 
 
 def _expectation_evidence() -> list[str]:
@@ -46,7 +37,7 @@ def _expectation_evidence() -> list[str]:
     ]
 
 
-def _candidate_evidence_tags(fam: dict | None) -> list[str]:
+def _candidate_evidence_tags(fam: dict | None, *, posthoc_er: str | None = None) -> list[str]:
     if not fam:
         return []
     tags = []
@@ -58,14 +49,14 @@ def _candidate_evidence_tags(fam: dict | None) -> list[str]:
         tags.append("control_depleted")
     if fam.get("evidence_myxo_biased"):
         tags.append("myxo_cooccurrence")
+    # Post-hoc display only — never used in ranking.
+    if posthoc_er:
+        tags.append(posthoc_er)
     return tags
 
 
 def _candidate_confidence(fam: dict | None) -> float:
-    """Association strength only — capped because v0 keys are domain bags.
-
-    Expectation confidence is never folded in here.
-    """
+    """Association strength only — expectation confidence never folded in."""
     if not fam:
         return 0.0
     bits = [
@@ -74,25 +65,28 @@ def _candidate_confidence(fam: dict | None) -> float:
         bool(fam.get("evidence_myxo_biased")),
         bool(fam.get("evidence_synteny")),
     ]
-    # Four binary axes → at most ~0.40 before representation penalty.
-    raw = 0.05 + 0.08 * sum(bits)
+    raw = 0.15 + 0.12 * sum(bits)
     assoc = fam.get("association_score")
     if assoc is not None:
-        raw = max(raw, min(0.45, 0.1 + 0.25 * float(assoc)))
-    # Hard cap: domain-bag identity cannot support mechanistic attribution.
-    return round(min(raw, 0.35), 3)
+        raw = max(raw, min(0.85, 0.2 + 0.45 * max(0.0, float(assoc))))
+    n_mem = int(fam.get("n_members") or 1)
+    if n_mem < 2:
+        raw = min(raw, 0.35)
+    else:
+        raw = min(0.9, raw + 0.05)
+    return round(raw, 3)
 
 
 def _uncertainty_reasons(fam: dict | None, *, n_plausible: int) -> list[str]:
     reasons: list[str] = []
     if fam is None:
         reasons.append(UNCERTAINTY_NO_CANDIDATE)
-        reasons.append(UNCERTAINTY_INSUFFICIENT_FAMILY)
         reasons.append(UNCERTAINTY_MISSING_HOMOLOGY)
         return reasons
-    # v0 representation
-    reasons.append(UNCERTAINTY_INSUFFICIENT_FAMILY)
-    reasons.append(UNCERTAINTY_MISSING_HOMOLOGY)
+    n_mem = int(fam.get("n_members") or 1)
+    if n_mem < 2:
+        reasons.append(UNCERTAINTY_MISSING_HOMOLOGY)
+    # Domain-bag insufficiency no longer applies under homolog90 multi-member clusters.
     if n_plausible >= 2:
         reasons.append(UNCERTAINTY_MULTIPLE)
     if not fam.get("evidence_synteny"):
@@ -110,6 +104,7 @@ def _hypothesis_status(exp_conf: float, cand_conf: float, reasons: list[str]) ->
         cand_conf >= CANDIDATE_SUPPORTED_MIN
         and UNCERTAINTY_INSUFFICIENT_FAMILY not in reasons
         and UNCERTAINTY_NO_CANDIDATE not in reasons
+        and UNCERTAINTY_MISSING_HOMOLOGY not in reasons
     ):
         status.append("candidate_supported")
     else:
@@ -124,12 +119,6 @@ def _discovery_readiness(
     reasons: list[str],
     status: list[str],
 ) -> dict:
-    """Wet-lab interface score — independent of collapsing expectation/candidate.
-
-    Strong expectations with unresolved families are scientifically valuable but
-    not delete-and-assay ready; blocker names the upgrade that unlocks the next
-    experiment.
-    """
     if "candidate_supported" in status:
         score = min(1.0, 0.55 + 0.3 * cand_conf + 0.15 * exp_conf)
         return {
@@ -141,23 +130,31 @@ def _discovery_readiness(
                 "the predicted metabolite shift."
             ),
         }
-    # Primary blocker for v0: family identity, not the gap itself.
     if UNCERTAINTY_NO_CANDIDATE in reasons:
         score = min(0.4, 0.2 + 0.25 * exp_conf)
+        blocker = "no_candidate_in_cluster"
+        next_exp = "No in-cluster homolog candidate scored; inspect protein inventory."
+    elif UNCERTAINTY_MISSING_HOMOLOGY in reasons:
+        score = min(0.45, 0.25 + 0.2 * exp_conf + 0.15 * cand_conf)
+        blocker = "limited_homology"
+        next_exp = "Candidate is a singleton cluster; seek broader homolog support."
+    elif UNCERTAINTY_MULTIPLE in reasons:
+        score = min(0.55, 0.3 + 0.2 * exp_conf + 0.25 * cand_conf)
+        blocker = "multiple_plausible_candidates"
         next_exp = (
-            "Resolve catalytic family identity in-cluster (Pfam/UniRef) before "
-            "designing a knockout."
+            "Multiple homolog families compete; add synteny/structure to disambiguate, "
+            "then design knockout of the leading family."
         )
     else:
-        score = min(0.5, 0.25 + 0.2 * exp_conf + 0.25 * cand_conf)
+        score = min(0.55, 0.3 + 0.2 * exp_conf + 0.25 * cand_conf)
+        blocker = "no_syntenic_support" if UNCERTAINTY_NO_SYNTENY in reasons else "provisional_attribution"
         next_exp = (
-            "Upgrade family representation (Pfam/UniRef); then design knockout "
-            "of the leading family member and assay metabolite shift."
+            "Homolog family scored; strengthen synteny/context evidence before wet-lab design."
         )
     return {
         "confidence": round(score, 3),
         "stars": _stars_from_confidence(score),
-        "blocker": "family_resolution",
+        "blocker": blocker,
         "next_experiment": next_exp,
     }
 
@@ -168,6 +165,7 @@ def _interpretation_summary(
     exp_conf: float,
     fam: dict | None,
     reasons: list[str],
+    posthoc_er: str | None,
 ) -> str:
     exp_clause = (
         f"Architecture strongly predicts {chemistry} "
@@ -175,18 +173,25 @@ def _interpretation_summary(
     )
     if fam is None:
         return (
-            f"{exp_clause}, but no non-core candidate family scored in-cluster. "
+            f"{exp_clause}, but no homolog90 candidate family scored in-cluster. "
             "Capability gap is supported; protein attribution is unresolved."
         )
-    if UNCERTAINTY_INSUFFICIENT_FAMILY in reasons:
+    fk = fam.get("family_key")
+    extra = ""
+    if posthoc_er:
+        extra = " Cluster contains an ER-positive homolog elsewhere (post-hoc annotation)."
+    if UNCERTAINTY_MULTIPLE in reasons:
         return (
-            f"{exp_clause}, but v0 family resolution is insufficient to identify "
-            "the responsible catalytic family. Domain-bag keys are functional labels, "
-            "not Pfam/UniRef catalytic families."
+            f"{exp_clause}; leading homolog family `{fk}` carries association evidence "
+            f"but multiple plausible candidates remain.{extra}"
+        )
+    if UNCERTAINTY_MISSING_HOMOLOGY in reasons:
+        return (
+            f"{exp_clause}; `{fk}` is a singleton homolog cluster — limited family support.{extra}"
         )
     return (
-        f"{exp_clause}; candidate family `{fam.get('family_key')}` carries "
-        f"association evidence but attribution remains provisional."
+        f"{exp_clause}; candidate homolog family `{fk}` carries gap-association evidence "
+        f"(representation={REPRESENTATION}).{extra}"
     )
 
 
@@ -194,15 +199,14 @@ def _n_plausible_in_bgc(
     bgc_id: str,
     families: pd.DataFrame,
     domains: pd.DataFrame,
+    clusters: pd.DataFrame,
     *,
+    capacity: str,
     top_score_frac: float = 0.85,
 ) -> int:
-    """How many ranked families co-occur in this BGC near the top score."""
-    from bgcatlas.analyses.capability_gap.candidates import _cds_families
-
-    if families.empty:
+    if families.empty or clusters.empty:
         return 0
-    present = _cds_families(domains)
+    present = cds_families_homolog(domains, clusters, capacity=capacity)
     present = present[present["bgc_id"].astype(str) == str(bgc_id)]
     if present.empty:
         return 0
@@ -223,21 +227,28 @@ def build_cards(
     *,
     calibration: dict,
     domains: pd.DataFrame | None = None,
+    clusters: pd.DataFrame | None = None,
+    er_positive_families: set[str] | None = None,
+    capacity: str | None = None,
     top_n: int = 6,
 ) -> list[dict]:
     """Assemble dual-confidence hypothesis claims (no single overall score)."""
     if gaps.empty:
         return []
+    cap = capacity or PILOT_GRAMMAR["expected_capacity"]
+    er_pos = er_positive_families or set()
     cards = []
     for i, g in gaps.head(top_n).reset_index(drop=True).iterrows():
         hid = f"MYXO-{i+1:03d}"
         fam = None
         n_plausible = 0
-        if domains is not None and len(families):
-            fam = best_family_for_bgc(str(g["bgc_id"]), families, domains)
-            n_plausible = _n_plausible_in_bgc(str(g["bgc_id"]), families, domains)
-        elif len(families):
-            fam = families.iloc[0].to_dict()
+        if domains is not None and clusters is not None and len(families):
+            fam = best_family_for_bgc(
+                str(g["bgc_id"]), families, domains, clusters=clusters, capacity=cap
+            )
+            n_plausible = _n_plausible_in_bgc(
+                str(g["bgc_id"]), families, domains, clusters, capacity=cap
+            )
 
         exp_conf = float(g["expectation_confidence"])
         gap_p = float(g["capability_gap"])
@@ -245,16 +256,17 @@ def build_cards(
         cand_conf = _candidate_confidence(fam)
         reasons = _uncertainty_reasons(fam, n_plausible=n_plausible)
         status = _hypothesis_status(exp_conf, cand_conf, reasons)
-        evidence_tags = _candidate_evidence_tags(fam)
+        family_key = fam["family_key"] if fam else None
+        posthoc = None
+        if family_key and family_key in er_pos:
+            posthoc = "contains_ER_positive_homolog_elsewhere"
+        evidence_tags = _candidate_evidence_tags(fam, posthoc_er=posthoc)
         readiness = _discovery_readiness(
             exp_conf=exp_conf,
             cand_conf=cand_conf,
             reasons=reasons,
             status=status,
         )
-
-        raw_key = fam["family_key"] if fam else None
-        family_key = _domain_bag_key(raw_key) if raw_key else None
 
         card = {
             "hypothesis_id": hid,
@@ -282,14 +294,18 @@ def build_cards(
             },
             "candidate": {
                 "family_key": family_key,
-                "representation": "domain_bag",
+                "representation": REPRESENTATION,
+                "n_members": int(fam["n_members"]) if fam and fam.get("n_members") else None,
                 "confidence": cand_conf,
                 "stars": _stars_from_confidence(cand_conf),
                 "evidence": evidence_tags,
                 "limitation": (
-                    ["domain_bag_not_catalytic_family"] if fam else ["no_family_scored"]
+                    ["singleton_cluster"]
+                    if fam and int(fam.get("n_members") or 1) < 2
+                    else (["provisional_homolog_attribution"] if fam else ["no_family_scored"])
                 ),
                 "uncertainty_reasons": reasons,
+                "posthoc_annotation": posthoc,
             },
             "discovery_readiness": readiness,
             "hypothesis_status": status,
@@ -299,18 +315,15 @@ def build_cards(
                     exp_conf=exp_conf,
                     fam=fam,
                     reasons=reasons,
+                    posthoc_er=posthoc,
                 ),
             },
             "validation": PILOT_GRAMMAR["validation_hint"],
-            # Future atlas evidence slots (empty in v0 — not a collapsed score).
             "future_evidence": {
                 "active_site_similarity": False,
                 "metabolomics": False,
                 "bioactivity_prior": False,
             },
-            # Priority ranks by expectation / gap strength (gaps pre-sorted), not
-            # candidate confidence — a strong gap with weak attribution outranks
-            # a weaker gap with a noisier family association.
             "priority": i + 1,
             "calibration_gate_ok": bool(calibration.get("calibration_ok")),
         }
@@ -323,14 +336,19 @@ def write_cards_markdown(cards: list[dict], path: Path, *, calibration: dict) ->
     lines = [
         "# Capability-gap hypotheses (pilot: reductive PKS)",
         "",
-        "Inference layer over the atlas: **conditional capability expectations**, not global "
-        "novelty. Each card is a **claim with two independent uncertainties** — expectation "
-        "(does this pathway need this chemistry?) vs candidate (do we know which protein "
-        "performs it?). Discovery readiness is the wet-lab interface. There is no single "
-        "overall confidence score. Cards are ranked by **expectation / gap strength**, "
-        "not candidate confidence.",
+        "**Architecture can predict missing chemistry — even when we cannot yet "
+        "identify the responsible enzyme.**",
         "",
-        "## Calibration gate (frozen v0 baseline)",
+        "Level 1 (architecture → expected chemistry) is frozen and supported. "
+        "Level 2 upgrades candidate identity to **homolog90** clusters (MMseqs2, "
+        "90% identity). Under ER-masking calibration, the architecture-derived "
+        "expectation model recovered hidden ER-associated biology in ~64% of cases. "
+        "Candidate attribution is evaluated separately (Recall@k / MRR / enrichment).",
+        "",
+        "Each card splits **expectation** vs **candidate** uncertainty. Discovery "
+        "readiness is the wet-lab interface. Cards rank by expectation / gap strength.",
+        "",
+        "## Calibration gate (frozen Level-1 baseline)",
         "",
         f"- Counterfactual detection (annotated positives): "
         f"{calibration.get('counterfactual_detection_rate_on_annotated')}",
@@ -384,6 +402,7 @@ def write_cards_markdown(cards: list[dict], path: Path, *, calibration: dict) ->
             f"| Observed inventory | {gap['observed_inventory_note']} |",
             f"| Candidate family | {('`' + cand['family_key'] + '`') if cand['family_key'] else '_(none)_'} |",
             f"| Candidate representation | {cand['representation']} |",
+            f"| Cluster size (n_members) | {cand.get('n_members')} |",
             f"| Priority | {c['priority']} |",
             "",
             "Expectation evidence:",
@@ -398,8 +417,11 @@ def write_cards_markdown(cards: list[dict], path: Path, *, calibration: dict) ->
         else:
             lines.append("- _(none)_")
         lines += ["", "Candidate uncertainty reasons:", ""]
-        for r in cand["uncertainty_reasons"]:
-            lines.append(f"- `{r}`")
+        if cand["uncertainty_reasons"]:
+            for r in cand["uncertainty_reasons"]:
+                lines.append(f"- `{r}`")
+        else:
+            lines.append("- _(none)_")
         lines += [
             "",
             f"**Validation.** {c['validation']}",

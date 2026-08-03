@@ -1,8 +1,12 @@
 # Capability-gap hypotheses (pilot: reductive PKS)
 
-Inference layer over the atlas: **conditional capability expectations**, not global novelty. Each card is a **claim with two independent uncertainties** — expectation (does this pathway need this chemistry?) vs candidate (do we know which protein performs it?). Discovery readiness is the wet-lab interface. There is no single overall confidence score. Cards are ranked by **expectation / gap strength**, not candidate confidence.
+**Architecture can predict missing chemistry — even when we cannot yet identify the responsible enzyme.**
 
-## Calibration gate (frozen v0 baseline)
+Level 1 (architecture → expected chemistry) is frozen and supported. Level 2 upgrades candidate identity to **homolog90** clusters (MMseqs2, 90% identity). Under ER-masking calibration, the architecture-derived expectation model recovered hidden ER-associated biology in ~64% of cases. Candidate attribution is evaluated separately (Recall@k / MRR / enrichment).
+
+Each card splits **expectation** vs **candidate** uncertainty. Discovery readiness is the wet-lab interface. Cards rank by expectation / gap strength.
+
+## Calibration gate (frozen Level-1 baseline)
 
 - Counterfactual detection (annotated positives): 0.6444444444444445
 - Detection on true gaps: 0.411214953271028
@@ -23,14 +27,14 @@ Counterfactual calibration: estimate P(capacity|neighborhood) on the observed at
 | | Confidence |
 |---|---|
 | **Expectation** (architecture → chemistry) | ★★★★☆ (0.80) |
-| **Candidate** (protein attribution) | ☆☆☆☆☆ (0.00) |
-| **Discovery readiness** (wet-lab interface) | ★★☆☆☆ (0.40) |
+| **Candidate** (protein attribution) | ★★☆☆☆ (0.35) |
+| **Discovery readiness** (wet-lab interface) | ★★☆☆☆ (0.45) |
 
-**Blocker.** `family_resolution`
+**Blocker.** `limited_homology`
 
-**Next experiment.** Resolve catalytic family identity in-cluster (Pfam/UniRef) before designing a knockout.
+**Next experiment.** Candidate is a singleton cluster; seek broader homolog support.
 
-**Interpretation.** Architecture strongly predicts enoyl reduction (ER) (expectation confidence 0.80), but no non-core candidate family scored in-cluster. Capability gap is supported; protein attribution is unresolved.
+**Interpretation.** Architecture strongly predicts enoyl reduction (ER) (expectation confidence 0.80); leading homolog family `homolog90__clu_15054` carries association evidence but multiple plausible candidates remain.
 
 | Field | Value |
 |-------|-------|
@@ -39,8 +43,9 @@ Counterfactual calibration: estimate P(capacity|neighborhood) on the observed at
 | Chemistry | enoyl reduction (ER) |
 | Gap type | missing_catalytic_capability |
 | Observed inventory | No annotated enoyl reduction |
-| Candidate family | _(none)_ |
-| Candidate representation | domain_bag |
+| Candidate family | `homolog90__clu_15054` |
+| Candidate representation | homolog90 |
+| Cluster size (n_members) | 1 |
 | Priority | 1 |
 
 Expectation evidence:
@@ -51,13 +56,14 @@ Expectation evidence:
 
 Candidate evidence:
 
-- _(none)_
+- `local_synteny`
+- `control_depleted`
+- `myxo_cooccurrence`
 
 Candidate uncertainty reasons:
 
-- `no_candidate_in_cluster`
-- `insufficient_family_resolution`
 - `missing_homology_cluster`
+- `multiple_plausible_candidates`
 
 **Validation.** Knockout / depletion → accumulation of β-unsaturated intermediate (+2 Da gap vs reduced product).
 
@@ -72,14 +78,14 @@ Candidate uncertainty reasons:
 | | Confidence |
 |---|---|
 | **Expectation** (architecture → chemistry) | ★★★★☆ (0.78) |
-| **Candidate** (protein attribution) | ☆☆☆☆☆ (0.00) |
-| **Discovery readiness** (wet-lab interface) | ★★☆☆☆ (0.39) |
+| **Candidate** (protein attribution) | ★★☆☆☆ (0.35) |
+| **Discovery readiness** (wet-lab interface) | ★★☆☆☆ (0.45) |
 
-**Blocker.** `family_resolution`
+**Blocker.** `limited_homology`
 
-**Next experiment.** Resolve catalytic family identity in-cluster (Pfam/UniRef) before designing a knockout.
+**Next experiment.** Candidate is a singleton cluster; seek broader homolog support.
 
-**Interpretation.** Architecture strongly predicts enoyl reduction (ER) (expectation confidence 0.78), but no non-core candidate family scored in-cluster. Capability gap is supported; protein attribution is unresolved.
+**Interpretation.** Architecture strongly predicts enoyl reduction (ER) (expectation confidence 0.78); leading homolog family `homolog90__clu_03388` carries association evidence but multiple plausible candidates remain.
 
 | Field | Value |
 |-------|-------|
@@ -88,8 +94,9 @@ Candidate uncertainty reasons:
 | Chemistry | enoyl reduction (ER) |
 | Gap type | missing_catalytic_capability |
 | Observed inventory | No annotated enoyl reduction |
-| Candidate family | _(none)_ |
-| Candidate representation | domain_bag |
+| Candidate family | `homolog90__clu_03388` |
+| Candidate representation | homolog90 |
+| Cluster size (n_members) | 1 |
 | Priority | 2 |
 
 Expectation evidence:
@@ -100,13 +107,14 @@ Expectation evidence:
 
 Candidate evidence:
 
-- _(none)_
+- `local_synteny`
+- `control_depleted`
+- `myxo_cooccurrence`
 
 Candidate uncertainty reasons:
 
-- `no_candidate_in_cluster`
-- `insufficient_family_resolution`
 - `missing_homology_cluster`
+- `multiple_plausible_candidates`
 
 **Validation.** Knockout / depletion → accumulation of β-unsaturated intermediate (+2 Da gap vs reduced product).
 
@@ -121,14 +129,14 @@ Candidate uncertainty reasons:
 | | Confidence |
 |---|---|
 | **Expectation** (architecture → chemistry) | ★★★★☆ (0.72) |
-| **Candidate** (protein attribution) | ☆☆☆☆☆ (0.00) |
-| **Discovery readiness** (wet-lab interface) | ★★☆☆☆ (0.38) |
+| **Candidate** (protein attribution) | ★★☆☆☆ (0.35) |
+| **Discovery readiness** (wet-lab interface) | ★★☆☆☆ (0.45) |
 
-**Blocker.** `family_resolution`
+**Blocker.** `limited_homology`
 
-**Next experiment.** Resolve catalytic family identity in-cluster (Pfam/UniRef) before designing a knockout.
+**Next experiment.** Candidate is a singleton cluster; seek broader homolog support.
 
-**Interpretation.** Architecture strongly predicts enoyl reduction (ER) (expectation confidence 0.72), but no non-core candidate family scored in-cluster. Capability gap is supported; protein attribution is unresolved.
+**Interpretation.** Architecture strongly predicts enoyl reduction (ER) (expectation confidence 0.72); leading homolog family `homolog90__clu_00770` carries association evidence but multiple plausible candidates remain.
 
 | Field | Value |
 |-------|-------|
@@ -137,8 +145,9 @@ Candidate uncertainty reasons:
 | Chemistry | enoyl reduction (ER) |
 | Gap type | missing_catalytic_capability |
 | Observed inventory | No annotated enoyl reduction |
-| Candidate family | _(none)_ |
-| Candidate representation | domain_bag |
+| Candidate family | `homolog90__clu_00770` |
+| Candidate representation | homolog90 |
+| Cluster size (n_members) | 1 |
 | Priority | 3 |
 
 Expectation evidence:
@@ -149,13 +158,14 @@ Expectation evidence:
 
 Candidate evidence:
 
-- _(none)_
+- `local_synteny`
+- `control_depleted`
+- `myxo_cooccurrence`
 
 Candidate uncertainty reasons:
 
-- `no_candidate_in_cluster`
-- `insufficient_family_resolution`
 - `missing_homology_cluster`
+- `multiple_plausible_candidates`
 
 **Validation.** Knockout / depletion → accumulation of β-unsaturated intermediate (+2 Da gap vs reduced product).
 
@@ -170,14 +180,14 @@ Candidate uncertainty reasons:
 | | Confidence |
 |---|---|
 | **Expectation** (architecture → chemistry) | ★★★★☆ (0.70) |
-| **Candidate** (protein attribution) | ★☆☆☆☆ (0.21) |
+| **Candidate** (protein attribution) | ★★☆☆☆ (0.35) |
 | **Discovery readiness** (wet-lab interface) | ★★☆☆☆ (0.44) |
 
-**Blocker.** `family_resolution`
+**Blocker.** `limited_homology`
 
-**Next experiment.** Upgrade family representation (Pfam/UniRef); then design knockout of the leading family member and assay metabolite shift.
+**Next experiment.** Candidate is a singleton cluster; seek broader homolog support.
 
-**Interpretation.** Architecture strongly predicts enoyl reduction (ER) (expectation confidence 0.70), but v0 family resolution is insufficient to identify the responsible catalytic family. Domain-bag keys are functional labels, not Pfam/UniRef catalytic families.
+**Interpretation.** Architecture strongly predicts enoyl reduction (ER) (expectation confidence 0.70); leading homolog family `homolog90__clu_15502` carries association evidence but multiple plausible candidates remain.
 
 | Field | Value |
 |-------|-------|
@@ -186,8 +196,9 @@ Candidate uncertainty reasons:
 | Chemistry | enoyl reduction (ER) |
 | Gap type | missing_catalytic_capability |
 | Observed inventory | No annotated enoyl reduction |
-| Candidate family | `domain_bag__Redox` |
-| Candidate representation | domain_bag |
+| Candidate family | `homolog90__clu_15502` |
+| Candidate representation | homolog90 |
+| Cluster size (n_members) | 1 |
 | Priority | 4 |
 
 Expectation evidence:
@@ -199,12 +210,13 @@ Expectation evidence:
 Candidate evidence:
 
 - `local_synteny`
-- `gap_cooccurrence`
+- `control_depleted`
+- `myxo_cooccurrence`
 
 Candidate uncertainty reasons:
 
-- `insufficient_family_resolution`
 - `missing_homology_cluster`
+- `multiple_plausible_candidates`
 
 **Validation.** Knockout / depletion → accumulation of β-unsaturated intermediate (+2 Da gap vs reduced product).
 
@@ -219,14 +231,14 @@ Candidate uncertainty reasons:
 | | Confidence |
 |---|---|
 | **Expectation** (architecture → chemistry) | ★★★☆☆ (0.65) |
-| **Candidate** (protein attribution) | ★☆☆☆☆ (0.21) |
+| **Candidate** (protein attribution) | ★★☆☆☆ (0.35) |
 | **Discovery readiness** (wet-lab interface) | ★★☆☆☆ (0.43) |
 
-**Blocker.** `family_resolution`
+**Blocker.** `limited_homology`
 
-**Next experiment.** Upgrade family representation (Pfam/UniRef); then design knockout of the leading family member and assay metabolite shift.
+**Next experiment.** Candidate is a singleton cluster; seek broader homolog support.
 
-**Interpretation.** Architecture strongly predicts enoyl reduction (ER) (expectation confidence 0.65), but v0 family resolution is insufficient to identify the responsible catalytic family. Domain-bag keys are functional labels, not Pfam/UniRef catalytic families.
+**Interpretation.** Architecture strongly predicts enoyl reduction (ER) (expectation confidence 0.65); leading homolog family `homolog90__clu_14034` carries association evidence but multiple plausible candidates remain.
 
 | Field | Value |
 |-------|-------|
@@ -235,8 +247,9 @@ Candidate uncertainty reasons:
 | Chemistry | enoyl reduction (ER) |
 | Gap type | missing_catalytic_capability |
 | Observed inventory | No annotated enoyl reduction |
-| Candidate family | `domain_bag__Hydrolase` |
-| Candidate representation | domain_bag |
+| Candidate family | `homolog90__clu_14034` |
+| Candidate representation | homolog90 |
+| Cluster size (n_members) | 1 |
 | Priority | 5 |
 
 Expectation evidence:
@@ -248,11 +261,11 @@ Expectation evidence:
 Candidate evidence:
 
 - `local_synteny`
-- `gap_cooccurrence`
+- `control_depleted`
+- `myxo_cooccurrence`
 
 Candidate uncertainty reasons:
 
-- `insufficient_family_resolution`
 - `missing_homology_cluster`
 - `multiple_plausible_candidates`
 
@@ -269,14 +282,14 @@ Candidate uncertainty reasons:
 | | Confidence |
 |---|---|
 | **Expectation** (architecture → chemistry) | ★★★☆☆ (0.62) |
-| **Candidate** (protein attribution) | ★☆☆☆☆ (0.21) |
+| **Candidate** (protein attribution) | ★★☆☆☆ (0.35) |
 | **Discovery readiness** (wet-lab interface) | ★★☆☆☆ (0.43) |
 
-**Blocker.** `family_resolution`
+**Blocker.** `limited_homology`
 
-**Next experiment.** Upgrade family representation (Pfam/UniRef); then design knockout of the leading family member and assay metabolite shift.
+**Next experiment.** Candidate is a singleton cluster; seek broader homolog support.
 
-**Interpretation.** Architecture strongly predicts enoyl reduction (ER) (expectation confidence 0.62), but v0 family resolution is insufficient to identify the responsible catalytic family. Domain-bag keys are functional labels, not Pfam/UniRef catalytic families.
+**Interpretation.** Architecture strongly predicts enoyl reduction (ER) (expectation confidence 0.62); leading homolog family `homolog90__clu_23603` carries association evidence but multiple plausible candidates remain.
 
 | Field | Value |
 |-------|-------|
@@ -285,8 +298,9 @@ Candidate uncertainty reasons:
 | Chemistry | enoyl reduction (ER) |
 | Gap type | missing_catalytic_capability |
 | Observed inventory | No annotated enoyl reduction |
-| Candidate family | `domain_bag__Hydrolase` |
-| Candidate representation | domain_bag |
+| Candidate family | `homolog90__clu_23603` |
+| Candidate representation | homolog90 |
+| Cluster size (n_members) | 1 |
 | Priority | 6 |
 
 Expectation evidence:
@@ -298,11 +312,11 @@ Expectation evidence:
 Candidate evidence:
 
 - `local_synteny`
-- `gap_cooccurrence`
+- `control_depleted`
+- `myxo_cooccurrence`
 
 Candidate uncertainty reasons:
 
-- `insufficient_family_resolution`
 - `missing_homology_cluster`
 - `multiple_plausible_candidates`
 

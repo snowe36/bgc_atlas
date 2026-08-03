@@ -12,5 +12,6 @@
   "p_true_gaps_vs_nonpilot_winrate": 0.906068650590511,
   "min_expectation": 0.55,
   "calibration_ok": true,
-  "note": "Counterfactual calibration: estimate P(capacity|neighborhood) on the observed atlas, then ask whether annotated-positive pilot BGCs would clear the gap threshold if their capacity annotation were absent. Masking all positives before fitting P(.) is invalid \u2014 it erases the neighborhood prior."
+  "note": "Counterfactual calibration: estimate P(capacity|neighborhood) on the observed atlas, then ask whether annotated-positive pilot BGCs would clear the gap threshold if their capacity annotation were absent. Masking all positives before fitting P(.) is invalid \u2014 it erases the neighborhood prior.",
+  "calibration_unchanged_vs_frozen_baseline": true
 }

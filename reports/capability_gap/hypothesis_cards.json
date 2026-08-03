@@ -26,32 +26,37 @@
       "stars": "\u2605\u2605\u2605\u2605\u2606"
     },
     "candidate": {
-      "family_key": null,
-      "representation": "domain_bag",
-      "confidence": 0.0,
-      "stars": "\u2606\u2606\u2606\u2606\u2606",
-      "evidence": [],
+      "family_key": "homolog90__clu_15054",
+      "representation": "homolog90",
+      "n_members": 1,
+      "confidence": 0.35,
+      "stars": "\u2605\u2605\u2606\u2606\u2606",
+      "evidence": [
+        "local_synteny",
+        "control_depleted",
+        "myxo_cooccurrence"
+      ],
       "limitation": [
-        "no_family_scored"
+        "singleton_cluster"
       ],
       "uncertainty_reasons": [
-        "no_candidate_in_cluster",
-        "insufficient_family_resolution",
-        "missing_homology_cluster"
-      ]
+        "missing_homology_cluster",
+        "multiple_plausible_candidates"
+      ],
+      "posthoc_annotation": null
     },
     "discovery_readiness": {
-      "confidence": 0.4,
+      "confidence": 0.45,
       "stars": "\u2605\u2605\u2606\u2606\u2606",
-      "blocker": "family_resolution",
-      "next_experiment": "Resolve catalytic family identity in-cluster (Pfam/UniRef) before designing a knockout."
+      "blocker": "limited_homology",
+      "next_experiment": "Candidate is a singleton cluster; seek broader homolog support."
     },
     "hypothesis_status": [
       "expectation_supported",
       "candidate_unresolved"
     ],
     "interpretation": {
-      "summary": "Architecture strongly predicts enoyl reduction (ER) (expectation confidence 0.80), but no non-core candidate family scored in-cluster. Capability gap is supported; protein attribution is unresolved."
+      "summary": "Architecture strongly predicts enoyl reduction (ER) (expectation confidence 0.80); leading homolog family `homolog90__clu_15054` carries association evidence but multiple plausible candidates remain."
     },
     "validation": "Knockout / depletion \u2192 accumulation of \u03b2-unsaturated intermediate (+2 Da gap vs reduced product).",
     "future_evidence": {
@@ -89,32 +94,37 @@
       "stars": "\u2605\u2605\u2605\u2605\u2606"
     },
     "candidate": {
-      "family_key": null,
-      "representation": "domain_bag",
-      "confidence": 0.0,
-      "stars": "\u2606\u2606\u2606\u2606\u2606",
-      "evidence": [],
+      "family_key": "homolog90__clu_03388",
+      "representation": "homolog90",
+      "n_members": 1,
+      "confidence": 0.35,
+      "stars": "\u2605\u2605\u2606\u2606\u2606",
+      "evidence": [
+        "local_synteny",
+        "control_depleted",
+        "myxo_cooccurrence"
+      ],
       "limitation": [
-        "no_family_scored"
+        "singleton_cluster"
       ],
       "uncertainty_reasons": [
-        "no_candidate_in_cluster",
-        "insufficient_family_resolution",
-        "missing_homology_cluster"
-      ]
+        "missing_homology_cluster",
+        "multiple_plausible_candidates"
+      ],
+      "posthoc_annotation": null
     },
     "discovery_readiness": {
-      "confidence": 0.394,
+      "confidence": 0.45,
       "stars": "\u2605\u2605\u2606\u2606\u2606",
-      "blocker": "family_resolution",
-      "next_experiment": "Resolve catalytic family identity in-cluster (Pfam/UniRef) before designing a knockout."
+      "blocker": "limited_homology",
+      "next_experiment": "Candidate is a singleton cluster; seek broader homolog support."
     },
     "hypothesis_status": [
       "expectation_supported",
       "candidate_unresolved"
     ],
     "interpretation": {
-      "summary": "Architecture strongly predicts enoyl reduction (ER) (expectation confidence 0.78), but no non-core candidate family scored in-cluster. Capability gap is supported; protein attribution is unresolved."
+      "summary": "Architecture strongly predicts enoyl reduction (ER) (expectation confidence 0.78); leading homolog family `homolog90__clu_03388` carries association evidence but multiple plausible candidates remain."
     },
     "validation": "Knockout / depletion \u2192 accumulation of \u03b2-unsaturated intermediate (+2 Da gap vs reduced product).",
     "future_evidence": {
@@ -152,32 +162,37 @@
       "stars": "\u2605\u2605\u2605\u2605\u2606"
     },
     "candidate": {
-      "family_key": null,
-      "representation": "domain_bag",
-      "confidence": 0.0,
-      "stars": "\u2606\u2606\u2606\u2606\u2606",
-      "evidence": [],
+      "family_key": "homolog90__clu_00770",
+      "representation": "homolog90",
+      "n_members": 1,
+      "confidence": 0.35,
+      "stars": "\u2605\u2605\u2606\u2606\u2606",
+      "evidence": [
+        "local_synteny",
+        "control_depleted",
+        "myxo_cooccurrence"
+      ],
       "limitation": [
-        "no_family_scored"
+        "singleton_cluster"
       ],
       "uncertainty_reasons": [
-        "no_candidate_in_cluster",
-        "insufficient_family_resolution",
-        "missing_homology_cluster"
-      ]
+        "missing_homology_cluster",
+        "multiple_plausible_candidates"
+      ],
+      "posthoc_annotation": null
     },
     "discovery_readiness": {
-      "confidence": 0.381,
+      "confidence": 0.448,
       "stars": "\u2605\u2605\u2606\u2606\u2606",
-      "blocker": "family_resolution",
-      "next_experiment": "Resolve catalytic family identity in-cluster (Pfam/UniRef) before designing a knockout."
+      "blocker": "limited_homology",
+      "next_experiment": "Candidate is a singleton cluster; seek broader homolog support."
     },
     "hypothesis_status": [
       "expectation_supported",
       "candidate_unresolved"
     ],
     "interpretation": {
-      "summary": "Architecture strongly predicts enoyl reduction (ER) (expectation confidence 0.72), but no non-core candidate family scored in-cluster. Capability gap is supported; protein attribution is unresolved."
+      "summary": "Architecture strongly predicts enoyl reduction (ER) (expectation confidence 0.72); leading homolog family `homolog90__clu_00770` carries association evidence but multiple plausible candidates remain."
     },
     "validation": "Knockout / depletion \u2192 accumulation of \u03b2-unsaturated intermediate (+2 Da gap vs reduced product).",
     "future_evidence": {
@@ -215,34 +230,37 @@
       "stars": "\u2605\u2605\u2605\u2605\u2606"
     },
     "candidate": {
-      "family_key": "domain_bag__Redox",
-      "representation": "domain_bag",
-      "confidence": 0.21,
-      "stars": "\u2605\u2606\u2606\u2606\u2606",
+      "family_key": "homolog90__clu_15502",
+      "representation": "homolog90",
+      "n_members": 1,
+      "confidence": 0.35,
+      "stars": "\u2605\u2605\u2606\u2606\u2606",
       "evidence": [
         "local_synteny",
-        "gap_cooccurrence"
+        "control_depleted",
+        "myxo_cooccurrence"
       ],
       "limitation": [
-        "domain_bag_not_catalytic_family"
+        "singleton_cluster"
       ],
       "uncertainty_reasons": [
-        "insufficient_family_resolution",
-        "missing_homology_cluster"
-      ]
+        "missing_homology_cluster",
+        "multiple_plausible_candidates"
+      ],
+      "posthoc_annotation": null
     },
     "discovery_readiness": {
       "confidence": 0.443,
       "stars": "\u2605\u2605\u2606\u2606\u2606",
-      "blocker": "family_resolution",
-      "next_experiment": "Upgrade family representation (Pfam/UniRef); then design knockout of the leading family member and assay metabolite shift."
+      "blocker": "limited_homology",
+      "next_experiment": "Candidate is a singleton cluster; seek broader homolog support."
     },
     "hypothesis_status": [
       "expectation_supported",
       "candidate_unresolved"
     ],
     "interpretation": {
-      "summary": "Architecture strongly predicts enoyl reduction (ER) (expectation confidence 0.70), but v0 family resolution is insufficient to identify the responsible catalytic family. Domain-bag keys are functional labels, not Pfam/UniRef catalytic families."
+      "summary": "Architecture strongly predicts enoyl reduction (ER) (expectation confidence 0.70); leading homolog family `homolog90__clu_15502` carries association evidence but multiple plausible candidates remain."
     },
     "validation": "Knockout / depletion \u2192 accumulation of \u03b2-unsaturated intermediate (+2 Da gap vs reduced product).",
     "future_evidence": {
@@ -280,35 +298,37 @@
       "stars": "\u2605\u2605\u2605\u2606\u2606"
     },
     "candidate": {
-      "family_key": "domain_bag__Hydrolase",
-      "representation": "domain_bag",
-      "confidence": 0.21,
-      "stars": "\u2605\u2606\u2606\u2606\u2606",
+      "family_key": "homolog90__clu_14034",
+      "representation": "homolog90",
+      "n_members": 1,
+      "confidence": 0.35,
+      "stars": "\u2605\u2605\u2606\u2606\u2606",
       "evidence": [
         "local_synteny",
-        "gap_cooccurrence"
+        "control_depleted",
+        "myxo_cooccurrence"
       ],
       "limitation": [
-        "domain_bag_not_catalytic_family"
+        "singleton_cluster"
       ],
       "uncertainty_reasons": [
-        "insufficient_family_resolution",
         "missing_homology_cluster",
         "multiple_plausible_candidates"
-      ]
+      ],
+      "posthoc_annotation": null
     },
     "discovery_readiness": {
       "confidence": 0.432,
       "stars": "\u2605\u2605\u2606\u2606\u2606",
-      "blocker": "family_resolution",
-      "next_experiment": "Upgrade family representation (Pfam/UniRef); then design knockout of the leading family member and assay metabolite shift."
+      "blocker": "limited_homology",
+      "next_experiment": "Candidate is a singleton cluster; seek broader homolog support."
     },
     "hypothesis_status": [
       "expectation_supported",
       "candidate_unresolved"
     ],
     "interpretation": {
-      "summary": "Architecture strongly predicts enoyl reduction (ER) (expectation confidence 0.65), but v0 family resolution is insufficient to identify the responsible catalytic family. Domain-bag keys are functional labels, not Pfam/UniRef catalytic families."
+      "summary": "Architecture strongly predicts enoyl reduction (ER) (expectation confidence 0.65); leading homolog family `homolog90__clu_14034` carries association evidence but multiple plausible candidates remain."
     },
     "validation": "Knockout / depletion \u2192 accumulation of \u03b2-unsaturated intermediate (+2 Da gap vs reduced product).",
     "future_evidence": {
@@ -346,35 +366,37 @@
       "stars": "\u2605\u2605\u2605\u2606\u2606"
     },
     "candidate": {
-      "family_key": "domain_bag__Hydrolase",
-      "representation": "domain_bag",
-      "confidence": 0.21,
-      "stars": "\u2605\u2606\u2606\u2606\u2606",
+      "family_key": "homolog90__clu_23603",
+      "representation": "homolog90",
+      "n_members": 1,
+      "confidence": 0.35,
+      "stars": "\u2605\u2605\u2606\u2606\u2606",
       "evidence": [
         "local_synteny",
-        "gap_cooccurrence"
+        "control_depleted",
+        "myxo_cooccurrence"
       ],
       "limitation": [
-        "domain_bag_not_catalytic_family"
+        "singleton_cluster"
       ],
       "uncertainty_reasons": [
-        "insufficient_family_resolution",
         "missing_homology_cluster",
         "multiple_plausible_candidates"
-      ]
+      ],
+      "posthoc_annotation": null
     },
     "discovery_readiness": {
       "confidence": 0.427,
       "stars": "\u2605\u2605\u2606\u2606\u2606",
-      "blocker": "family_resolution",
-      "next_experiment": "Upgrade family representation (Pfam/UniRef); then design knockout of the leading family member and assay metabolite shift."
+      "blocker": "limited_homology",
+      "next_experiment": "Candidate is a singleton cluster; seek broader homolog support."
     },
     "hypothesis_status": [
       "expectation_supported",
       "candidate_unresolved"
     ],
     "interpretation": {
-      "summary": "Architecture strongly predicts enoyl reduction (ER) (expectation confidence 0.62), but v0 family resolution is insufficient to identify the responsible catalytic family. Domain-bag keys are functional labels, not Pfam/UniRef catalytic families."
+      "summary": "Architecture strongly predicts enoyl reduction (ER) (expectation confidence 0.62); leading homolog family `homolog90__clu_23603` carries association evidence but multiple plausible candidates remain."
     },
     "validation": "Knockout / depletion \u2192 accumulation of \u03b2-unsaturated intermediate (+2 Da gap vs reduced product).",
     "future_evidence": {

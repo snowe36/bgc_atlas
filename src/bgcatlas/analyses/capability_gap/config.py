@@ -82,3 +82,11 @@ REDOX_HINT_DOMAINS = {
     "PF08659",
     "PF14765",
 }
+
+# Frozen Level-1 calibration baseline (ER-masking). Candidate upgrades must not move these.
+FROZEN_CALIBRATION_BASELINE = {
+    "counterfactual_detection_rate_on_annotated": 0.6444444444444445,
+    "p_annotated_vs_nonpilot_winrate": 0.9744439058544728,
+    "calibration_ok": True,
+}
+CALIBRATION_FREEZE_ATOL = 1e-6

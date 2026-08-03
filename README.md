@@ -9,7 +9,7 @@
 **Question.** Can architecture novelty identify future discoveries?
 **Answer.** Not yet — under a prospective MIBiG time split, architecture novelty underperforms a matched random control (held-out 0.40 vs control 0.50). Architectural novelty and discoverability are not the same thing.
 
-`bgc_atlas` does **not** predict discovery. It quantifies architectural organization, tests whether novelty is meaningful, and identifies lineage-associated biosynthetic design grammars (`bgc-myxo-grammar`).
+`bgc_atlas` does **not** predict discovery. It quantifies architectural organization, tests whether novelty is meaningful, identifies lineage-associated biosynthetic design grammars (`bgc-myxo-grammar`), and asks whether architecture can constrain **missing chemistry** before the responsible enzyme is known (`bgc-capability-gap`).
 
 Suite: **BGC (encode)** → [Catalyst](https://github.com/snowe36/catalyst_atlas) (catalyze) → [Metabo](https://github.com/snowe36/metabo_atlas) (observe) → [ABX](https://github.com/snowe36/abx_atlas) (function).
 
@@ -47,6 +47,7 @@ Outputs: `demo/outputs/` — start with [`biological_case_studies.png`](reports/
 ✓  Prospective: novelty does not predict MIBiG deposition
 ✓  Hashed architecture vs ESM novelty barely agree (ρ=−0.38, top-decile Jaccard 1.7%)
 ✓  Learned SupCon removes size correlation — still does not predict discovery
+✓  Architecture predicts missing chemistry (capability gaps) before enzyme ID
 ```
 
 Without the ≤60-gene control, the story collapses to “myxobacteria have weird giant BGCs.” With it: myxobacteria appear to explore different architectural design space. Full stats: [`reports/biological_case_studies.json`](reports/biological_case_studies.json).
@@ -193,18 +194,31 @@ Outputs: [`reports/myxo_grammar_report.md`](reports/myxo_grammar_report.md), [`r
 
 ### Capability-gap hypotheses (inference layer)
 
-Atlases are priors; this layer emits **family-level mechanistic hypotheses** from conditional expectation gaps — `P(capacity | architecture neighborhood)` — not global novelty.
+**Architecture can predict missing chemistry — even when we cannot yet identify the responsible enzyme.**
+
+That is a pathway-level result, not a failed enzyme call. Level 1 (architecture → expected chemistry) is a different inference problem from Level 2 (chemistry → responsible protein family).
+
+We asked whether biosynthetic architecture could identify missing catalytic capabilities independent of direct gene annotation. Using k-nearest-neighbor architecture neighborhoods, we estimated conditional capability expectations and identified BGCs whose observed inventories departed from neighborhood expectations. In myxobacterial reductive PKS neighborhoods, this recovered reproducible **enoyl-reduction** gaps. Under ER-masking calibration, the architecture-derived expectation model recovered hidden ER-associated biology in **~64%** of cases (pilot vs non-pilot win-rate ~97%), showing that pathway neighborhoods contain predictive information about missing catalytic capabilities. Candidate attribution remains unresolved under coarse domain-bag family keys — the current boundary between pathway-level inference and enzyme-level assignment.
+
+| Level | Inference | Status |
+|-------|-----------|--------|
+| 1 | Architecture → expected chemistry | ✓ frozen |
+| 2 | Expected chemistry → protein family | homolog90 (MMseqs2 90%) |
+| 3–4 | Mechanism → metabolite / phenotype | future |
+
+**Frozen for further upgrades.** Neighborhood definition, capability probabilities, gap scoring, and calibration stay fixed. Level 2 replaces domain bags with **homolog90** sequence clusters. Next: Pfam/UniRef / Catalyst — still without retuning Level 1. Success metric: candidate uncertainty movement + Recall@k / enrichment@k in `candidate_level2_metrics.json`.
 
 ```bash
 uv run --no-sync bgc-capability-gap
 ```
 
-Pilot: [`reports/capability_gap_hypotheses.md`](reports/capability_gap_hypotheses.md) (calibration gate + `MYXO-00N` cards). Details: [`analyses/capability_gap/`](analyses/capability_gap/).
+Cards: [`reports/capability_gap_hypotheses.md`](reports/capability_gap_hypotheses.md). Details: [`analyses/capability_gap/`](analyses/capability_gap/).
 
 ---
 
 ## Future directions
 
+- **Candidate identity** — homolog90 done; next Pfam/UniRef / Catalyst with Level 1 frozen
 - **Representation disagreement as a filter** — ESM-familiar but architecture-novel (aranazole pattern)
 - **Why novelty ≠ deposition** — taxon bias, accessibility, sampling economics
 - Self-supervised objectives without class labels that keep size confound low
