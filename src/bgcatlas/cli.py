@@ -239,6 +239,18 @@ def train_encoder_main(argv: list[str] | None = None) -> int:
     return 0
 
 
+def _myxo_grammar_main(argv: list[str] | None = None) -> int:
+    from bgcatlas.analyses.myxo_grammar.run import run_myxo_grammar_main
+
+    return run_myxo_grammar_main(argv)
+
+
+def _capability_gap_main(argv: list[str] | None = None) -> int:
+    from bgcatlas.analyses.capability_gap.run import run_capability_gap_main
+
+    return run_capability_gap_main(argv)
+
+
 def learned_eval_main(argv: list[str] | None = None) -> int:
     from bgcatlas.config import DEFAULT_NOVELTY_K, DEFAULT_TEMPORAL_CUTOFF
 
@@ -274,6 +286,8 @@ if __name__ == "__main__":
         "novelty-compare": novelty_compare_main,
         "train-encoder": train_encoder_main,
         "learned-eval": learned_eval_main,
+        "myxo-grammar": _myxo_grammar_main,
+        "capability-gap": _capability_gap_main,
     }
     if cmd in dispatch:
         raise SystemExit(dispatch[cmd](rest))

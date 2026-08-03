@@ -1,0 +1,352 @@
+[
+  {
+    "hypothesis_id": "MYXO-001",
+    "bgc_id": "BGC0001051",
+    "organism": "Sorangium cellulosum",
+    "biosynth_class": "hybrid",
+    "architecture": {
+      "neighborhood": "reductive_pks",
+      "expectation": {
+        "capability": "enoyl_reduction",
+        "chemistry": "enoyl reduction (ER)",
+        "confidence": 0.8,
+        "stars": "\u2605\u2605\u2605\u2605\u2606",
+        "evidence": [
+          "enriched_DH_KR_grammar",
+          "kNN_capacity_probability",
+          "matched_myxo_manifold"
+        ]
+      }
+    },
+    "capability_gap": {
+      "gap_type": "missing_catalytic_capability",
+      "capability_probability": 0.8,
+      "observed_inventory": false,
+      "observed_inventory_note": "No annotated enoyl reduction",
+      "stars": "\u2605\u2605\u2605\u2605\u2606"
+    },
+    "candidate": {
+      "family_key": null,
+      "representation": "domain_bag",
+      "confidence": 0.0,
+      "stars": "\u2606\u2606\u2606\u2606\u2606",
+      "evidence": [],
+      "limitation": [
+        "no_family_scored"
+      ],
+      "uncertainty_reasons": [
+        "no_candidate_in_cluster",
+        "insufficient_family_resolution",
+        "missing_homology_cluster"
+      ]
+    },
+    "hypothesis_status": [
+      "expectation_supported",
+      "candidate_unresolved"
+    ],
+    "interpretation": {
+      "summary": "Architecture strongly predicts enoyl reduction (ER) (expectation confidence 0.80), but no non-core candidate family scored in-cluster. Capability gap is supported; protein attribution is unresolved."
+    },
+    "validation": "Knockout / depletion \u2192 accumulation of \u03b2-unsaturated intermediate (+2 Da gap vs reduced product).",
+    "future_evidence": {
+      "active_site_similarity": false,
+      "metabolomics": false,
+      "bioactivity_prior": false
+    },
+    "priority": 1,
+    "calibration_gate_ok": true
+  },
+  {
+    "hypothesis_id": "MYXO-002",
+    "bgc_id": "BGC0000184",
+    "organism": "Sorangium cellulosum",
+    "biosynth_class": "PKS",
+    "architecture": {
+      "neighborhood": "reductive_pks",
+      "expectation": {
+        "capability": "enoyl_reduction",
+        "chemistry": "enoyl reduction (ER)",
+        "confidence": 0.775,
+        "stars": "\u2605\u2605\u2605\u2605\u2606",
+        "evidence": [
+          "enriched_DH_KR_grammar",
+          "kNN_capacity_probability",
+          "matched_myxo_manifold"
+        ]
+      }
+    },
+    "capability_gap": {
+      "gap_type": "missing_catalytic_capability",
+      "capability_probability": 0.775,
+      "observed_inventory": false,
+      "observed_inventory_note": "No annotated enoyl reduction",
+      "stars": "\u2605\u2605\u2605\u2605\u2606"
+    },
+    "candidate": {
+      "family_key": null,
+      "representation": "domain_bag",
+      "confidence": 0.0,
+      "stars": "\u2606\u2606\u2606\u2606\u2606",
+      "evidence": [],
+      "limitation": [
+        "no_family_scored"
+      ],
+      "uncertainty_reasons": [
+        "no_candidate_in_cluster",
+        "insufficient_family_resolution",
+        "missing_homology_cluster"
+      ]
+    },
+    "hypothesis_status": [
+      "expectation_supported",
+      "candidate_unresolved"
+    ],
+    "interpretation": {
+      "summary": "Architecture strongly predicts enoyl reduction (ER) (expectation confidence 0.78), but no non-core candidate family scored in-cluster. Capability gap is supported; protein attribution is unresolved."
+    },
+    "validation": "Knockout / depletion \u2192 accumulation of \u03b2-unsaturated intermediate (+2 Da gap vs reduced product).",
+    "future_evidence": {
+      "active_site_similarity": false,
+      "metabolomics": false,
+      "bioactivity_prior": false
+    },
+    "priority": 2,
+    "calibration_gate_ok": true
+  },
+  {
+    "hypothesis_id": "MYXO-003",
+    "bgc_id": "BGC0000044",
+    "organism": "Stigmatella aurantiaca DW4/3-1",
+    "biosynth_class": "PKS",
+    "architecture": {
+      "neighborhood": "reductive_pks",
+      "expectation": {
+        "capability": "enoyl_reduction",
+        "chemistry": "enoyl reduction (ER)",
+        "confidence": 0.725,
+        "stars": "\u2605\u2605\u2605\u2605\u2606",
+        "evidence": [
+          "enriched_DH_KR_grammar",
+          "kNN_capacity_probability",
+          "matched_myxo_manifold"
+        ]
+      }
+    },
+    "capability_gap": {
+      "gap_type": "missing_catalytic_capability",
+      "capability_probability": 0.725,
+      "observed_inventory": false,
+      "observed_inventory_note": "No annotated enoyl reduction",
+      "stars": "\u2605\u2605\u2605\u2605\u2606"
+    },
+    "candidate": {
+      "family_key": null,
+      "representation": "domain_bag",
+      "confidence": 0.0,
+      "stars": "\u2606\u2606\u2606\u2606\u2606",
+      "evidence": [],
+      "limitation": [
+        "no_family_scored"
+      ],
+      "uncertainty_reasons": [
+        "no_candidate_in_cluster",
+        "insufficient_family_resolution",
+        "missing_homology_cluster"
+      ]
+    },
+    "hypothesis_status": [
+      "expectation_supported",
+      "candidate_unresolved"
+    ],
+    "interpretation": {
+      "summary": "Architecture strongly predicts enoyl reduction (ER) (expectation confidence 0.72), but no non-core candidate family scored in-cluster. Capability gap is supported; protein attribution is unresolved."
+    },
+    "validation": "Knockout / depletion \u2192 accumulation of \u03b2-unsaturated intermediate (+2 Da gap vs reduced product).",
+    "future_evidence": {
+      "active_site_similarity": false,
+      "metabolomics": false,
+      "bioactivity_prior": false
+    },
+    "priority": 3,
+    "calibration_gate_ok": true
+  },
+  {
+    "hypothesis_id": "MYXO-004",
+    "bgc_id": "BGC0001069",
+    "organism": "Sorangium cellulosum",
+    "biosynth_class": "hybrid",
+    "architecture": {
+      "neighborhood": "reductive_pks",
+      "expectation": {
+        "capability": "enoyl_reduction",
+        "chemistry": "enoyl reduction (ER)",
+        "confidence": 0.7,
+        "stars": "\u2605\u2605\u2605\u2605\u2606",
+        "evidence": [
+          "enriched_DH_KR_grammar",
+          "kNN_capacity_probability",
+          "matched_myxo_manifold"
+        ]
+      }
+    },
+    "capability_gap": {
+      "gap_type": "missing_catalytic_capability",
+      "capability_probability": 0.7,
+      "observed_inventory": false,
+      "observed_inventory_note": "No annotated enoyl reduction",
+      "stars": "\u2605\u2605\u2605\u2605\u2606"
+    },
+    "candidate": {
+      "family_key": "domain_bag__Redox",
+      "representation": "domain_bag",
+      "confidence": 0.21,
+      "stars": "\u2605\u2606\u2606\u2606\u2606",
+      "evidence": [
+        "local_synteny",
+        "gap_cooccurrence"
+      ],
+      "limitation": [
+        "domain_bag_not_catalytic_family"
+      ],
+      "uncertainty_reasons": [
+        "insufficient_family_resolution",
+        "missing_homology_cluster"
+      ]
+    },
+    "hypothesis_status": [
+      "expectation_supported",
+      "candidate_unresolved"
+    ],
+    "interpretation": {
+      "summary": "Architecture strongly predicts enoyl reduction (ER) (expectation confidence 0.70), but v0 family resolution is insufficient to identify the responsible catalytic family. Domain-bag keys are functional labels, not Pfam/UniRef catalytic families."
+    },
+    "validation": "Knockout / depletion \u2192 accumulation of \u03b2-unsaturated intermediate (+2 Da gap vs reduced product).",
+    "future_evidence": {
+      "active_site_similarity": false,
+      "metabolomics": false,
+      "bioactivity_prior": false
+    },
+    "priority": 4,
+    "calibration_gate_ok": true
+  },
+  {
+    "hypothesis_id": "MYXO-005",
+    "bgc_id": "BGC0000986",
+    "organism": "Stigmatella aurantiaca DW4/3-1",
+    "biosynth_class": "hybrid",
+    "architecture": {
+      "neighborhood": "reductive_pks",
+      "expectation": {
+        "capability": "enoyl_reduction",
+        "chemistry": "enoyl reduction (ER)",
+        "confidence": 0.65,
+        "stars": "\u2605\u2605\u2605\u2606\u2606",
+        "evidence": [
+          "enriched_DH_KR_grammar",
+          "kNN_capacity_probability",
+          "matched_myxo_manifold"
+        ]
+      }
+    },
+    "capability_gap": {
+      "gap_type": "missing_catalytic_capability",
+      "capability_probability": 0.65,
+      "observed_inventory": false,
+      "observed_inventory_note": "No annotated enoyl reduction",
+      "stars": "\u2605\u2605\u2605\u2606\u2606"
+    },
+    "candidate": {
+      "family_key": "domain_bag__Hydrolase",
+      "representation": "domain_bag",
+      "confidence": 0.21,
+      "stars": "\u2605\u2606\u2606\u2606\u2606",
+      "evidence": [
+        "local_synteny",
+        "gap_cooccurrence"
+      ],
+      "limitation": [
+        "domain_bag_not_catalytic_family"
+      ],
+      "uncertainty_reasons": [
+        "insufficient_family_resolution",
+        "missing_homology_cluster",
+        "multiple_plausible_candidates"
+      ]
+    },
+    "hypothesis_status": [
+      "expectation_supported",
+      "candidate_unresolved"
+    ],
+    "interpretation": {
+      "summary": "Architecture strongly predicts enoyl reduction (ER) (expectation confidence 0.65), but v0 family resolution is insufficient to identify the responsible catalytic family. Domain-bag keys are functional labels, not Pfam/UniRef catalytic families."
+    },
+    "validation": "Knockout / depletion \u2192 accumulation of \u03b2-unsaturated intermediate (+2 Da gap vs reduced product).",
+    "future_evidence": {
+      "active_site_similarity": false,
+      "metabolomics": false,
+      "bioactivity_prior": false
+    },
+    "priority": 5,
+    "calibration_gate_ok": true
+  },
+  {
+    "hypothesis_id": "MYXO-006",
+    "bgc_id": "BGC0001751",
+    "organism": "Pyxidicoccus sp. MCy9557",
+    "biosynth_class": "hybrid",
+    "architecture": {
+      "neighborhood": "reductive_pks",
+      "expectation": {
+        "capability": "enoyl_reduction",
+        "chemistry": "enoyl reduction (ER)",
+        "confidence": 0.625,
+        "stars": "\u2605\u2605\u2605\u2606\u2606",
+        "evidence": [
+          "enriched_DH_KR_grammar",
+          "kNN_capacity_probability",
+          "matched_myxo_manifold"
+        ]
+      }
+    },
+    "capability_gap": {
+      "gap_type": "missing_catalytic_capability",
+      "capability_probability": 0.625,
+      "observed_inventory": false,
+      "observed_inventory_note": "No annotated enoyl reduction",
+      "stars": "\u2605\u2605\u2605\u2606\u2606"
+    },
+    "candidate": {
+      "family_key": "domain_bag__Hydrolase",
+      "representation": "domain_bag",
+      "confidence": 0.21,
+      "stars": "\u2605\u2606\u2606\u2606\u2606",
+      "evidence": [
+        "local_synteny",
+        "gap_cooccurrence"
+      ],
+      "limitation": [
+        "domain_bag_not_catalytic_family"
+      ],
+      "uncertainty_reasons": [
+        "insufficient_family_resolution",
+        "missing_homology_cluster",
+        "multiple_plausible_candidates"
+      ]
+    },
+    "hypothesis_status": [
+      "expectation_supported",
+      "candidate_unresolved"
+    ],
+    "interpretation": {
+      "summary": "Architecture strongly predicts enoyl reduction (ER) (expectation confidence 0.62), but v0 family resolution is insufficient to identify the responsible catalytic family. Domain-bag keys are functional labels, not Pfam/UniRef catalytic families."
+    },
+    "validation": "Knockout / depletion \u2192 accumulation of \u03b2-unsaturated intermediate (+2 Da gap vs reduced product).",
+    "future_evidence": {
+      "active_site_similarity": false,
+      "metabolomics": false,
+      "bioactivity_prior": false
+    },
+    "priority": 6,
+    "calibration_gate_ok": true
+  }
+]

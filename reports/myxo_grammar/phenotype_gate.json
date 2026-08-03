@@ -1,0 +1,24 @@
+{
+  "size_filter_n_genes_max": 60,
+  "control_clade": "Streptomyces",
+  "n_myxo": 84,
+  "n_control": 826,
+  "median_myxo": 0.7313473379210431,
+  "median_control": 0.616171676928649,
+  "frac_top_decile_myxo": 0.30952380952380953,
+  "frac_top_decile_control": 0.13196125907990314,
+  "odds_ratio_top_decile": 2.9487503954444794,
+  "odds_ratio_top_decile_ci95": [
+    1.7803703258072099,
+    4.883887789295551
+  ],
+  "contingency_top_decile": {
+    "myxo_top": 26,
+    "myxo_rest": 58,
+    "control_top": 109,
+    "control_rest": 717
+  },
+  "mannwhitney_u": 41978.0,
+  "mannwhitney_p": 0.0007507399159967742,
+  "gate_ok": true
+}

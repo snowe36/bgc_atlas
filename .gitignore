@@ -44,6 +44,17 @@ reports/figures/*.svg
 !reports/figures/learned_novelty_comparison.png
 !reports/figures/learned_temporal_holdout.png
 !reports/figures/encoder_sweep_summary.png
+# Myxo grammar decode (targeted analysis)
+!reports/myxo_grammar_report.md
+!reports/myxo_grammar/
+!reports/myxo_grammar/**
+!reports/figures/fig_myxo_architecture_grammar.png
+!reports/figures/fig_myxo_architecture_grammar.pdf
+!reports/temporal_holdout_ranking.csv
+# Capability-gap inference (hypothesis cards)
+!reports/capability_gap_hypotheses.md
+!reports/capability_gap/
+!reports/capability_gap/**
 
 # Encoder checkpoints (large; regenerate with bgc-train-encoder)
 artifacts/

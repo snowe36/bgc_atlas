@@ -1,0 +1,16 @@
+{
+  "available": true,
+  "cutoff_date": "2022-09-16",
+  "n_heldout_total": 290,
+  "n_heldout_myxo": 6,
+  "n_heldout_streptomyces": 77,
+  "n_heldout_other": 207,
+  "global_heldout_mean": 0.3973440464233903,
+  "global_control_mean": 0.4948408293561743,
+  "global_p_heldout_gt_control": 0.9974008043878545,
+  "heldout_mean_myxo": 0.6390237324703344,
+  "heldout_mean_streptomyces": 0.4909532215357457,
+  "heldout_mean_nonmyxo": 0.3922381375632435,
+  "mannwhitney_myxo_gt_nonmyxo_u": 1227.0,
+  "mannwhitney_myxo_gt_nonmyxo_p": 0.0326806394850657
+}

@@ -1,0 +1,13 @@
+{
+  "n_tokens": 373,
+  "rarity": {
+    "n_myxo": 82,
+    "n_control": 174,
+    "median_idf_myxo": 1.5077292564727618,
+    "median_idf_control": 1.5303500251655309,
+    "mean_idf_myxo": 1.5280943154176598,
+    "mean_idf_control": 1.499590944644833,
+    "mannwhitney_u": 7316.0,
+    "mannwhitney_p_myxo_greater": 0.3713263455816208
+  }
+}

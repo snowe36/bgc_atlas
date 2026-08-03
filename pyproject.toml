@@ -45,6 +45,8 @@ bgc-novelty-compare = "bgcatlas.cli:novelty_compare_main"
 bgc-train-encoder = "bgcatlas.cli:train_encoder_main"
 bgc-learned-eval = "bgcatlas.cli:learned_eval_main"
 bgc-demo = "bgcatlas.demo:run_demo_main"
+bgc-myxo-grammar = "bgcatlas.analyses.myxo_grammar.run:run_myxo_grammar_main"
+bgc-capability-gap = "bgcatlas.analyses.capability_gap.run:run_capability_gap_main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

@@ -1,0 +1,14 @@
+{
+  "size_max": 60,
+  "gene_tol": 0.1,
+  "n_controls_per_myxo": 5,
+  "control_clade": "Streptomyces",
+  "n_myxo": 84,
+  "n_control_pool": 826,
+  "n_matched_myxo": 84,
+  "n_unique_controls": 183,
+  "n_match_pairs": 327,
+  "frac_same_class_pairs": 0.9847094801223242,
+  "n_unmatched_myxo": 0,
+  "mean_architecture_distance": 0.23607599072711102
+}

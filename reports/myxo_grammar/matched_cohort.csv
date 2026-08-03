@@ -1,0 +1,268 @@
+bgc_id,organism,biosynth_class,novelty,n_genes,biosynth_class_meta,organism_meta,n_genes_meta,clade,role
+BGC0000038,Streptomyces coelicolor A3(2),PKS,0.9972835929011228,24,PKS,Streptomyces coelicolor A3(2),24,Streptomyces,control
+BGC0000324,Streptomyces coelicolor A3(2),NRPS,0.9963781238681636,11,NRPS,Streptomyces coelicolor A3(2),11,Streptomyces,control
+BGC0000325,Streptomyces coelicolor A3(2),NRPS,0.995110467222021,11,NRPS,Streptomyces coelicolor A3(2),11,Streptomyces,control
+BGC0002089,Streptomyces scabiei 87.22,NRPS,0.9934806229626948,12,NRPS,Streptomyces scabiei 87.22,12,Streptomyces,control
+BGC0001845,Streptomyces sp. CBMAI 2042,hybrid,0.9909453096704092,9,hybrid,Streptomyces sp. CBMAI 2042,9,Streptomyces,control
+BGC0001111,Stigmatella aurantiaca Sg a15,hybrid,0.9860557768924304,13,hybrid,Stigmatella aurantiaca Sg a15,13,Myxobacteria,myxo
+BGC0000459,Streptomyces griseoviridis,hybrid,0.985331401666063,36,hybrid,Streptomyces griseoviridis,36,Streptomyces,control
+BGC0001093,Sorangium cellulosum,hybrid,0.9840637450199204,21,hybrid,Sorangium cellulosum,21,Myxobacteria,myxo
+BGC0001157,Streptomyces scabiei 87.22,RiPP,0.9771821803694314,13,RiPP,Streptomyces scabiei 87.22,13,Streptomyces,control
+BGC0000184,Sorangium cellulosum,PKS,0.970662803332126,23,PKS,Sorangium cellulosum,23,Myxobacteria,myxo
+BGC0001823,Streptomyces sp. CB02120-2,hybrid,0.970662803332126,31,hybrid,Streptomyces sp. CB02120-2,31,Streptomyces,control
+BGC0001116,Streptomyces virginiae,hybrid,0.9684896776530244,18,hybrid,Streptomyces virginiae,18,Streptomyces,control
+BGC0001063,Streptomyces coelicolor A3(2),hybrid,0.9641434262948207,22,hybrid,Streptomyces coelicolor A3(2),22,Streptomyces,control
+BGC0001106,Streptomyces albus,hybrid,0.9601593625498008,22,hybrid,Streptomyces albus,22,Streptomyces,control
+BGC0001025,Myxococcus xanthus DK 1622,hybrid,0.9594349873234336,23,hybrid,Myxococcus xanthus DK 1622,23,Myxobacteria,myxo
+BGC0001070,Streptomyces collinus Tu 365,hybrid,0.95907279971025,26,hybrid,Streptomyces collinus Tu 365,26,Streptomyces,control
+BGC0002931,Streptomyces sp. CS113,hybrid,0.9574429554509236,27,hybrid,Streptomyces sp. CS113,27,Streptomyces,control
+BGC0002101,Streptomyces sp. CMB-0406 CBM-0406,PKS,0.9498370155740674,21,PKS,Streptomyces sp. CMB-0406 CBM-0406,21,Streptomyces,control
+BGC0002735,Streptomyces incarnatus,hybrid,0.9465773270554148,20,hybrid,Streptomyces incarnatus,20,Streptomyces,control
+BGC0000963,Streptomyces verticillus,hybrid,0.9463962332488228,32,hybrid,Streptomyces verticillus,32,Streptomyces,control
+BGC0001036,Streptomyces sp. MK498-98F14,hybrid,0.9456718580224556,37,hybrid,Streptomyces sp. MK498-98F14,37,Streptomyces,control
+BGC0001091,Corallococcus coralloides,hybrid,0.9442231075697212,16,hybrid,Corallococcus coralloides,16,Myxobacteria,myxo
+BGC0001761,Sorangium cellulosum,PKS,0.9438609199565376,18,PKS,Sorangium cellulosum,18,Myxobacteria,myxo
+BGC0000034,Streptomyces sp. FR-008,hybrid,0.9411445128576604,21,hybrid,Streptomyces sp. FR-008,21,Streptomyces,control
+BGC0001053,Archangium disciforme,hybrid,0.9402390438247012,32,hybrid,Archangium disciforme,32,Myxobacteria,myxo
+BGC0001344,Cystobacter sp. SBCb004,hybrid,0.9367982614994568,17,hybrid,Cystobacter sp. SBCb004,17,Myxobacteria,myxo
+BGC0001394,Myxococcus stipitatus DSM 14675,hybrid,0.9310032596885186,12,hybrid,Myxococcus stipitatus DSM 14675,12,Myxobacteria,myxo
+BGC0000954,Chondromyces crocatus,hybrid,0.9310032596885186,13,hybrid,Chondromyces crocatus,13,Myxobacteria,myxo
+BGC0000023,Stigmatella aurantiaca DW4/3-1,PKS,0.9302788844621512,14,PKS,Stigmatella aurantiaca DW4/3-1,14,Myxobacteria,myxo
+BGC0001069,Sorangium cellulosum,hybrid,0.9300977906555596,9,hybrid,Sorangium cellulosum,9,Myxobacteria,myxo
+BGC0000986,Stigmatella aurantiaca DW4/3-1,hybrid,0.9290112278160086,17,hybrid,Stigmatella aurantiaca DW4/3-1,17,Myxobacteria,myxo
+BGC0000218,Streptomyces peucetius,PKS,0.9262948207171314,9,PKS,Streptomyces peucetius,9,Streptomyces,control
+BGC0000380,Sorangium cellulosum,hybrid,0.9204998189061934,35,hybrid,Sorangium cellulosum,35,Myxobacteria,myxo
+BGC0000179,Sorangium cellulosum So ce56,PKS,0.9194132560666424,16,PKS,Sorangium cellulosum So ce56,16,Myxobacteria,myxo
+BGC0000376,Streptomyces sp. Sp080513GE-23,NRPS,0.9190510684534589,24,NRPS,Streptomyces sp. Sp080513GE-23,24,Streptomyces,control
+BGC0003117,Myxococcus fulvus Mx f50,hybrid,0.9185077870336834,13,hybrid,Myxococcus fulvus Mx f50,13,Myxobacteria,myxo
+BGC0000069,Archangium violaceum Cb vi76,PKS,0.9166968489677652,21,PKS,Archangium violaceum Cb vi76,21,Myxobacteria,myxo
+BGC0001853,Streptomyces argillaceus,hybrid,0.9161535675479898,35,hybrid,Streptomyces argillaceus,35,Streptomyces,control
+BGC0001299,Sorangium cellulosum,PKS,0.9107207533502354,19,PKS,Sorangium cellulosum,19,Myxobacteria,myxo
+BGC0002441,Streptomyces sp. SANK 60404,hybrid,0.9076421586381744,31,hybrid,Streptomyces sp. SANK 60404,31,Streptomyces,control
+BGC0001751,Pyxidicoccus sp. MCy9557,hybrid,0.9067366896052156,27,hybrid,Pyxidicoccus sp. MCy9557,27,Myxobacteria,myxo
+BGC0000153,Stigmatella aurantiaca Sg a15,hybrid,0.90619340818544,20,hybrid,Stigmatella aurantiaca Sg a15,20,Myxobacteria,myxo
+BGC0000147,Sorangium cellulosum,PKS,0.9056501267656646,13,PKS,Sorangium cellulosum,13,Myxobacteria,myxo
+BGC0001034,Sorangium cellulosum,hybrid,0.9036580948931546,12,hybrid,Sorangium cellulosum,12,Myxobacteria,myxo
+BGC0000097,Streptomyces sp. MP39-85,PKS,0.9025715320536036,24,PKS,Streptomyces sp. MP39-85,24,Streptomyces,control
+BGC0000970,Chondromyces crocatus,hybrid,0.902390438247012,18,hybrid,Chondromyces crocatus,18,Myxobacteria,myxo
+BGC0000149,Sorangium cellulosum,PKS,0.902390438247012,13,PKS,Sorangium cellulosum,13,Myxobacteria,myxo
+BGC0001019,Sorangium cellulosum,hybrid,0.9020282506338284,11,hybrid,Sorangium cellulosum,11,Myxobacteria,myxo
+BGC0000974,Chondromyces crocatus,hybrid,0.8993118435349511,21,hybrid,Chondromyces crocatus,21,Myxobacteria,myxo
+BGC0001519,Streptomyces aurantiacus JA 4570,hybrid,0.8980441868888084,34,hybrid,Streptomyces aurantiacus JA 4570,34,Streptomyces,control
+BGC0002789,Streptomyces lavendulae strain YAKB-15,PKS,0.890619340818544,16,PKS,Streptomyces lavendulae strain YAKB-15,16,Streptomyces,control
+BGC0000360,Streptomyces sp. L-49973,NRPS,0.8879029337196668,28,NRPS,Streptomyces sp. L-49973,28,Streptomyces,control
+BGC0000083,Streptomyces amphibiosporus,PKS,0.8871785584932995,9,PKS,Streptomyces amphibiosporus,9,Streptomyces,control
+BGC0000114,Streptomyces violaceusniger,PKS,0.8864541832669323,18,PKS,Streptomyces violaceusniger,18,Streptomyces,control
+BGC0002810,Streptomyces spectabilis CPCC 200148,hybrid,0.885729808040565,11,hybrid,Streptomyces spectabilis CPCC 200148,11,Streptomyces,control
+BGC0002558,Streptomyces sp.,PKS,0.8821079319087287,34,PKS,Streptomyces sp.,34,Streptomyces,control
+BGC0000158,Streptomyces griseochromogenes,PKS,0.8795726186164433,21,PKS,Streptomyces griseochromogenes,21,Streptomyces,control
+BGC0000086,Streptomyces lasaliensis,PKS,0.8781238681637088,24,PKS,Streptomyces lasaliensis,24,Streptomyces,control
+BGC0001763,Streptomyces atratus,hybrid,0.8781238681637088,20,hybrid,Streptomyces atratus,20,Streptomyces,control
+BGC0001159,Streptomyces sp. CNQ-418,hybrid,0.8773994929373415,25,hybrid,Streptomyces sp. CNQ-418,25,Streptomyces,control
+BGC0001230,Streptomyces sp. CNB091,hybrid,0.8745019920318725,14,hybrid,Streptomyces sp. CNB091,14,Streptomyces,control
+BGC0000100,Streptomyces cinnamonensis,PKS,0.8739587106120971,34,PKS,Streptomyces cinnamonensis,34,Streptomyces,control
+BGC0000073,Streptomyces halstedii,PKS,0.873053241579138,9,PKS,Streptomyces halstedii,9,Streptomyces,control
+BGC0002940,Sorangium cellulosum So ce1875,hybrid,0.8725099601593626,6,hybrid,Sorangium cellulosum So ce1875,6,Myxobacteria,myxo
+BGC0001737,Corallococcus coralloides,hybrid,0.8708801159000362,10,hybrid,Corallococcus coralloides,10,Myxobacteria,myxo
+BGC0001941,Myxococcus fulvus,PKS,0.8706990220934444,24,PKS,Myxococcus fulvus,24,Myxobacteria,myxo
+BGC0000470,Streptomyces sp. WMMB272,RiPP,0.8705179282868526,11,RiPP,Streptomyces sp. WMMB272,11,Streptomyces,control
+BGC0000595,Streptomyces coelicolor A3(2),RiPP,0.8670771459616081,14,RiPP,Streptomyces coelicolor A3(2),14,Streptomyces,control
+BGC0002446,Streptomyces sp.,PKS,0.86526620789569,16,PKS,Streptomyces sp.,16,Streptomyces,control
+BGC0001984,Streptomyces sp.,NRPS,0.8598333936979355,12,NRPS,Streptomyces sp.,12,Streptomyces,control
+BGC0000059,Streptomyces avermitilis MA-4680 = NBRC 14893,PKS,0.8582035494386092,13,PKS,Streptomyces avermitilis MA-4680 = NBRC 14893,13,Streptomyces,control
+BGC0001172,Streptomyces sp. CNH-287,hybrid,0.8565737051792829,26,hybrid,Streptomyces sp. CNH-287,26,Streptomyces,control
+BGC0000950,Streptomyces sp. DSM 5940,NRPS,0.8563926113726911,29,NRPS,Streptomyces sp. DSM 5940,29,Streptomyces,control
+BGC0000014,Sorangium cellulosum,PKS,0.8547627671133647,34,PKS,Sorangium cellulosum,34,Myxobacteria,myxo
+BGC0000989,Sorangium cellulosum So0157-2,hybrid,0.8518652662078957,7,hybrid,Sorangium cellulosum So0157-2,7,Myxobacteria,myxo
+BGC0000988,Sorangium cellulosum,hybrid,0.8516841724013039,22,hybrid,Sorangium cellulosum,22,Myxobacteria,myxo
+BGC0000117,Streptomyces avermitilis,PKS,0.8500543281419776,18,PKS,Streptomyces avermitilis,18,Streptomyces,control
+BGC0003040,Cystobacter  sp. SBCb004,hybrid,0.8473379210431004,26,hybrid,Cystobacter  sp. SBCb004,26,Myxobacteria,myxo
+BGC0001022,Stigmatella aurantiaca,hybrid,0.8462513582035495,11,hybrid,Stigmatella aurantiaca,11,Myxobacteria,myxo
+BGC0001039,Streptomyces pyridomyceticus,hybrid,0.8437160449112641,26,hybrid,Streptomyces pyridomyceticus,26,Streptomyces,control
+BGC0001432,Stigmatella erecta,hybrid,0.8435349511046722,7,hybrid,Stigmatella erecta,7,Myxobacteria,myxo
+BGC0002760,Corallococcus coralloides 1071,NRPS,0.8435349511046722,11,NRPS,Corallococcus coralloides 1071,11,Myxobacteria,myxo
+BGC0001349,Streptomyces sp. SCSIO 03032,hybrid,0.8422672944585295,24,hybrid,Streptomyces sp. SCSIO 03032,24,Streptomyces,control
+BGC0000414,Streptomyces melanovinaceus,NRPS,0.8413618254255705,24,NRPS,Streptomyces melanovinaceus,24,Streptomyces,control
+BGC0002104,Streptomyces eurocidicus ATCC 27428,hybrid,0.8409996378123868,23,hybrid,Streptomyces eurocidicus ATCC 27428,23,Streptomyces,control
+BGC0000060,Streptomyces pulveraceus,PKS,0.839913074972836,21,PKS,Streptomyces pulveraceus,21,Streptomyces,control
+BGC0000660,Streptomyces coelicolor A3(2),terpene,0.8384643245201014,2,terpene,Streptomyces coelicolor A3(2),2,Streptomyces,control
+BGC0000971,Streptomyces cinnabarigriseus,hybrid,0.8375588554871424,22,hybrid,Streptomyces cinnabarigriseus,22,Streptomyces,control
+BGC0002333,Streptomyces cyanogenus,PKS,0.833031510322347,19,PKS,Streptomyces cyanogenus,19,Streptomyces,control
+BGC0002443,Streptomyces olivaceus,PKS,0.8266932270916335,23,PKS,Streptomyces olivaceus,23,Streptomyces,control
+BGC0001523,Streptomyces sp. 211726,PKS,0.8247011952191234,23,PKS,Streptomyces sp. 211726,23,Streptomyces,control
+BGC0000175,Streptomyces sp. YIM 56141,PKS,0.8100325968851865,18,PKS,Streptomyces sp. YIM 56141,18,Streptomyces,control
+BGC0000994,Streptomyces hygroscopicus subsp. ascomyceticus,hybrid,0.8062296269467584,22,hybrid,Streptomyces hygroscopicus subsp. ascomyceticus,22,Streptomyces,control
+BGC0001100,Streptomyces rochei,hybrid,0.8047808764940239,15,hybrid,Streptomyces rochei,15,Streptomyces,control
+BGC0000969,Chondromyces crocatus,hybrid,0.803694313654473,13,hybrid,Chondromyces crocatus,13,Myxobacteria,myxo
+BGC0002637,Streptomyces sp. WAC 06783,NRPS,0.8007968127490039,29,NRPS,Streptomyces sp. WAC 06783,29,Streptomyces,control
+BGC0001066,Streptomyces violaceoruber,PKS,0.798804780876494,20,PKS,Streptomyces violaceoruber,20,Streptomyces,control
+BGC0001902,Myxococcus virescens,hybrid,0.7960883737776168,18,hybrid,Myxococcus virescens,18,Myxobacteria,myxo
+BGC0000111,Streptomyces carzinostaticus,PKS,0.7953639985512495,14,PKS,Streptomyces carzinostaticus,14,Streptomyces,control
+BGC0000393,Myxococcus xanthus DK 1622,hybrid,0.7946396233248822,3,hybrid,Myxococcus xanthus DK 1622,3,Myxobacteria,myxo
+BGC0000394,Streptomyces lusitanus,NRPS,0.7944585295182904,28,NRPS,Streptomyces lusitanus,28,Streptomyces,control
+BGC0000998,Streptomyces sp. K01-0509,hybrid,0.7917421224194132,26,hybrid,Streptomyces sp. K01-0509,26,Streptomyces,control
+BGC0000432,Streptomyces rochei NBRC 12908,NRPS,0.7901122781600869,24,NRPS,Streptomyces rochei NBRC 12908,24,Streptomyces,control
+BGC0000167,Streptomyces halstedii,PKS,0.7846794639623325,20,PKS,Streptomyces halstedii,20,Streptomyces,control
+BGC0001819,Streptomyces venezuelae,PKS,0.7839550887359652,16,PKS,Streptomyces venezuelae,16,Streptomyces,control
+BGC0000094,Streptomyces venezuelae,PKS,0.779246649764578,7,PKS,Streptomyces venezuelae,7,Streptomyces,control
+BGC0000973,Streptomyces sp. CS40,hybrid,0.7770735240854763,27,hybrid,Streptomyces sp. CS40,27,Streptomyces,control
+BGC0000958,Streptomyces sp. S4,hybrid,0.7730894603404563,15,hybrid,Streptomyces sp. S4,15,Streptomyces,control
+BGC0001623,Streptomyces sp. MSC090213JE08,hybrid,0.7683810213690692,18,hybrid,Streptomyces sp. MSC090213JE08,18,Streptomyces,control
+BGC0000234,Streptomyces venezuelae ATCC 10712,PKS,0.7672944585295183,7,PKS,Streptomyces venezuelae ATCC 10712,7,Streptomyces,control
+BGC0000079,Streptomyces antibioticus,PKS,0.7667511771097428,23,PKS,Streptomyces antibioticus,23,Streptomyces,control
+BGC0001201,Sorangium cellulosum So ce56,terpene,0.7578775805867439,2,terpene,Sorangium cellulosum So ce56,2,Myxobacteria,myxo
+BGC0001942,Streptomyces rimosus subsp. paromomycinus,hybrid,0.7578775805867439,18,hybrid,Streptomyces rimosus subsp. paromomycinus,18,Streptomyces,control
+BGC0001533,Streptomyces rochei,PKS,0.7555233611010503,34,PKS,Streptomyces rochei,34,Streptomyces,control
+BGC0000024,Streptomyces thioluteus,PKS,0.7508149221296632,9,PKS,Streptomyces thioluteus,9,Streptomyces,control
+BGC0002581,Streptomyces sp.,NRPS,0.7500905469032959,9,NRPS,Streptomyces sp.,9,Streptomyces,control
+BGC0001012,Streptomyces violaceusniger,hybrid,0.7497283592901123,5,hybrid,Streptomyces violaceusniger,5,Streptomyces,control
+BGC0001967,Streptomyces hawaiiensis,hybrid,0.7455632017385005,19,hybrid,Streptomyces hawaiiensis,19,Streptomyces,control
+BGC0001024,Stigmatella aurantiaca DW4/3-1,hybrid,0.7435711698659906,7,hybrid,Stigmatella aurantiaca DW4/3-1,7,Myxobacteria,myxo
+BGC0000018,Streptomyces eurythermus,PKS,0.7397681999275625,5,PKS,Streptomyces eurythermus,5,Streptomyces,control
+BGC0000072,Pyxidicoccus fallax,PKS,0.7330677290836654,7,PKS,Pyxidicoccus fallax,7,Myxobacteria,myxo
+BGC0001216,Streptomyces sp. CNQ431,hybrid,0.7323433538572981,16,hybrid,Streptomyces sp. CNQ431,16,Streptomyces,control
+BGC0001834,Cystobacter sp. SBCb004,NRPS,0.7296269467584209,5,NRPS,Cystobacter sp. SBCb004,5,Myxobacteria,myxo
+BGC0002456,Streptomyces sp. NBRC 109436,hybrid,0.725642883013401,18,hybrid,Streptomyces sp. NBRC 109436,18,Streptomyces,control
+BGC0001051,Sorangium cellulosum,hybrid,0.7245563201738501,5,hybrid,Sorangium cellulosum,5,Myxobacteria,myxo
+BGC0002915,Streptomyces sp. CA-278952,hybrid,0.7238319449474828,7,hybrid,Streptomyces sp. CA-278952,7,Streptomyces,control
+BGC0001010,Melittangium lichenicola,hybrid,0.7238319449474828,19,hybrid,Melittangium lichenicola,19,Myxobacteria,myxo
+BGC0000982,Cystobacter fuscus,hybrid,0.723650851140891,17,hybrid,Cystobacter fuscus,17,Myxobacteria,myxo
+BGC0000633,Streptomyces avermitilis,terpene,0.7222021006881565,11,terpene,Streptomyces avermitilis,11,Streptomyces,control
+BGC0000113,Streptomyces caelestis,PKS,0.7220210068815647,7,PKS,Streptomyces caelestis,7,Streptomyces,control
+BGC0000166,Streptomyces fradiae,PKS,0.7220210068815647,7,PKS,Streptomyces fradiae,7,Streptomyces,control
+BGC0000257,Streptomyces griseoviridis,PKS,0.7218399130749729,24,PKS,Streptomyces griseoviridis,24,Streptomyces,control
+BGC0002509,Streptomyces sp.,NRPS,0.718761318362912,9,NRPS,Streptomyces sp.,9,Streptomyces,control
+BGC0001822,Cystobacter sp.,NRPS,0.7116986599058313,12,NRPS,Cystobacter sp.,12,Myxobacteria,myxo
+BGC0001919,Streptomyces orinoci,hybrid,0.708982252806954,20,hybrid,Streptomyces orinoci,20,Streptomyces,control
+BGC0002295,Streptomyces hygroscopicus,NRPS,0.7073524085476277,5,NRPS,Streptomyces hygroscopicus,5,Streptomyces,control
+BGC0002090,Streptomyces griseoaurantiacus,hybrid,0.706084751901485,23,hybrid,Streptomyces griseoaurantiacus,23,Streptomyces,control
+BGC0000991,Sorangium cellulosum,hybrid,0.7028250633828323,10,hybrid,Sorangium cellulosum,10,Myxobacteria,myxo
+BGC0000990,Sorangium cellulosum,hybrid,0.7001086562839551,24,hybrid,Sorangium cellulosum,24,Myxobacteria,myxo
+BGC0001052,Streptomyces sp. 307-9,hybrid,0.6988409996378124,15,hybrid,Streptomyces sp. 307-9,15,Streptomyces,control
+BGC0000028,Streptomyces lohii,PKS,0.6981166244114452,18,PKS,Streptomyces lohii,18,Streptomyces,control
+BGC0001918,Streptomyces sp.,hybrid,0.6968489677653025,18,hybrid,Streptomyces sp.,18,Streptomyces,control
+BGC0001570,Streptomyces albulus,NRPS,0.695400217312568,9,NRPS,Streptomyces albulus,9,Streptomyces,control
+BGC0000296,Streptomyces anulatus,NRPS,0.6886997464686708,28,NRPS,Streptomyces anulatus,28,Streptomyces,control
+BGC0002634,Streptomyces parvus,hybrid,0.6867077145961609,20,hybrid,Streptomyces parvus,20,Streptomyces,control
+BGC0000157,Streptomyces sp. CK4412,PKS,0.6845345889170591,14,PKS,Streptomyces sp. CK4412,14,Streptomyces,control
+BGC0001562,Streptomyces curacoi,NRPS,0.6819992756247736,11,NRPS,Streptomyces curacoi,11,Streptomyces,control
+BGC0000335,Cystobacter fuscus,hybrid,0.6809127127852227,10,hybrid,Cystobacter fuscus,10,Myxobacteria,myxo
+BGC0001438,Streptomyces sp. CS057,PKS,0.6803694313654474,34,PKS,Streptomyces sp. CS057,34,Streptomyces,control
+BGC0001709,Streptomyces albulus,PKS,0.6803694313654474,19,PKS,Streptomyces albulus,19,Streptomyces,control
+BGC0002994,Streptomyces sp. 71268,NRPS,0.6763853676204274,12,NRPS,Streptomyces sp. 71268,12,Streptomyces,control
+BGC0001620,Streptomyces atratus,hybrid,0.6752988047808766,21,hybrid,Streptomyces atratus,21,Streptomyces,control
+BGC0002500,Streptomyces pactum,PKS,0.6724013038754074,16,PKS,Streptomyces pactum,16,Streptomyces,control
+BGC0000044,Stigmatella aurantiaca DW4/3-1,PKS,0.6680550525172039,9,PKS,Stigmatella aurantiaca DW4/3-1,9,Myxobacteria,myxo
+BGC0001342,Chondromyces crocatus,hybrid,0.6629844259326331,16,hybrid,Chondromyces crocatus,16,Myxobacteria,myxo
+BGC0003062,Streptomyces marianii ICN19,RiPP,0.6580948931546541,10,RiPP,Streptomyces marianii ICN19,10,Streptomyces,control
+BGC0000306,Streptomyces filamentosus NRRL 11379,NRPS,0.6553784860557769,9,NRPS,Streptomyces filamentosus NRRL 11379,9,Streptomyces,control
+BGC0001455,Streptomyces argillaceus,hybrid,0.6548352046360014,16,hybrid,Streptomyces argillaceus,16,Streptomyces,control
+BGC0002372,Streptomyces sp.,hybrid,0.6535675479898587,16,hybrid,Streptomyces sp.,16,Streptomyces,control
+BGC0002115,Streptomyces albidoflavus J1074,RiPP,0.6499456718580224,12,RiPP,Streptomyces albidoflavus J1074,12,Streptomyces,control
+BGC0000080,Sorangium cellulosum,PKS,0.6385367620427381,21,PKS,Sorangium cellulosum,21,Myxobacteria,myxo
+BGC0001188,Streptomyces sp. CT34,RiPP,0.633828323071351,12,RiPP,Streptomyces sp. CT34,12,Streptomyces,control
+BGC0000235,Streptomyces sp. W007,PKS,0.6334661354581673,20,PKS,Streptomyces sp. W007,20,Streptomyces,control
+BGC0001148,Streptomyces cirratus,hybrid,0.6293009779065556,21,hybrid,Streptomyces cirratus,21,Streptomyces,control
+BGC0000353,Streptomyces sp. MA6548,NRPS,0.6291198840999638,3,NRPS,Streptomyces sp. MA6548,3,Streptomyces,control
+BGC0002706,Myxococcus xanthus,NRPS,0.6274900398406374,3,NRPS,Myxococcus xanthus,3,Myxobacteria,myxo
+BGC0002342,Myxococcus xanthus,hybrid,0.6238681637088012,9,hybrid,Myxococcus xanthus,9,Myxobacteria,myxo
+BGC0000444,Streptomyces turgidiscabies Car8,NRPS,0.6131836291198841,11,NRPS,Streptomyces turgidiscabies Car8,11,Streptomyces,control
+BGC0000955,Myxococcus xanthus,hybrid,0.6053965954364361,6,hybrid,Myxococcus xanthus,6,Myxobacteria,myxo
+BGC0001043,Streptomyces griseus subsp. griseus NBRC 13350,hybrid,0.6041289387902934,6,hybrid,Streptomyces griseus subsp. griseus NBRC 13350,6,Streptomyces,control
+BGC0001878,Streptomyces sp. NRRL B-1347,hybrid,0.5968851865266208,5,hybrid,Streptomyces sp. NRRL B-1347,5,Streptomyces,control
+BGC0001556,Streptomyces sp.,hybrid,0.59181455994205,9,hybrid,Streptomyces sp.,9,Streptomyces,control
+BGC0002081,Streptomyces sp. Tue6314,PKS,0.5852951829047447,19,PKS,Streptomyces sp. Tue6314,19,Streptomyces,control
+BGC0000019,Streptomyces eurythermus,PKS,0.584027526258602,13,PKS,Streptomyces eurythermus,13,Streptomyces,control
+BGC0001413,Cystobacter sp. Cbv34,NRPS,0.5822165881926838,24,NRPS,Cystobacter sp. Cbv34,24,Myxobacteria,myxo
+BGC0001840,Streptomyces sp. NRRL S-325,hybrid,0.5793190872872148,9,hybrid,Streptomyces sp. NRRL S-325,9,Streptomyces,control
+BGC0001200,Streptomyces sp. NBRC 109706,PKS,0.5787758058674394,21,PKS,Streptomyces sp. NBRC 109706,21,Streptomyces,control
+BGC0001945,Myxococcus sp.,NRPS,0.5621151756609923,29,NRPS,Myxococcus sp.,29,Myxobacteria,myxo
+BGC0001567,Streptomyces lincolnensis,NRPS,0.5617529880478087,11,NRPS,Streptomyces lincolnensis,11,Streptomyces,control
+BGC0000957,Streptomyces sp. XZQH13,hybrid,0.5559579862368706,26,hybrid,Streptomyces sp. XZQH13,26,Streptomyces,control
+BGC0001214,Streptomyces drozdowiczii,NRPS,0.5554147048170952,24,NRPS,Streptomyces drozdowiczii,24,Streptomyces,control
+BGC0002928,Streptomyces sp. MST-91080,PKS,0.5519739224918507,19,PKS,Streptomyces sp. MST-91080,19,Streptomyces,control
+BGC0000217,Streptomyces sp.,PKS,0.5494386091995653,9,PKS,Streptomyces sp.,9,Streptomyces,control
+BGC0000345,Streptomyces hygroscopicus,hybrid,0.5481709525534226,14,hybrid,Streptomyces hygroscopicus,14,Streptomyces,control
+BGC0000996,Streptomyces sp. SPB78,hybrid,0.5456356392611372,7,hybrid,Streptomyces sp. SPB78,7,Streptomyces,control
+BGC0000229,Streptomyces lusitanus,PKS,0.5418326693227091,34,PKS,Streptomyces lusitanus,34,Streptomyces,control
+BGC0001329,Streptomyces lilacinus,hybrid,0.5407461064831582,19,hybrid,Streptomyces lilacinus,19,Streptomyces,control
+BGC0002582,Streptomyces chrestomyceticus,NRPS,0.540021731256791,5,NRPS,Streptomyces chrestomyceticus,5,Streptomyces,control
+BGC0001435,Streptomyces sp. ZJ306,hybrid,0.5356754798985874,25,hybrid,Streptomyces sp. ZJ306,25,Streptomyces,control
+BGC0002386,Sorangium cellulosum So0157-2,hybrid,0.5231800072437522,20,hybrid,Sorangium cellulosum So0157-2,20,Myxobacteria,myxo
+BGC0001622,Streptomyces sp.,PKS,0.5217312567910177,21,PKS,Streptomyces sp.,21,Streptomyces,control
+BGC0001343,Stigmatella aurantiaca Sg a15,PKS,0.5130387540746106,18,PKS,Stigmatella aurantiaca Sg a15,18,Myxobacteria,myxo
+BGC0000066,Streptomyces hygroscopicus,PKS,0.5119521912350598,23,PKS,Streptomyces hygroscopicus,23,Streptomyces,control
+BGC0001553,Streptomyces sp. JV178,hybrid,0.5081492212966316,10,hybrid,Streptomyces sp. JV178,10,Streptomyces,control
+BGC0002499,Streptomyces achromogenes subsp. streptozoticus,hybrid,0.5079681274900398,24,hybrid,Streptomyces achromogenes subsp. streptozoticus,24,Streptomyces,control
+BGC0000068,Streptomyces hygroscopicus,PKS,0.5065193770373053,13,PKS,Streptomyces hygroscopicus,13,Streptomyces,control
+BGC0000220,Streptomyces maritimus,PKS,0.504889532777979,20,PKS,Streptomyces maritimus,20,Streptomyces,control
+BGC0002365,Streptomyces sp.,PKS,0.5005432814197754,6,PKS,Streptomyces sp.,6,Streptomyces,control
+BGC0000605,Streptomyces sp. ATCC 55365,RiPP,0.4835204636001449,13,RiPP,Streptomyces sp. ATCC 55365,13,Streptomyces,control
+BGC0001726,Streptomyces pactum,hybrid,0.4826149945671858,9,hybrid,Streptomyces pactum,9,Streptomyces,control
+BGC0002860,Streptomyces sp. CL12-4,terpene,0.4630568634552698,12,terpene,Streptomyces sp. CL12-4,12,Streptomyces,control
+BGC0001078,Streptomyces sp. KO-3988,hybrid,0.4625135820354943,23,hybrid,Streptomyces sp. KO-3988,23,Streptomyces,control
+BGC0003141,Streptomyces albofaciens JCM 4342,NRPS,0.4596160811300253,3,NRPS,Streptomyces albofaciens JCM 4342,3,Streptomyces,control
+BGC0000231,Streptomyces griseus,PKS,0.4556320173850054,5,PKS,Streptomyces griseus,5,Streptomyces,control
+BGC0001145,Streptomyces mobaraensis NBRC 13819 = DSM 40847,RiPP,0.45110467222021,10,RiPP,Streptomyces mobaraensis NBRC 13819 = DSM 40847,10,Streptomyces,control
+BGC0001002,Streptomyces roseoverticillatus,hybrid,0.4480260775081492,9,hybrid,Streptomyces roseoverticillatus,9,Streptomyces,control
+BGC0000253,Streptomyces antibioticus,PKS,0.4425932633103948,24,PKS,Streptomyces antibioticus,24,Streptomyces,control
+BGC0001831,Myxococcus xanthus DK 1622,PKS,0.4310032596885186,6,PKS,Myxococcus xanthus DK 1622,6,Myxobacteria,myxo
+BGC0002851,Streptomyces violaceusniger AgN23,PKS,0.4261137269105396,6,PKS,Streptomyces violaceusniger AgN23,6,Streptomyces,control
+BGC0000197,Streptomyces echinatus,PKS,0.4052879391524809,23,PKS,Streptomyces echinatus,23,Streptomyces,control
+BGC0000252,Streptomyces griseus subsp. griseus,PKS,0.4020282506338283,14,PKS,Streptomyces griseus subsp. griseus,14,Streptomyces,control
+BGC0001910,Streptomyces cyslabdanicus,terpene,0.3956899674031148,11,terpene,Streptomyces cyslabdanicus,11,Streptomyces,control
+BGC0002324,Archangium violaceum,hybrid,0.3757696486780152,12,hybrid,Archangium violaceum,12,Myxobacteria,myxo
+BGC0000648,Myxococcus xanthus,terpene,0.3621876131836291,11,terpene,Myxococcus xanthus,11,Myxobacteria,myxo
+BGC0001940,Pyxidicoccus fallax,PKS,0.3547627671133647,20,PKS,Pyxidicoccus fallax,20,Myxobacteria,myxo
+BGC0002934,Myxococcus  fulvus MCy8288,RiPP,0.3496921405287939,10,RiPP,Myxococcus  fulvus MCy8288,10,Myxobacteria,myxo
+BGC0001168,Streptomyces lividans 1326,NRPS,0.345708076783774,3,NRPS,Streptomyces lividans 1326,3,Streptomyces,control
+BGC0001225,Streptomyces caelestis,NRPS,0.3424483882651213,24,NRPS,Streptomyces caelestis,24,Streptomyces,control
+BGC0001023,Stigmatella aurantiaca,hybrid,0.3326693227091634,3,hybrid,Stigmatella aurantiaca,3,Myxobacteria,myxo
+BGC0000215,Streptomyces cyaneus,PKS,0.3178196305686345,7,PKS,Streptomyces cyaneus,7,Streptomyces,control
+BGC0000131,Streptomyces sp. UC 11065,PKS,0.3167330677290836,6,PKS,Streptomyces sp. UC 11065,6,Streptomyces,control
+BGC0001431,Stigmatella aurantiaca,hybrid,0.3158275986961246,12,hybrid,Stigmatella aurantiaca,12,Myxobacteria,myxo
+BGC0001429,Stigmatella aurantiaca DW4/3-1,hybrid,0.3152843172763491,12,hybrid,Stigmatella aurantiaca DW4/3-1,12,Myxobacteria,myxo
+BGC0001345,Stigmatella aurantiaca Sg a15,NRPS,0.3098515030785947,12,NRPS,Stigmatella aurantiaca Sg a15,12,Myxobacteria,myxo
+BGC0002492,Myxococcus xanthus DK 1622,NRPS,0.3080405650126765,9,NRPS,Myxococcus xanthus DK 1622,9,Myxobacteria,myxo
+BGC0001430,Stigmatella aurantiaca Sg a15,hybrid,0.3038754074610648,12,hybrid,Stigmatella aurantiaca Sg a15,12,Myxobacteria,myxo
+BGC0001366,Streptomyces sp. FJS31-2,PKS,0.3004346251358203,16,PKS,Streptomyces sp. FJS31-2,16,Streptomyces,control
+BGC0001421,Myxococcus sp.,hybrid,0.2868525896414342,13,hybrid,Myxococcus sp.,13,Myxobacteria,myxo
+BGC0001424,Myxococcus virescens,hybrid,0.2835929011227815,14,hybrid,Myxococcus virescens,14,Myxobacteria,myxo
+BGC0000261,Streptomyces sp. R1128,PKS,0.2817819630568634,14,PKS,Streptomyces sp. R1128,14,Streptomyces,control
+BGC0001423,Myxococcus hansupus,hybrid,0.2761680550525172,13,hybrid,Myxococcus hansupus,13,Myxobacteria,myxo
+BGC0001227,Streptomyces collinus Tu 365,terpene,0.2745382107931908,11,terpene,Streptomyces collinus Tu 365,11,Streptomyces,control
+BGC0001911,Streptomyces anulatus,terpene,0.2698297718218037,10,terpene,Streptomyces anulatus,10,Streptomyces,control
+BGC0000264,Streptomyces resistomycificus,PKS,0.2651213328504165,18,PKS,Streptomyces resistomycificus,18,Streptomyces,control
+BGC0000214,Streptomyces olindensis,PKS,0.2651213328504165,14,PKS,Streptomyces olindensis,14,Streptomyces,control
+BGC0000244,Streptomyces griseus subsp. griseus,PKS,0.2618616443317638,6,PKS,Streptomyces griseus subsp. griseus,6,Streptomyces,control
+BGC0002835,Streptomyces S. leeuwenhoekii Streptomyces leeuwenhoekii DSM42122,RiPP,0.2600507062658457,12,RiPP,Streptomyces S. leeuwenhoekii Streptomyces leeuwenhoekii DSM42122,12,Streptomyces,control
+BGC0002043,Myxococcus xanthus DK 1622,RiPP,0.2575153929735603,3,RiPP,Myxococcus xanthus DK 1622,3,Myxobacteria,myxo
+BGC0002631,Pyxidicoccus fallax,RiPP,0.2575153929735603,3,RiPP,Pyxidicoccus fallax,3,Myxobacteria,myxo
+BGC0000254,Streptomyces rimosus,PKS,0.2558855487142339,20,PKS,Streptomyces rimosus,20,Streptomyces,control
+BGC0000375,Streptomyces chromofuscus,NRPS,0.2553422672944585,5,NRPS,Streptomyces chromofuscus,5,Streptomyces,control
+BGC0001428,Myxococcus xanthus,hybrid,0.2549800796812749,14,hybrid,Myxococcus xanthus,14,Myxobacteria,myxo
+BGC0001422,Myxococcus fulvus HW-1,hybrid,0.2540746106483158,14,hybrid,Myxococcus fulvus HW-1,14,Myxobacteria,myxo
+BGC0001426,Myxococcus xanthus,hybrid,0.2488228902571532,13,hybrid,Myxococcus xanthus,13,Myxobacteria,myxo
+BGC0001427,Myxococcus xanthus,hybrid,0.2486417964505614,13,hybrid,Myxococcus xanthus,13,Myxobacteria,myxo
+BGC0001425,Myxococcus xanthus DK 1622,hybrid,0.2484607026439695,13,hybrid,Myxococcus xanthus DK 1622,13,Myxobacteria,myxo
+BGC0000871,Myxococcus xanthus DK 1622,other,0.2480985150307859,5,other,Myxococcus xanthus DK 1622,5,Myxobacteria,myxo
+BGC0000658,Streptomyces griseus subsp. griseus NBRC 13350,terpene,0.2395871061209706,2,terpene,Streptomyces griseus subsp. griseus NBRC 13350,2,Streptomyces,control
+BGC0001079,Streptomyces aculeolatus,hybrid,0.2366896052155016,31,hybrid,Streptomyces aculeolatus,31,Streptomyces,control
+BGC0000207,Streptomyces chartreusis,PKS,0.2348786671495835,13,PKS,Streptomyces chartreusis,13,Streptomyces,control
+BGC0003063,Streptomyces sp. DvalAA-43 ,RiPP,0.2160449112640347,3,RiPP,Streptomyces sp. DvalAA-43 ,3,Streptomyces,control
+BGC0000250,Streptomyces nogalater,PKS,0.2030061571894241,6,PKS,Streptomyces nogalater,6,Streptomyces,control
+BGC0003029,Streptomyces sp.  CL190,hybrid,0.1885186526620789,3,hybrid,Streptomyces sp.  CL190,3,Streptomyces,control
+BGC0002560,Streptomyces sp. NRRL S-4,RiPP,0.1868888084027526,10,RiPP,Streptomyces sp. NRRL S-4,10,Streptomyces,control
+BGC0000278,Streptomyces fradiae,PKS,0.1810938065918145,5,PKS,Streptomyces fradiae,5,Streptomyces,control
+BGC0000193,Streptomyces galilaeus,PKS,0.1780152118797537,13,PKS,Streptomyces galilaeus,13,Streptomyces,control
+BGC0003136,Myxococcus unclassified  MCy9171,RiPP,0.1693227091633466,12,RiPP,Myxococcus unclassified  MCy9171,12,Myxobacteria,myxo
+BGC0000496,Streptomyces griseus subsp. griseus NBRC 13350,RiPP,0.1499456718580224,5,RiPP,Streptomyces griseus subsp. griseus NBRC 13350,5,Streptomyces,control
+BGC0002150,Streptomyces triculaminicus,RiPP,0.1314741035856573,3,RiPP,Streptomyces triculaminicus,3,Streptomyces,control
+BGC0002151,Streptomyces griseocarneus,RiPP,0.1311119159724737,3,RiPP,Streptomyces griseocarneus,3,Streptomyces,control
+BGC0000469,Streptomyces sp. BC16019,RiPP,0.1153567547989858,13,RiPP,Streptomyces sp. BC16019,13,Streptomyces,control
+BGC0000468,Streptomyces bottropensis DSM40262,RiPP,0.1019558131111915,13,RiPP,Streptomyces bottropensis DSM40262,13,Streptomyces,control
+BGC0001559,Chondromyces crocatus,RiPP,0.0441868888084027,13,RiPP,Chondromyces crocatus,13,Myxobacteria,myxo
+BGC0001472,Streptomyces bernensis,RiPP,0.0376675117710974,10,RiPP,Streptomyces bernensis,10,Streptomyces,control
+BGC0002105,Streptomyces viridosporus NRRL 2414,PKS,0.0358565737051792,19,PKS,Streptomyces viridosporus NRRL 2414,19,Streptomyces,control
+BGC0002921,Streptomyces sp. NRRL S-1521,RiPP,0.0137631293009779,3,RiPP,Streptomyces sp. NRRL S-1521,3,Streptomyces,control
+BGC0002882,Streptomyces  unclassified Streptomyces RK44,RiPP,0.012676566461427,3,RiPP,Streptomyces  unclassified Streptomyces RK44,3,Streptomyces,control

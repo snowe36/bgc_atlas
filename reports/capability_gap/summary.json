@@ -1,0 +1,25 @@
+{
+  "pilot": "reductive_pks",
+  "capacity": "enoyl_reduction",
+  "calibration": {
+    "capacity": "enoyl_reduction",
+    "n_annotated_positives": 450,
+    "n_true_gaps_in_grammar": 214,
+    "n_non_pilot": 2063,
+    "counterfactual_detection_rate_on_annotated": 0.6444444444444445,
+    "detection_rate_on_true_gaps": 0.411214953271028,
+    "mean_p_annotated_positives": 0.6174444444444445,
+    "mean_p_true_gaps": 0.46752336448598136,
+    "mean_p_non_pilot": 0.08818468250121184,
+    "p_annotated_vs_nonpilot_winrate": 0.9744439058544728,
+    "p_true_gaps_vs_nonpilot_winrate": 0.906068650590511,
+    "min_expectation": 0.55,
+    "calibration_ok": true,
+    "note": "Counterfactual calibration: estimate P(capacity|neighborhood) on the observed atlas, then ask whether annotated-positive pilot BGCs would clear the gap threshold if their capacity annotation were absent. Masking all positives before fitting P(.) is invalid \u2014 it erases the neighborhood prior."
+  },
+  "n_expectation_gaps_myxo": 13,
+  "n_cards": 6,
+  "top_family": "Kinase",
+  "report": "/Users/ericsnow/bgc_atlas/reports/capability_gap_hypotheses.md",
+  "figures_dir": "/Users/ericsnow/bgc_atlas/reports/figures"
+}

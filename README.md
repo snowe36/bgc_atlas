@@ -9,6 +9,8 @@
 **Question.** Can architecture novelty identify future discoveries?
 **Answer.** Not yet — under a prospective MIBiG time split, architecture novelty underperforms a matched random control (held-out 0.40 vs control 0.50). Architectural novelty and discoverability are not the same thing.
 
+`bgc_atlas` does **not** predict discovery. It quantifies architectural organization, tests whether novelty is meaningful, and identifies lineage-associated biosynthetic design grammars (`bgc-myxo-grammar`).
+
 Suite: **BGC (encode)** → [Catalyst](https://github.com/snowe36/catalyst_atlas) (catalyze) → [Metabo](https://github.com/snowe36/metabo_atlas) (observe) → [ABX](https://github.com/snowe36/abx_atlas) (function).
 
 [![CI](https://github.com/snowe36/bgc_atlas/actions/workflows/ci.yml/badge.svg)](https://github.com/snowe36/bgc_atlas/actions/workflows/ci.yml)
@@ -175,13 +177,39 @@ Hero ranking: [`reports/novelty_ranking.csv`](reports/novelty_ranking.csv). Vali
 
 ---
 
+## Myxobacterial architecture grammar
+
+Targeted analysis (not an atlas expansion): *which architectural primitives explain the size-matched myxo neighborhood shift?*
+
+The analysis first **reproduces the phenotype gate** (OR ≈ 2.9 under ≤60-gene control), then builds a size- and class-matched Streptomyces cohort (±10% gene count; ~98% same class) to isolate architectural composition from those confounders. Enrichment is over **ordered assembly grammars** (motifs and capacity combos), not a new embedding.
+
+**Rarity negative control.** Mean token-IDF does not differ (p ≈ 0.37): myxobacteria are not unusual because they use rarer parts — they preferentially arrange familiar components into different pathway organization rules (e.g. `PKS_DH2→KR` motifs, `DH→ER→KR` reduction cascades, PKS↔NRPS bridges).
+
+```bash
+uv run --no-sync bgc-myxo-grammar
+```
+
+Outputs: [`reports/myxo_grammar_report.md`](reports/myxo_grammar_report.md), [`reports/figures/fig_myxo_architecture_grammar.png`](reports/figures/fig_myxo_architecture_grammar.png), tables under `reports/myxo_grammar/`. Details: [`analyses/myxo_grammar/`](analyses/myxo_grammar/).
+
+### Capability-gap hypotheses (inference layer)
+
+Atlases are priors; this layer emits **family-level mechanistic hypotheses** from conditional expectation gaps — `P(capacity | architecture neighborhood)` — not global novelty.
+
+```bash
+uv run --no-sync bgc-capability-gap
+```
+
+Pilot: [`reports/capability_gap_hypotheses.md`](reports/capability_gap_hypotheses.md) (calibration gate + `MYXO-00N` cards). Details: [`analyses/capability_gap/`](analyses/capability_gap/).
+
+---
+
 ## Future directions
 
-- **Why myxobacteria?** Which domain combinations drive the enrichment
 - **Representation disagreement as a filter** — ESM-familiar but architecture-novel (aranazole pattern)
 - **Why novelty ≠ deposition** — taxon bias, accessibility, sampling economics
 - Self-supervised objectives without class labels that keep size confound low
 - Longer lead-time cutoffs and organism-stratified holdouts
+- Clade-aware / Proteobacteria-only controls for the myxo grammar
 
 ---
 
