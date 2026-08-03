@@ -117,6 +117,51 @@ def _hypothesis_status(exp_conf: float, cand_conf: float, reasons: list[str]) ->
     return status
 
 
+def _discovery_readiness(
+    *,
+    exp_conf: float,
+    cand_conf: float,
+    reasons: list[str],
+    status: list[str],
+) -> dict:
+    """Wet-lab interface score — independent of collapsing expectation/candidate.
+
+    Strong expectations with unresolved families are scientifically valuable but
+    not delete-and-assay ready; blocker names the upgrade that unlocks the next
+    experiment.
+    """
+    if "candidate_supported" in status:
+        score = min(1.0, 0.55 + 0.3 * cand_conf + 0.15 * exp_conf)
+        return {
+            "confidence": round(score, 3),
+            "stars": _stars_from_confidence(score),
+            "blocker": None,
+            "next_experiment": (
+                "Delete / deplete a member of the candidate family and assay "
+                "the predicted metabolite shift."
+            ),
+        }
+    # Primary blocker for v0: family identity, not the gap itself.
+    if UNCERTAINTY_NO_CANDIDATE in reasons:
+        score = min(0.4, 0.2 + 0.25 * exp_conf)
+        next_exp = (
+            "Resolve catalytic family identity in-cluster (Pfam/UniRef) before "
+            "designing a knockout."
+        )
+    else:
+        score = min(0.5, 0.25 + 0.2 * exp_conf + 0.25 * cand_conf)
+        next_exp = (
+            "Upgrade family representation (Pfam/UniRef); then design knockout "
+            "of the leading family member and assay metabolite shift."
+        )
+    return {
+        "confidence": round(score, 3),
+        "stars": _stars_from_confidence(score),
+        "blocker": "family_resolution",
+        "next_experiment": next_exp,
+    }
+
+
 def _interpretation_summary(
     *,
     chemistry: str,
@@ -201,6 +246,12 @@ def build_cards(
         reasons = _uncertainty_reasons(fam, n_plausible=n_plausible)
         status = _hypothesis_status(exp_conf, cand_conf, reasons)
         evidence_tags = _candidate_evidence_tags(fam)
+        readiness = _discovery_readiness(
+            exp_conf=exp_conf,
+            cand_conf=cand_conf,
+            reasons=reasons,
+            status=status,
+        )
 
         raw_key = fam["family_key"] if fam else None
         family_key = _domain_bag_key(raw_key) if raw_key else None
@@ -240,6 +291,7 @@ def build_cards(
                 ),
                 "uncertainty_reasons": reasons,
             },
+            "discovery_readiness": readiness,
             "hypothesis_status": status,
             "interpretation": {
                 "summary": _interpretation_summary(
@@ -256,6 +308,9 @@ def build_cards(
                 "metabolomics": False,
                 "bioactivity_prior": False,
             },
+            # Priority ranks by expectation / gap strength (gaps pre-sorted), not
+            # candidate confidence — a strong gap with weak attribution outranks
+            # a weaker gap with a noisier family association.
             "priority": i + 1,
             "calibration_gate_ok": bool(calibration.get("calibration_ok")),
         }
@@ -271,9 +326,11 @@ def write_cards_markdown(cards: list[dict], path: Path, *, calibration: dict) ->
         "Inference layer over the atlas: **conditional capability expectations**, not global "
         "novelty. Each card is a **claim with two independent uncertainties** — expectation "
         "(does this pathway need this chemistry?) vs candidate (do we know which protein "
-        "performs it?). There is no single overall confidence score.",
+        "performs it?). Discovery readiness is the wet-lab interface. There is no single "
+        "overall confidence score. Cards are ranked by **expectation / gap strength**, "
+        "not candidate confidence.",
         "",
-        "## Calibration gate",
+        "## Calibration gate (frozen v0 baseline)",
         "",
         f"- Counterfactual detection (annotated positives): "
         f"{calibration.get('counterfactual_detection_rate_on_annotated')}",
@@ -296,7 +353,9 @@ def write_cards_markdown(cards: list[dict], path: Path, *, calibration: dict) ->
         exp = arch["expectation"]
         gap = c["capability_gap"]
         cand = c["candidate"]
+        ready = c["discovery_readiness"]
         status = ", ".join(c["hypothesis_status"])
+        blocker = ready.get("blocker") or "_(none)_"
         lines += [
             f"## Hypothesis {c['hypothesis_id']}",
             "",
@@ -308,6 +367,11 @@ def write_cards_markdown(cards: list[dict], path: Path, *, calibration: dict) ->
             f"|---|---|",
             f"| **Expectation** (architecture → chemistry) | {exp['stars']} ({exp['confidence']:.2f}) |",
             f"| **Candidate** (protein attribution) | {cand['stars']} ({cand['confidence']:.2f}) |",
+            f"| **Discovery readiness** (wet-lab interface) | {ready['stars']} ({ready['confidence']:.2f}) |",
+            "",
+            f"**Blocker.** `{blocker}`",
+            "",
+            f"**Next experiment.** {ready['next_experiment']}",
             "",
             f"**Interpretation.** {c['interpretation']['summary']}",
             "",

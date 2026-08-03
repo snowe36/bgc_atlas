@@ -1,8 +1,8 @@
 # Capability-gap hypotheses (pilot: reductive PKS)
 
-Inference layer over the atlas: **conditional capability expectations**, not global novelty. Each card is a **claim with two independent uncertainties** — expectation (does this pathway need this chemistry?) vs candidate (do we know which protein performs it?). There is no single overall confidence score.
+Inference layer over the atlas: **conditional capability expectations**, not global novelty. Each card is a **claim with two independent uncertainties** — expectation (does this pathway need this chemistry?) vs candidate (do we know which protein performs it?). Discovery readiness is the wet-lab interface. There is no single overall confidence score. Cards are ranked by **expectation / gap strength**, not candidate confidence.
 
-## Calibration gate
+## Calibration gate (frozen v0 baseline)
 
 - Counterfactual detection (annotated positives): 0.6444444444444445
 - Detection on true gaps: 0.411214953271028
@@ -24,6 +24,11 @@ Counterfactual calibration: estimate P(capacity|neighborhood) on the observed at
 |---|---|
 | **Expectation** (architecture → chemistry) | ★★★★☆ (0.80) |
 | **Candidate** (protein attribution) | ☆☆☆☆☆ (0.00) |
+| **Discovery readiness** (wet-lab interface) | ★★☆☆☆ (0.40) |
+
+**Blocker.** `family_resolution`
+
+**Next experiment.** Resolve catalytic family identity in-cluster (Pfam/UniRef) before designing a knockout.
 
 **Interpretation.** Architecture strongly predicts enoyl reduction (ER) (expectation confidence 0.80), but no non-core candidate family scored in-cluster. Capability gap is supported; protein attribution is unresolved.
 
@@ -68,6 +73,11 @@ Candidate uncertainty reasons:
 |---|---|
 | **Expectation** (architecture → chemistry) | ★★★★☆ (0.78) |
 | **Candidate** (protein attribution) | ☆☆☆☆☆ (0.00) |
+| **Discovery readiness** (wet-lab interface) | ★★☆☆☆ (0.39) |
+
+**Blocker.** `family_resolution`
+
+**Next experiment.** Resolve catalytic family identity in-cluster (Pfam/UniRef) before designing a knockout.
 
 **Interpretation.** Architecture strongly predicts enoyl reduction (ER) (expectation confidence 0.78), but no non-core candidate family scored in-cluster. Capability gap is supported; protein attribution is unresolved.
 
@@ -112,6 +122,11 @@ Candidate uncertainty reasons:
 |---|---|
 | **Expectation** (architecture → chemistry) | ★★★★☆ (0.72) |
 | **Candidate** (protein attribution) | ☆☆☆☆☆ (0.00) |
+| **Discovery readiness** (wet-lab interface) | ★★☆☆☆ (0.38) |
+
+**Blocker.** `family_resolution`
+
+**Next experiment.** Resolve catalytic family identity in-cluster (Pfam/UniRef) before designing a knockout.
 
 **Interpretation.** Architecture strongly predicts enoyl reduction (ER) (expectation confidence 0.72), but no non-core candidate family scored in-cluster. Capability gap is supported; protein attribution is unresolved.
 
@@ -156,6 +171,11 @@ Candidate uncertainty reasons:
 |---|---|
 | **Expectation** (architecture → chemistry) | ★★★★☆ (0.70) |
 | **Candidate** (protein attribution) | ★☆☆☆☆ (0.21) |
+| **Discovery readiness** (wet-lab interface) | ★★☆☆☆ (0.44) |
+
+**Blocker.** `family_resolution`
+
+**Next experiment.** Upgrade family representation (Pfam/UniRef); then design knockout of the leading family member and assay metabolite shift.
 
 **Interpretation.** Architecture strongly predicts enoyl reduction (ER) (expectation confidence 0.70), but v0 family resolution is insufficient to identify the responsible catalytic family. Domain-bag keys are functional labels, not Pfam/UniRef catalytic families.
 
@@ -200,6 +220,11 @@ Candidate uncertainty reasons:
 |---|---|
 | **Expectation** (architecture → chemistry) | ★★★☆☆ (0.65) |
 | **Candidate** (protein attribution) | ★☆☆☆☆ (0.21) |
+| **Discovery readiness** (wet-lab interface) | ★★☆☆☆ (0.43) |
+
+**Blocker.** `family_resolution`
+
+**Next experiment.** Upgrade family representation (Pfam/UniRef); then design knockout of the leading family member and assay metabolite shift.
 
 **Interpretation.** Architecture strongly predicts enoyl reduction (ER) (expectation confidence 0.65), but v0 family resolution is insufficient to identify the responsible catalytic family. Domain-bag keys are functional labels, not Pfam/UniRef catalytic families.
 
@@ -245,6 +270,11 @@ Candidate uncertainty reasons:
 |---|---|
 | **Expectation** (architecture → chemistry) | ★★★☆☆ (0.62) |
 | **Candidate** (protein attribution) | ★☆☆☆☆ (0.21) |
+| **Discovery readiness** (wet-lab interface) | ★★☆☆☆ (0.43) |
+
+**Blocker.** `family_resolution`
+
+**Next experiment.** Upgrade family representation (Pfam/UniRef); then design knockout of the leading family member and assay metabolite shift.
 
 **Interpretation.** Architecture strongly predicts enoyl reduction (ER) (expectation confidence 0.62), but v0 family resolution is insufficient to identify the responsible catalytic family. Domain-bag keys are functional labels, not Pfam/UniRef catalytic families.
 

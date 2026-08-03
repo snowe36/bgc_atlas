@@ -40,6 +40,12 @@
         "missing_homology_cluster"
       ]
     },
+    "discovery_readiness": {
+      "confidence": 0.4,
+      "stars": "\u2605\u2605\u2606\u2606\u2606",
+      "blocker": "family_resolution",
+      "next_experiment": "Resolve catalytic family identity in-cluster (Pfam/UniRef) before designing a knockout."
+    },
     "hypothesis_status": [
       "expectation_supported",
       "candidate_unresolved"
@@ -97,6 +103,12 @@
         "missing_homology_cluster"
       ]
     },
+    "discovery_readiness": {
+      "confidence": 0.394,
+      "stars": "\u2605\u2605\u2606\u2606\u2606",
+      "blocker": "family_resolution",
+      "next_experiment": "Resolve catalytic family identity in-cluster (Pfam/UniRef) before designing a knockout."
+    },
     "hypothesis_status": [
       "expectation_supported",
       "candidate_unresolved"
@@ -153,6 +165,12 @@
         "insufficient_family_resolution",
         "missing_homology_cluster"
       ]
+    },
+    "discovery_readiness": {
+      "confidence": 0.381,
+      "stars": "\u2605\u2605\u2606\u2606\u2606",
+      "blocker": "family_resolution",
+      "next_experiment": "Resolve catalytic family identity in-cluster (Pfam/UniRef) before designing a knockout."
     },
     "hypothesis_status": [
       "expectation_supported",
@@ -212,6 +230,12 @@
         "insufficient_family_resolution",
         "missing_homology_cluster"
       ]
+    },
+    "discovery_readiness": {
+      "confidence": 0.443,
+      "stars": "\u2605\u2605\u2606\u2606\u2606",
+      "blocker": "family_resolution",
+      "next_experiment": "Upgrade family representation (Pfam/UniRef); then design knockout of the leading family member and assay metabolite shift."
     },
     "hypothesis_status": [
       "expectation_supported",
@@ -273,6 +297,12 @@
         "multiple_plausible_candidates"
       ]
     },
+    "discovery_readiness": {
+      "confidence": 0.432,
+      "stars": "\u2605\u2605\u2606\u2606\u2606",
+      "blocker": "family_resolution",
+      "next_experiment": "Upgrade family representation (Pfam/UniRef); then design knockout of the leading family member and assay metabolite shift."
+    },
     "hypothesis_status": [
       "expectation_supported",
       "candidate_unresolved"
@@ -332,6 +362,12 @@
         "missing_homology_cluster",
         "multiple_plausible_candidates"
       ]
+    },
+    "discovery_readiness": {
+      "confidence": 0.427,
+      "stars": "\u2605\u2605\u2606\u2606\u2606",
+      "blocker": "family_resolution",
+      "next_experiment": "Upgrade family representation (Pfam/UniRef); then design knockout of the leading family member and assay metabolite shift."
     },
     "hypothesis_status": [
       "expectation_supported",

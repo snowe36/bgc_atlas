@@ -65,6 +65,8 @@ def test_cards_split_expectation_and_candidate_confidence():
     assert "expectation_supported" in c["hypothesis_status"]
     assert "candidate_unresolved" in c["hypothesis_status"]
     assert "interpretation" in c and c["interpretation"]["summary"]
+    assert "discovery_readiness" in c
+    assert c["discovery_readiness"]["blocker"] == "family_resolution"
 
 
 @pytest.mark.skipif(

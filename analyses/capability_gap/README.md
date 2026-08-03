@@ -27,7 +27,8 @@ Each card splits two independent uncertainties — never a single overall score:
 | **Candidate** | Do we know which protein performs it? |
 
 `hypothesis_status` tracks maturity (`expectation_supported` + `candidate_unresolved` → later `candidate_supported`).  
-`candidate.uncertainty_reasons` are first-class codes (`insufficient_family_resolution`, …) — actionable upgrade targets.
+`candidate.uncertainty_reasons` are first-class codes (`insufficient_family_resolution`, …) — actionable upgrade targets.  
+`discovery_readiness` is the wet-lab interface (blocker + next experiment). Cards rank by expectation/gap strength, not candidate confidence.
 
 v0 family keys are `domain_bag__…` labels, not catalytic families. Low candidate confidence means attribution is limited, not that the gap failed.
 
